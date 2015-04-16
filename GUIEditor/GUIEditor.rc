@@ -50,8 +50,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1, 0, 0, 1
-PRODUCTVERSION 1, 0, 0, 1
+FILEVERSION 1, 1, 0, 0
+PRODUCTVERSION 1, 1, 0, 0
 FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 FILEFLAGS 0x1L
@@ -68,12 +68,12 @@ BLOCK "040c04b0"
 BEGIN
 VALUE "CompanyName", "ATools"
 VALUE "FileDescription", "ATools - GUIEditor"
-VALUE "FileVersion", "1.0.0.1"
+VALUE "FileVersion", "1.1.0.0"
 VALUE "InternalName", "GUIEditor.exe"
 VALUE "LegalCopyright", "ATools - Open Source"
 VALUE "OriginalFilename", "GUIEditor.exe"
 VALUE "ProductName", "GUIEditor"
-VALUE "ProductVersion", "1.0.0.1"
+VALUE "ProductVersion", "1.1.0.0"
 END
 END
 BLOCK "VarFileInfo"

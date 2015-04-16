@@ -36,7 +36,7 @@ private:
 	string m_rootBoneID;
 	QMap<string, Material*> m_materials;
 	QVector<Material*> m_transparentMaterials;
-	QMap<string, Bone> m_bones;
+	QList<Bone*> m_bones;
 	QMap<string, GMObject*> m_objects;
 	QMap<string, TMAnimation*> m_animations;
 	QMap<Bone*, int> m_boneIDs;

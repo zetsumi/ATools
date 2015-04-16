@@ -78,7 +78,6 @@ CObject3D::CObject3D(LPDIRECT3DDEVICE9 device)
 	m_frameCount(0),
 	m_LOD(false),
 	m_boneCount(0),
-	m_havePhysique(false),
 	m_attributes(null),
 	m_baseBones(null),
 	m_baseInvBones(null),
@@ -95,9 +94,9 @@ CObject3D::CObject3D(LPDIRECT3DDEVICE9 device)
 	memset(m_groups, 0, sizeof(m_groups));
 	memset(&m_collObj, 0, sizeof(m_collObj));
 	memset(m_events, 0, sizeof(m_events));
-	m_collObj.type = EGMT_ERROR;
+	m_collObj.type = GMT_ERROR;
 	m_collObj.parentID = -1;
-	m_collObj.parentType = EGMT_ERROR;
+	m_collObj.parentType = GMT_ERROR;
 	D3DXMatrixIdentity(&m_collObj.transform);
 
 	for (int i = 0; i < MAX_GROUP; i++)
@@ -186,7 +185,7 @@ void CObject3D::Render(const D3DXMATRIX* world, int lod, float currentFrame, int
 	{
 		const GMObject& obj = m_group->objects[i];
 
-		if (obj.type == EGMT_SKIN)
+		if (obj.type == GMT_SKIN)
 			_renderSkin(obj, world, alpha);
 		else
 		{
@@ -258,7 +257,7 @@ void CObject3D::_animate(float currentFrame_, int nextFrame)
 	for (int i = 0; i < m_group->objectCount; i++)
 	{
 		obj = &m_group->objects[i];
-		if (obj->parentType == EGMT_BONE)
+		if (obj->parentType == GMT_BONE)
 		{
 			if (m_externBones)
 				parent = m_externBones;
@@ -574,7 +573,7 @@ bool CObject3D::InitDeviceObjects()
 			obj = &m_groups[i].objects[j];
 			poolSize++;
 
-			if (obj->type == EGMT_SKIN)
+			if (obj->type == GMT_SKIN)
 			{
 				vertexSize = sizeof(SkinVertex);
 				FVF = SkinVertex::FVF;
@@ -585,10 +584,8 @@ bool CObject3D::InitDeviceObjects()
 			{
 				vertexSize = sizeof(NormalVertex);
 				FVF = NormalVertex::FVF;
-			}
-
-			if (!obj->physiqueVertices)
 				normalObj = true;
+			}
 
 			bufferSize = vertexSize * obj->vertexCount;
 			if (SUCCEEDED(m_device->CreateVertexBuffer(bufferSize, D3DUSAGE_WRITEONLY, FVF, D3DPOOL_MANAGED, &obj->VB, NULL)))
@@ -633,7 +630,7 @@ bool CObject3D::InitDeviceObjects()
 	}
 
 #if defined(WORLD_EDITOR) || defined(MODEL_EDITOR)
-	if (m_collObj.type != EGMT_ERROR
+	if (m_collObj.type != GMT_ERROR
 		&& m_collObj.vertexCount > 0
 		&& m_collObj.indexCount > 0)
 	{
@@ -643,7 +640,7 @@ bool CObject3D::InitDeviceObjects()
 			CollisionVertex* VB;
 			if (SUCCEEDED(m_collObj.VB->Lock(0, bufferSize, (void**)&VB, 0)))
 			{
-				if (m_collObj.type == EGMT_NORMAL)
+				if (m_collObj.type == GMT_NORMAL)
 				{
 					NormalVertex* vertices = (NormalVertex*)m_collObj.vertices;
 					for (i = 0; i < m_collObj.vertexCount; i++)
@@ -749,7 +746,7 @@ bool CObject3D::Load(const string& filename)
 	file.Read(temp);
 	if (temp)
 	{
-		m_collObj.type = EGMT_NORMAL;
+		m_collObj.type = GMT_NORMAL;
 		ReadGMObject(file, m_collObj);
 	}
 
@@ -818,10 +815,7 @@ bool CObject3D::Load(const string& filename)
 			file.Read(obj->transform);
 			ReadGMObject(file, *obj);
 
-			if (obj->physiqueVertices)
-				m_havePhysique = true;
-
-			if (obj->type == EGMT_NORMAL && m_frameCount > 0)
+			if (obj->type == GMT_NORMAL && m_frameCount > 0)
 			{
 				int frame;
 				file.Read(frame);
@@ -892,7 +886,7 @@ bool CObject3D::Save(const string& filename)
 	if (m_eventCount > 0)
 		file.Write(m_events, m_eventCount);
 
-	int temp = (m_collObj.type != EGMT_ERROR) ? 1 : 0;
+	int temp = (m_collObj.type != GMT_ERROR) ? 1 : 0;
 	file.Write(temp);
 	if (temp)
 		SaveGMObject(file, m_collObj);
@@ -950,7 +944,7 @@ bool CObject3D::Save(const string& filename)
 			file.Write(obj->transform);
 			SaveGMObject(file, *obj);
 
-			if (obj->type == EGMT_NORMAL && m_frameCount > 0)
+			if (obj->type == GMT_NORMAL && m_frameCount > 0)
 			{
 				const int frame = (obj->frames != null) ? 1 : 0;
 				file.Write(frame);
@@ -991,7 +985,7 @@ void CObject3D::ReadGMObject(CFile& file, GMObject& obj)
 	obj.vertexList = new D3DXVECTOR3[obj.vertexListCount];
 	file.Read(obj.vertexList, obj.vertexListCount);
 
-	if (obj.type == EGMT_SKIN)
+	if (obj.type == GMT_SKIN)
 	{
 		obj.vertices = new SkinVertex[obj.vertexCount];
 		file.Read((SkinVertex*)obj.vertices, obj.vertexCount);
@@ -1067,7 +1061,7 @@ void CObject3D::SaveGMObject(CFile& file, GMObject& obj)
 
 	file.Write(obj.vertexList, obj.vertexListCount);
 
-	if (obj.type == EGMT_SKIN)
+	if (obj.type == GMT_SKIN)
 		file.Write((SkinVertex*)obj.vertices, obj.vertexCount);
 	else
 		file.Write((NormalVertex*)obj.vertices, obj.vertexCount);
@@ -1122,7 +1116,7 @@ const Bounds& CObject3D::GetBounds() const
 void CObject3D::RenderCollision(const D3DXMATRIX* world)
 {
 #if defined(WORLD_EDITOR) || defined(MODEL_EDITOR)
-	if (m_collObj.type == EGMT_ERROR || !m_collObj.VB)
+	if (m_collObj.type == GMT_ERROR || !m_collObj.VB)
 		return;
 
 	m_device->SetFVF(CollisionVertex::FVF);
@@ -1149,7 +1143,7 @@ bool CObject3D::Pick(const D3DXMATRIX& world, const D3DXVECTOR3& origin, const D
 	for (i = 0; i < m_groups[0].objectCount; i++)
 	{
 		obj = &m_groups[0].objects[i];
-		if (obj->type == EGMT_SKIN)
+		if (obj->type == GMT_SKIN)
 		{
 			D3DXMatrixInverse(&invTM, null, &world);
 			D3DXVec3TransformCoord(&invOrigin, &origin, &invTM);
@@ -1201,26 +1195,29 @@ bool CObject3D::Pick(const D3DXMATRIX& world, const D3DXVECTOR3& origin, const D
 		}
 		else
 		{
-			TM = m_groups[0].updates[i] * world;
-			D3DXMatrixInverse(&invTM, null, &TM);
-			D3DXVec3TransformCoord(&invOrigin, &origin, &invTM);
-			invTM._41 = 0;	invTM._42 = 0;	invTM._43 = 0;
-			D3DXVec3TransformCoord(&invDir, &dir, &invTM);
-
-			const NormalVertex* VB = (NormalVertex*)obj->vertices;
-			IB = obj->indices;
-			faceCount = obj->faceListCount;
-
-			for (j = 0; j < faceCount; j++)
+			if (m_groups[0].updates)
 			{
-				const D3DXVECTOR3& v1 = VB[*IB++].p;
-				const D3DXVECTOR3& v2 = VB[*IB++].p;
-				const D3DXVECTOR3& v3 = VB[*IB++].p;
+				TM = m_groups[0].updates[i] * world;
+				D3DXMatrixInverse(&invTM, null, &TM);
+				D3DXVec3TransformCoord(&invOrigin, &origin, &invTM);
+				invTM._41 = 0;	invTM._42 = 0;	invTM._43 = 0;
+				D3DXVec3TransformCoord(&invDir, &dir, &invTM);
 
-				if (IntersectTriangle(v1, v2, v3, invOrigin, invDir, tempDist) && tempDist < dist)
+				const NormalVertex* VB = (NormalVertex*)obj->vertices;
+				IB = obj->indices;
+				faceCount = obj->faceListCount;
+
+				for (j = 0; j < faceCount; j++)
 				{
-					pick = true;
-					dist = tempDist;
+					const D3DXVECTOR3& v1 = VB[*IB++].p;
+					const D3DXVECTOR3& v2 = VB[*IB++].p;
+					const D3DXVECTOR3& v3 = VB[*IB++].p;
+
+					if (IntersectTriangle(v1, v2, v3, invOrigin, invDir, tempDist) && tempDist < dist)
+					{
+						pick = true;
+						dist = tempDist;
+					}
 				}
 			}
 		}

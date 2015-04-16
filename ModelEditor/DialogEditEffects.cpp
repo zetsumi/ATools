@@ -8,14 +8,16 @@
 #include "DialogEditEffects.h"
 #include <Object3D.h>
 #include "ModelViewer.h"
+#include <TextureMng.h>
 
 CDialogEditEffects::CDialogEditEffects(CModelViewer* modelViewer, CObject3D* obj3D, QWidget *parent)
 	: QDialog(parent),
 	m_modelViewer(modelViewer),
 	m_obj3D(obj3D),
-	m_oldBlocks(nullptr),
-	m_materialBlockCount(0),
-	m_editing(nullptr)
+	m_oldBlocks(null),
+	m_editing(null),
+	m_editingObj(null),
+	m_editingGroup(null)
 {
 	ui.setupUi(this);
 
@@ -26,48 +28,17 @@ CDialogEditEffects::CDialogEditEffects(CModelViewer* modelViewer, CObject3D* obj
 	connect(ui.checkReflect, SIGNAL(toggled(bool)), this, SLOT(SetReflect(bool)));
 	connect(ui.checkSelfIlluminate, SIGNAL(toggled(bool)), this, SLOT(SetSelfIlluminate(bool)));
 	connect(ui.spinOpacity, SIGNAL(valueChanged(int)), this, SLOT(SetAmount(int)));
+	connect(ui.changeTexture, SIGNAL(clicked()), this, SLOT(ChangeTexture()));
+
+	int materialBlockCount = 0;
 
 	for (int i = 0; i < (m_obj3D->m_LOD ? MAX_GROUP : 1); i++)
 		for (int j = 0; j < m_obj3D->m_groups[i].objectCount; j++)
 			for (int k = 0; k < m_obj3D->m_groups[i].objects[j].materialBlockCount; k++)
-				m_materialBlockCount++;
+				materialBlockCount++;
 
-	m_oldBlocks = new MaterialBlock[m_materialBlockCount];
-
-	QTreeWidgetItem* item, *item2, *item3;
-	QList<QTreeWidgetItem*> items;
-	int id = 0;
-	for (int i = 0; i < (m_obj3D->m_LOD ? MAX_GROUP : 1); i++)
-	{
-		if (m_obj3D->m_LOD)
-			item3 = new QTreeWidgetItem(QStringList(QString("LOD %1").arg(i)));
-
-		for (int j = 0; j < m_obj3D->m_groups[i].objectCount; j++)
-		{
-			item = new QTreeWidgetItem(QStringList(QString("GMObject %1").arg(j + 1)));
-			for (int k = 0; k < m_obj3D->m_groups[i].objects[j].materialBlockCount; k++)
-			{
-				m_oldBlocks[id] = m_obj3D->m_groups[i].objects[j].materialBlocks[k];
-
-				item2 = new QTreeWidgetItem(QStringList(QString(
-					QString(m_obj3D->m_groups[i].objects[j].materials[m_obj3D->m_groups[i].objects[j].materialBlocks[k].materialID].textureName) % " %1").arg(
-					k + 1)), id + 1);
-				item->addChild(item2);
-
-				id++;
-			}
-
-			if (m_obj3D->m_LOD)
-				item3->addChild(item);
-			else
-				items.append(item);
-		}
-
-		if (m_obj3D->m_LOD)
-			items.append(item3);
-	}
-	ui.tree->insertTopLevelItems(0, items);
-	ui.tree->expandAll();
+	m_oldBlocks = new MaterialBlock[materialBlockCount];
+	_setTree();
 
 	connect(ui.tree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(CurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
@@ -98,7 +69,25 @@ void CDialogEditEffects::ResetBlocks()
 
 void CDialogEditEffects::CurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-	if (current->type() > 0)
+	m_editing = null;
+	m_editingObj = null;
+	m_editingGroup = null;
+
+	ui.checkReflect->setEnabled(false);
+	ui.checkOpacity->setEnabled(false);
+	ui.check2Sides->setEnabled(false);
+	ui.checkSelfIlluminate->setEnabled(false);
+	ui.spinOpacity->setEnabled(false);
+	ui.checkHighlight->setEnabled(false);
+	ui.changeTexture->setEnabled(false);
+	ui.checkReflect->setChecked(false);
+	ui.checkOpacity->setChecked(false);
+	ui.check2Sides->setChecked(false);
+	ui.checkSelfIlluminate->setChecked(false);
+	ui.spinOpacity->setValue(255);
+	ui.checkHighlight->setChecked(false);
+
+	if (current && current->type() > 0)
 	{
 		int id = 1;
 		for (int i = 0; i < (m_obj3D->m_LOD ? MAX_GROUP : 1); i++)
@@ -109,27 +98,32 @@ void CDialogEditEffects::CurrentItemChanged(QTreeWidgetItem* current, QTreeWidge
 				{
 					if (id == current->type())
 					{
-						m_editing = nullptr;
 						MaterialBlock* editing = &m_obj3D->m_groups[i].objects[j].materialBlocks[k];
+
+						ui.checkReflect->setEnabled(true);
+						ui.checkOpacity->setEnabled(true);
+						ui.check2Sides->setEnabled(true);
+						ui.checkSelfIlluminate->setEnabled(true);
+						ui.checkHighlight->setEnabled(true);
 
 						ui.checkReflect->setChecked(editing->effect & XE_REFLECT);
 						ui.checkHighlight->setChecked(editing->effect & XE_HIGHLIGHT_OBJ);
 						ui.checkOpacity->setChecked(editing->effect & XE_OPACITY);
-						if (!ui.checkOpacity->isChecked())
-						{
-							ui.spinOpacity->setValue(255);
-							ui.spinOpacity->setEnabled(false);
-						}
-						else
-						{
-							ui.spinOpacity->setEnabled(true);
-							ui.spinOpacity->setValue(editing->amount);
-						}
 						ui.check2Sides->setChecked(editing->effect & XE_2SIDE);
 						ui.checkSelfIlluminate->setChecked(editing->effect & XE_SELF_ILLUMINATE);
-						ui.spinOpacity->setValue(editing->amount);
+
+						if (ui.checkOpacity->isChecked())
+						{
+							ui.spinOpacity->setValue(editing->amount);
+							ui.spinOpacity->setEnabled(true);
+						}
+
+						if (m_obj3D->m_groups[i].objects[j].material)
+							ui.changeTexture->setEnabled(true);
 
 						m_editing = editing;
+						m_editingObj = &m_obj3D->m_groups[i].objects[j];
+						m_editingGroup = &m_obj3D->m_groups[i];
 						return;
 					}
 					id++;
@@ -137,6 +131,60 @@ void CDialogEditEffects::CurrentItemChanged(QTreeWidgetItem* current, QTreeWidge
 			}
 		}
 	}
+}
+
+void CDialogEditEffects::_setTree()
+{
+	ui.tree->clear();
+	m_items.clear();
+
+	QTreeWidgetItem* item, *item2, *item3;
+	QList<QTreeWidgetItem*> items;
+	int id = 0;
+	for (int i = 0; i < (m_obj3D->m_LOD ? MAX_GROUP : 1); i++)
+	{
+		if (m_obj3D->m_LOD)
+			item3 = new QTreeWidgetItem(QStringList(string("LOD %1").arg(i)));
+
+		for (int j = 0; j < m_obj3D->m_groups[i].objectCount; j++)
+		{
+			item = new QTreeWidgetItem(QStringList(string("GMObject %1").arg(j + 1)));
+			for (int k = 0; k < m_obj3D->m_groups[i].objects[j].materialBlockCount; k++)
+			{
+				m_oldBlocks[id] = m_obj3D->m_groups[i].objects[j].materialBlocks[k];
+
+				if (m_obj3D->m_groups[i].objects[j].material)
+				{
+					item2 = new QTreeWidgetItem(QStringList(string(
+						string(m_obj3D->m_groups[i].objects[j].materials[m_obj3D->m_groups[i].objects[j].materialBlocks[k].materialID].textureName) % " %1").arg(
+						k + 1)), id + 1);
+				}
+				else
+				{
+					item2 = new QTreeWidgetItem(QStringList(string(
+						string("- %1")).arg(
+						k + 1)), id + 1);
+				}
+
+				item->addChild(item2);
+
+				m_items[&m_obj3D->m_groups[i].objects[j].materialBlocks[k]] = item2;
+
+				id++;
+			}
+
+			if (m_obj3D->m_LOD)
+				item3->addChild(item);
+			else
+				items.append(item);
+		}
+
+		if (m_obj3D->m_LOD)
+			items.append(item3);
+	}
+
+	ui.tree->insertTopLevelItems(0, items);
+	ui.tree->expandAll();
 }
 
 void CDialogEditEffects::Set2Sides(bool b)
@@ -231,6 +279,42 @@ void CDialogEditEffects::SetAmount(int v)
 {
 	if (m_editing)
 		m_editing->amount = v;
+
+	if (!m_modelViewer->IsAutoRefresh())
+		m_modelViewer->RenderEnvironment();
+}
+
+void CDialogEditEffects::ChangeTexture()
+{
+	if (m_editing && m_editingObj && m_editingGroup)
+	{
+		Material* mat = &m_editingObj->materials[m_editing->materialID];
+
+		const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"),
+			"Model/Texture/" % string(mat->textureName), tr("Fichier texture (*.dds *.tga *.bmp *.png)"));
+
+		if (!texture.isEmpty())
+		{
+			QFileInfo fileInfo(texture);
+			const string text = fileInfo.fileName().left(255).toLower();
+			TextureMng->SetModelTexturePath(fileInfo.path() % '/');
+
+			const QByteArray data = text.toLocal8Bit();
+			char* textureName = mat->textureName;
+
+			memcpy(textureName, data.constData(), data.size());
+			textureName[data.size()] = '\0';
+
+			memset(mat->textures, 0, sizeof(CTexture*) * 8);
+			m_editingGroup->currentTextureEx = -1;
+
+			MaterialBlock* oldEditing = m_editing;
+			_setTree();
+			auto it = m_items.find(oldEditing);
+			if (it != m_items.end())
+				ui.tree->setCurrentItem(it.value());
+		}
+	}
 
 	if (!m_modelViewer->IsAutoRefresh())
 		m_modelViewer->RenderEnvironment();

@@ -531,16 +531,6 @@ void CWorldEditor::mousePressEvent(QMouseEvent * event)
 	{
 		m_rotatingCamera = true;
 		m_lastRightClickPos = mousePos;
-		if (editMode != EDIT_CONTINENT && !MainFrame->IsSelectionLocked())
-		{
-			if (CWorld::s_selection.Find(m_pickObject) == -1)
-				CWorld::s_selection.RemoveAll();
-			if (m_pickObject)
-			{
-				if (CWorld::s_selection.Find(m_pickObject) == -1)
-					CWorld::s_selection.Append(m_pickObject);
-			}
-		}
 		event->accept();
 	}
 
@@ -783,6 +773,26 @@ void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
 			}
 			else
 			{
+				if (!MainFrame->IsSelectionLocked())
+				{
+					bool render = false;
+					if (CWorld::s_selection.Find(m_pickObject) == -1)
+					{
+						CWorld::s_selection.RemoveAll();
+						render = true;
+					}
+					if (m_pickObject)
+					{
+						if (CWorld::s_selection.Find(m_pickObject) == -1)
+						{
+							CWorld::s_selection.Append(m_pickObject);
+							render = true;
+						}
+					}
+					if (render)
+						RenderEnvironment();
+				}
+
 				MouseLost();
 				QMenu* editMenu;
 				if (CWorld::s_selection.GetSize() > 0 && (CWorld::s_selection.Find(m_pickObject) != -1 || MainFrame->IsSelectionLocked()))

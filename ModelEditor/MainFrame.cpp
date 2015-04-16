@@ -104,6 +104,8 @@ void CMainFrame::_connectWidgets()
 	connect(m_timeline, SIGNAL(CurrentFrameChanged(int)), m_modelViewer, SLOT(SetFrame(int)));
 	connect(m_timeline, SIGNAL(KeyModified(int, int, bool)), this, SLOT(MotionAttributeModified(int, int, bool)));
 	connect(m_languageActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(SetLanguage(QAction*)));
+	connect(ui.actionCW_CCW, SIGNAL(triggered()), this, SLOT(ChangeCW()));
+	connect(ui.actionSkin_auto, SIGNAL(triggered()), this, SLOT(SkinAuto()));
 }
 
 void CMainFrame::CloseFile()
@@ -269,7 +271,7 @@ void CMainFrame::_openFile(const string& filename)
 			}
 		}
 
-		if (m_mesh && (filenameToLower.startsWith("part") || filenameToLower.startsWith("mvr")) && m_motionList->rowCount() == 0)
+		if (m_mesh && (filenameToLower.startsWith("part") || filenameToLower.startsWith("mvr") || filenameToLower.startsWith("item")) && m_motionList->rowCount() == 0)
 		{
 			QStringList list;
 			const QDir fileDir(dir);

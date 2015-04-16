@@ -140,6 +140,18 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DialogEditEffects.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ChangeCW.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinAuto.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SkinAuto.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SkinAuto.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -193,6 +205,9 @@
     <ClInclude Include="GeneratedFiles\ui_MainFrame.h">
       <Filter>MainFrame\UI</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_SkinAuto.h">
+      <Filter>MainFrame\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.qrc">
@@ -218,6 +233,12 @@
     </CustomBuild>
     <CustomBuild Include="DialogEditEffects.ui">
       <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkinAuto.ui">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkinAuto.h">
+      <Filter>MainFrame</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

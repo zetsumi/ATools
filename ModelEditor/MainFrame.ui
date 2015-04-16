@@ -51,6 +51,8 @@
      <string>Édition</string>
     </property>
     <addaction name="action_diter_les_effets"/>
+    <addaction name="actionCW_CCW"/>
+    <addaction name="actionSkin_auto"/>
     <addaction name="separator"/>
     <addaction name="actionGuide_d_import"/>
    </widget>
@@ -412,6 +414,16 @@
    </property>
    <property name="text">
     <string>Objet de collision</string>
+   </property>
+  </action>
+  <action name="actionCW_CCW">
+   <property name="text">
+    <string>CW &lt;-&gt; CCW</string>
+   </property>
+  </action>
+  <action name="actionSkin_auto">
+   <property name="text">
+    <string>Skin auto</string>
    </property>
   </action>
  </widget>

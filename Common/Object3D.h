@@ -67,10 +67,10 @@ struct MaterialBlock
 
 enum EGMType
 {
-	EGMT_ERROR = -1,
-	EGMT_NORMAL,
-	EGMT_SKIN,
-	EGMT_BONE
+	GMT_ERROR = -1,
+	GMT_NORMAL,
+	GMT_SKIN,
+	GMT_BONE
 };
 
 struct GMObject
@@ -158,7 +158,6 @@ private:
 	bool m_LOD;
 	int m_boneCount;
 	LODGroup m_groups[MAX_GROUP];
-	bool m_havePhysique;
 	MotionAttribute* m_attributes;
 	D3DXMATRIX* m_baseBones;
 	D3DXMATRIX* m_baseInvBones;

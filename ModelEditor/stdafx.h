@@ -14,8 +14,9 @@ class CImporter;
 class CMainFrame;
 class CDAEExporter;
 class CDialogEditEffects;
+class CDialogSkinAuto;
 
-#define MODEL_EDITOR_FRIENDS	friend class CImporter; friend class CMainFrame; friend class CDAEExporter; friend class CDialogEditEffects;
+#define MODEL_EDITOR_FRIENDS	friend class CImporter; friend class CMainFrame; friend class CDAEExporter; friend class CDialogEditEffects; friend class CDialogSkinAuto;
 
 #include <Common.h>
 

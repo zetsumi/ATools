@@ -154,6 +154,8 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_objectMenu->addAction(ui.actionCacher_les_objets);
 	m_objectMenu->addAction(ui.actionCacher_les_objets_au_dessus);
 	m_objectMenu->addSeparator();
+	m_objectMenu->addAction(ui.actionTranslation);
+	m_objectMenu->addAction(ui.actionRotation);
 	m_objectMenu->addAction(ui.actionRamener_sur_le_sol);
 	m_objectMenu->addAction(ui.actionTaille_et_rotation_al_atoires);
 	m_objectMenu->addSeparator();
@@ -282,4 +284,6 @@ void CMainFrame::_connectWidgets()
 	connect(ui.removePatrol , SIGNAL(clicked()), this, SLOT(RemovePath()));
 	connect(ui.patrolList, SIGNAL(currentRowChanged(int)), this, SLOT(SetCurrentPath(int)));
 	connect(ui.actionListe, SIGNAL(triggered()), this, SLOT(GenerateList()));
+	connect(ui.actionTranslation, SIGNAL(triggered()), this, SLOT(TranslateObjects()));
+	connect(ui.actionRotation, SIGNAL(triggered()), this, SLOT(RotateObjects()));
 }

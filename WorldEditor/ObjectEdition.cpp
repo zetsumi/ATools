@@ -16,6 +16,144 @@
 
 #include "ui_Random.h"
 
+class CCustomDoubleSpinBox : public QDoubleSpinBox
+{
+public:
+	CCustomDoubleSpinBox(QWidget* parent = null) : QDoubleSpinBox(parent) { }
+
+protected:
+	virtual void keyPressEvent(QKeyEvent* event)
+	{
+		if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+		{
+			((QDialog*)parent())->accept();
+			event->accept();
+			return;
+		}
+		QDoubleSpinBox::keyPressEvent(event);
+	}
+};
+
+void CMainFrame::RotateObjects()
+{
+	if (!m_world || CWorld::s_selection.GetSize() <= 0)
+		return;
+
+	HideDialogs();
+
+	QDialog* dialog = new QDialog(this, Qt::Window);
+	dialog->setModal(true);
+	dialog->setWindowTitle(tr("Rotation"));
+	QBoxLayout * layout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
+	dialog->setLayout(layout);
+	CCustomDoubleSpinBox* spinX = new CCustomDoubleSpinBox(dialog);
+	spinX->setMinimum(0.0);
+	spinX->setMaximum(360.0);
+	spinX->setSingleStep(10.0);
+	spinX->setDecimals(3);
+	spinX->setPrefix(tr("X: "));
+	spinX->setValue(fmod(CWorld::s_selection[0]->GetRot().x, 360.0f));
+	layout->addWidget(spinX);
+	CCustomDoubleSpinBox* spinY = new CCustomDoubleSpinBox(dialog);
+	spinY->setMinimum(0.0);
+	spinY->setMaximum(360.0);
+	spinY->setSingleStep(10.0);
+	spinY->setDecimals(3);
+	spinY->setPrefix(tr("Y: "));
+	spinY->setValue(fmod(CWorld::s_selection[0]->GetRot().y, 360.0f));
+	layout->addWidget(spinY);
+	CCustomDoubleSpinBox* spinZ = new CCustomDoubleSpinBox(dialog);
+	spinZ->setMinimum(0.0);
+	spinZ->setMaximum(360.0);
+	spinZ->setSingleStep(10.0);
+	spinZ->setDecimals(3);
+	spinZ->setPrefix(tr("Z: "));
+	spinZ->setValue(fmod(CWorld::s_selection[0]->GetRot().z, 360.0f));
+	layout->addWidget(spinZ);
+	spinY->setFocus();
+
+	if (dialog->exec() == QDialog::Accepted)
+	{
+		const D3DXVECTOR3 rot((float)spinX->value(),
+			(float)spinY->value(),
+			(float)spinZ->value());
+
+		for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+			CWorld::s_selection[i]->SetRot(rot);
+
+		UpdateWorldEditor();
+	}
+
+	Delete(dialog);
+	ShowDialogs();
+}
+
+void CMainFrame::TranslateObjects()
+{
+	if (!m_world || CWorld::s_selection.GetSize() <= 0)
+		return;
+
+	HideDialogs();
+
+	D3DXVECTOR3 center(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+		center += CWorld::s_selection[i]->GetPos();
+	center /= (float)CWorld::s_selection.GetSize();
+
+	QDialog* dialog = new QDialog(this, Qt::Window);
+	dialog->setModal(true);
+	dialog->setWindowTitle(tr("Translation"));
+	QBoxLayout * layout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
+	dialog->setLayout(layout);
+	CCustomDoubleSpinBox* spinX = new CCustomDoubleSpinBox(dialog);
+	spinX->setMinimum(0.0);
+	spinX->setMaximum(m_world->m_width * MAP_SIZE * MPU);
+	spinX->setSingleStep(10.0);
+	spinX->setDecimals(3);
+	spinX->setPrefix(tr("X: "));
+	spinX->setValue((float)center.x);
+	layout->addWidget(spinX);
+	CCustomDoubleSpinBox* spinY = new CCustomDoubleSpinBox(dialog);
+	spinY->setMinimum(0.0);
+	spinY->setMaximum(9999.0);
+	spinY->setSingleStep(10.0);
+	spinY->setDecimals(3);
+	spinY->setPrefix(tr("Y: "));
+	spinY->setValue((float)center.y);
+	layout->addWidget(spinY);
+	CCustomDoubleSpinBox* spinZ = new CCustomDoubleSpinBox(dialog);
+	spinZ->setMinimum(0.0);
+	spinZ->setMaximum(m_world->m_height * MAP_SIZE * MPU);
+	spinZ->setSingleStep(10.0);
+	spinZ->setDecimals(3);
+	spinZ->setPrefix(tr("Z: "));
+	spinZ->setValue((float)center.z);
+	layout->addWidget(spinZ);
+	spinX->setFocus();
+
+	if (dialog->exec() == QDialog::Accepted)
+	{
+		center.x -= (float)spinX->value();
+		center.y -= (float)spinY->value();
+		center.z -= (float)spinZ->value();
+
+		D3DXVECTOR3 temp;
+		CObject* obj;
+		for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+		{
+			obj = CWorld::s_selection[i];
+			temp = obj->GetPos();
+			temp -= center;
+			m_world->MoveObject(obj, temp);
+		}
+
+		UpdateWorldEditor();
+	}
+
+	Delete(dialog);
+	ShowDialogs();
+}
+
 void CMainFrame::AddPath()
 {
 	if (!m_world)

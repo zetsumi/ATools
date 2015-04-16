@@ -151,6 +151,8 @@ public slots:
 	void AddPath();
 	void RemovePath();
 	void GenerateList();
+	void TranslateObjects();
+	void RotateObjects();
 
 private:
 	Ui::MainFrameClass ui;

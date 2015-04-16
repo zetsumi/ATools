@@ -67,6 +67,7 @@
    <addaction name="actionEditXZ"/>
    <addaction name="separator"/>
    <addaction name="actionVerrouiller_la_s_lection"/>
+   <addaction name="actionRamener_sur_le_sol"/>
    <addaction name="actionGravit"/>
    <addaction name="actionPlacer_sur_la_grille"/>
    <addaction name="separator"/>
@@ -1039,6 +1040,8 @@
     <addaction name="actionEditXZ"/>
     <addaction name="separator"/>
     <addaction name="actionVerrouiller_la_s_lection"/>
+    <addaction name="actionTranslation"/>
+    <addaction name="actionRotation"/>
     <addaction name="actionTaille_et_rotation_al_atoires"/>
     <addaction name="actionGravit"/>
     <addaction name="actionRamener_sur_le_sol"/>
@@ -1983,7 +1986,7 @@
     <string>Taille et rotation aléatoires</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Ctrl+Alt+R</string>
    </property>
   </action>
   <action name="actionCopier">
@@ -2127,6 +2130,30 @@
    </property>
    <property name="text">
     <string>Liste</string>
+   </property>
+  </action>
+  <action name="actionTranslation">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/edit_ObjMove.png</normaloff>:/MainFrame/Resources/edit_ObjMove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Translation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionRotation">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/edit_ObjRot.png</normaloff>:/MainFrame/Resources/edit_ObjRot.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

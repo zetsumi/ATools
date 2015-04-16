@@ -46,7 +46,7 @@ CDAEExporter::CDAEExporter(CAnimatedMesh* mesh)
 	}
 
 	int matID = 0;
-	if (obj3D->m_collObj.type != EGMT_ERROR)
+	if (obj3D->m_collObj.type != GMT_ERROR)
 	{
 		if (obj3D->m_collObj.material)
 		{
@@ -197,12 +197,11 @@ CDAEExporter::CDAEExporter(CAnimatedMesh* mesh)
 	{
 		for (int i = 0; i < boneCount; i++)
 		{
-			const string boneID = string(bones[i].name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_');
-			m_bones[boneID] = bones[i];
-			m_boneIDs[&m_bones[boneID]] = i;
+			m_bones.push_back(&bones[i]);
+			m_boneIDs[&bones[i]] = i;
 
 			if (bones[i].parentID == -1)
-				m_rootBoneID = boneID;
+				m_rootBoneID = string(bones[i].name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_');
 		}
 	}
 
@@ -229,7 +228,7 @@ CDAEExporter::CDAEExporter(CAnimatedMesh* mesh)
 			if (motion->m_frames[i].frames)
 				m_animations[boneID % "-transform"] = motion->m_frames[i].frames;
 			else
-				m_bones[boneID].localTM = motion->m_frames[i].TM;
+				m_bones[i]->localTM = motion->m_frames[i].TM;
 		}
 	}
 }
@@ -475,7 +474,7 @@ void CDAEExporter::_writeGeometries()
 
 			for (int i = 0; i < vertexCount; i++)
 			{
-				if (obj->type == EGMT_SKIN)
+				if (obj->type == GMT_SKIN)
 					v = ((SkinVertex*)obj->vertices)[i].p;
 				else
 					v = ((NormalVertex*)obj->vertices)[i].p;
@@ -520,7 +519,7 @@ void CDAEExporter::_writeGeometries()
 
 			for (int i = 0; i < vertexCount; i++)
 			{
-				if (obj->type == EGMT_SKIN)
+				if (obj->type == GMT_SKIN)
 					v = ((SkinVertex*)obj->vertices)[i].n;
 				else
 					v = ((NormalVertex*)obj->vertices)[i].n;
@@ -565,7 +564,7 @@ void CDAEExporter::_writeGeometries()
 			D3DXVECTOR2 v2;
 			for (int i = 0; i < vertexCount; i++)
 			{
-				if (obj->type == EGMT_SKIN)
+				if (obj->type == GMT_SKIN)
 					v2 = ((SkinVertex*)obj->vertices)[i].t;
 				else
 					v2 = ((NormalVertex*)obj->vertices)[i].t;
@@ -826,7 +825,7 @@ void CDAEExporter::_writeControllers()
 	for (auto it = m_objects.begin(); it != m_objects.end(); it++)
 	{
 		obj = it.value();
-		if (obj->type != EGMT_SKIN)
+		if (obj->type != GMT_SKIN)
 			continue;
 
 		SkinVertex* vertices = (SkinVertex*)obj->vertices;
@@ -1100,10 +1099,10 @@ void CDAEExporter::_writeVisualScenes()
 			_writeNode(&visual_scene, it.key(), it.value());
 	}
 
-	for (auto it = m_bones.begin(); it != m_bones.end(); it++)
+	for (int i = 0; i < m_bones.size(); i++)
 	{
-		if (it.value().parentID == -1)
-			_writeNode(&visual_scene, it.key(), &it.value());
+		if (m_bones[i]->parentID == -1)
+			_writeNode(&visual_scene, string(m_bones[i]->name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_'), m_bones[i]);
 	}
 }
 
@@ -1120,7 +1119,7 @@ void CDAEExporter::_writeNode(QDomElement* parent, const string& name, GMObject*
 	node.appendChild(matrix);
 
 	QDomElement instance_geometry;
-	if (obj->type == EGMT_SKIN)
+	if (obj->type == GMT_SKIN)
 	{
 		instance_geometry = m_doc.createElement("instance_controller");
 		instance_geometry.setAttribute("url", '#' % name % "-skin");
@@ -1166,7 +1165,7 @@ void CDAEExporter::_writeNode(QDomElement* parent, const string& name, GMObject*
 	{
 		if (it.value()->parentID == m_objectIDs[obj]
 			&& m_objectLODs[it.value()] == m_objectLODs[obj]
-			&& it.value()->parentType != EGMT_BONE)
+			&& it.value()->parentType != GMT_BONE)
 			_writeNode(&node, it.key(), it.value());
 	}
 
@@ -1186,16 +1185,16 @@ void CDAEExporter::_writeNode(QDomElement* parent, const string& name, Bone* bon
 	matrix.appendChild(m_doc.createTextNode(_matToString(bone->localTM)));
 	node.appendChild(matrix);
 
-	for (auto it = m_bones.begin(); it != m_bones.end(); it++)
+	for (int i = 0; i < m_bones.size(); i++)
 	{
-		if (it.value().parentID == m_boneIDs[bone])
-			_writeNode(&node, it.key(), &it.value());
+		if (m_bones[i]->parentID == m_boneIDs[bone])
+			_writeNode(&node, string(m_bones[i]->name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_'), m_bones[i]);
 	}
 
 	for (auto it = m_objects.begin(); it != m_objects.end(); it++)
 	{
 		if (it.value()->parentID == m_boneIDs[bone]
-			&& it.value()->parentType == EGMT_BONE)
+			&& it.value()->parentType == GMT_BONE)
 			_writeNode(&node, it.key(), it.value());
 	}
 

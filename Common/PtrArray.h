@@ -116,6 +116,12 @@ public:
 		return -1;
 	}
 
+	void Sort(int(*compar)(const Type*, const Type*))
+	{
+		if (m_size > 1)
+			qsort((void*)m_data, m_size, sizeof(Type), (int(*)(const void*, const void*))compar);
+	}
+
 private:
 	int m_size;
 	int m_dataSize;

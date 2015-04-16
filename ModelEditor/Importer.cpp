@@ -18,7 +18,8 @@ CImporter::CImporter(CAnimatedMesh* mesh)
 	m_obj3D(null),
 	m_externBones(false),
 	m_frameCount(0),
-	m_bones(null)
+	m_bones(null),
+	m_useBones(false)
 {
 }
 
@@ -112,7 +113,12 @@ void CImporter::_importScene()
 {
 	_scanNode(m_scene->mRootNode);
 
-	if (m_boneNodes.size() > 0)
+	for (int i = 0; i < m_objects.size(); i++)
+		for (uint j = 0; j < m_objects[i]->mNumMeshes; j++)
+			if (m_scene->mMeshes[m_objects[i]->mMeshes[j]]->HasBones())
+				m_useBones = true;
+
+	if (m_useBones && m_boneNodes.size() > 0)
 		_createBones();
 
 	_createGMObjects();
@@ -120,7 +126,7 @@ void CImporter::_importScene()
 	if (m_scene->HasAnimations())
 		_createAnimations();
 
-	if (m_obj3D->m_collObj.type != EGMT_ERROR)
+	if (m_obj3D->m_collObj.type != GMT_ERROR)
 		_preTransformVertices(&m_obj3D->m_collObj);
 
 	_calculateBounds();
@@ -133,9 +139,9 @@ void CImporter::_calculateBounds()
 	bool normalObj = false;
 	int i, j;
 
-	for (i = 0; i <group->objectCount; i++)
+	for (i = 0; i < group->objectCount; i++)
 	{
-		if (!group->objects[i].physiqueVertices)
+		if (group->objects[i].type != GMT_SKIN)
 		{
 			normalObj = true;
 			break;
@@ -159,7 +165,7 @@ void CImporter::_calculateBounds()
 				updates[i] = obj->transform;
 			else
 			{
-				if (obj->parentType == EGMT_BONE)
+				if (obj->parentType == GMT_BONE)
 					updates[i] = obj->transform * m_bones[obj->parentID].TM;
 				else
 					updates[i] = obj->transform * updates[obj->parentID];
@@ -177,7 +183,7 @@ void CImporter::_calculateBounds()
 	{
 		obj = &group->objects[i];
 
-		if (obj->type == EGMT_SKIN)
+		if (obj->type == GMT_SKIN)
 			D3DXMatrixIdentity(&mat);
 		else
 			mat = updates[i];
@@ -224,7 +230,7 @@ void CImporter::_calculateBounds()
 void CImporter::_preTransformVertices(GMObject* obj)
 {
 	int i;
-	if (obj->type == EGMT_SKIN)
+	if (obj->type == GMT_SKIN)
 	{
 		SkinVertex* vertices = (SkinVertex*)obj->vertices;
 		for (i = 0; i < obj->vertexCount; i++)
@@ -249,6 +255,28 @@ void CImporter::_preTransformVertices(GMObject* obj)
 		D3DXVec3TransformCoord(&obj->vertexList[i], &obj->vertexList[i], &obj->transform);
 
 	D3DXMatrixIdentity(&obj->transform);
+
+	D3DXVECTOR3 bbMin(FLT_MAX, FLT_MAX, FLT_MAX);
+	D3DXVECTOR3 bbMax(FLT_MIN, FLT_MIN, FLT_MIN);
+	D3DXVECTOR3 v;
+	for (i = 0; i < obj->vertexListCount; i++)
+	{
+		v = obj->vertexList[i];
+		if (v.x < bbMin.x)
+			bbMin.x = v.x;
+		if (v.y < bbMin.y)
+			bbMin.y = v.y;
+		if (v.z < bbMin.z)
+			bbMin.z = v.z;
+		if (v.x > bbMax.x)
+			bbMax.x = v.x;
+		if (v.y > bbMax.y)
+			bbMax.y = v.y;
+		if (v.z > bbMax.z)
+			bbMax.z = v.z;
+	}
+	obj->bounds.Min = bbMin;
+	obj->bounds.Max = bbMax;
 }
 
 void CImporter::_createAnimations()
@@ -296,13 +324,16 @@ void CImporter::_createAnimations()
 		}
 
 		found = false;
-		for (j = 0; j < m_boneNodes.size(); j++)
+		if (m_useBones)
 		{
-			if (name == m_bones[j].name)
+			for (j = 0; j < m_boneNodes.size(); j++)
 			{
-				bonesAni[j] = frames;
-				found = true;
-				break;
+				if (name == m_bones[j].name)
+				{
+					bonesAni[j] = frames;
+					found = true;
+					break;
+				}
 			}
 		}
 
@@ -680,12 +711,12 @@ void CImporter::_createGMObject(GMObject* obj, aiNode* node)
 {
 	const string name = string(node->mName.C_Str()).toLower();
 
-	obj->type = EGMT_NORMAL;
+	obj->type = GMT_NORMAL;
 	for (uint i = 0; i < node->mNumMeshes; i++)
 	{
 		if (m_scene->mMeshes[node->mMeshes[i]]->HasBones())
 		{
-			obj->type = EGMT_SKIN;
+			obj->type = GMT_SKIN;
 			break;
 		}
 	}
@@ -696,18 +727,18 @@ void CImporter::_createGMObject(GMObject* obj, aiNode* node)
 		obj->light = false;
 
 	obj->parentID = -1;
-	obj->parentType = EGMT_ERROR;
+	obj->parentType = GMT_ERROR;
 	if (node->mParent != m_scene->mRootNode
 		&& node->mParent != null)
 	{
 		if (node->mParent->mNumMeshes > 0)
 		{
-			obj->parentType = EGMT_NORMAL;
+			obj->parentType = GMT_NORMAL;
 			obj->parentID = m_objectsIDWithLOD[node->mParent];
 		}
 		else
 		{
-			obj->parentType = EGMT_BONE;
+			obj->parentType = GMT_BONE;
 			for (int i = 0; i < m_boneNodes.size(); i++)
 			{
 				if (m_boneNodes[i] == node->mParent)
@@ -724,7 +755,7 @@ void CImporter::_createGMObject(GMObject* obj, aiNode* node)
 	_setMaterials(obj, node);
 	_setMaterialBlocks(obj, node);
 
-	if (obj->type == EGMT_SKIN)
+	if (obj->type == GMT_SKIN)
 	{
 		_setBones(obj, node);
 		_setPhysiqueVertices(obj);
@@ -878,7 +909,7 @@ void CImporter::_setMaterialBlocks(GMObject* obj, aiNode* node)
 	obj->IIB = obj->indices + obj->indexCount;
 	memset(obj->indices, 0, sizeof(ushort) * (obj->indexCount + obj->vertexCount));
 
-	if (obj->type == EGMT_SKIN)
+	if (obj->type == GMT_SKIN)
 	{
 		obj->vertices = new SkinVertex[obj->vertexCount];
 		memset(obj->vertices, 0, sizeof(SkinVertex) * obj->vertexCount);
@@ -917,7 +948,7 @@ void CImporter::_setMaterialBlocks(GMObject* obj, aiNode* node)
 			}
 		}
 
-		if (obj->type == EGMT_SKIN)
+		if (obj->type == GMT_SKIN)
 		{
 			SkinVertex* vertices = (SkinVertex*)obj->vertices;
 			for (j = 0; j < mesh->mNumVertices; j++)
@@ -986,7 +1017,7 @@ void CImporter::_setMaterialBlocks(GMObject* obj, aiNode* node)
 
 	for (i = 0; i < obj->vertexCount; i++)
 	{
-		if (obj->type == EGMT_SKIN)
+		if (obj->type == GMT_SKIN)
 			v = ((SkinVertex*)obj->vertices)[i].p;
 		else
 			v = ((NormalVertex*)obj->vertices)[i].p;
@@ -1148,7 +1179,6 @@ void CImporter::_setPhysiqueVertices(GMObject* obj)
 {
 	obj->physiqueVertices = new int[obj->vertexListCount];
 	memset(obj->physiqueVertices, 0, sizeof(int) * obj->vertexListCount);
-	m_obj3D->m_havePhysique = true;
 
 	int boneIDs[MAX_BONES];
 	int i, j, k;
@@ -1205,7 +1235,7 @@ void CImporter::_setPhysiqueVertices(GMObject* obj)
 void CImporter::_scanNode(aiNode* node)
 {
 	aiNode* children = null;
-	for (uint i = 0; i < node->mNumChildren; i++)
+	for (int i = 0; i < (int)node->mNumChildren; i++)
 	{
 		children = node->mChildren[i];
 		if (children->mNumMeshes > 0)

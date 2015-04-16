@@ -43,6 +43,8 @@ public slots:
 	void SetBackgroundColor();
 	void SetLanguage(QAction* action);
 	void ShowCollObj(bool show);
+	void ChangeCW();
+	void SkinAuto();
 
 private:
 	Ui::MainFrameClass ui;

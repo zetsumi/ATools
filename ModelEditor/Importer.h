@@ -40,6 +40,7 @@ private:
 
 	int m_frameCount;
 	double m_ticksPerSecond;
+	bool m_useBones;
 
 private:
 	void _importScene();

@@ -8,7 +8,7 @@
 #define COMMON_H
 
 #define VERSION		1
-#define SUB_VERSION	0
+#define SUB_VERSION	1
 
 // pour les defines en .h
 // détermine la version du GUIEditor aussi

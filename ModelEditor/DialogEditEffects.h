@@ -12,6 +12,8 @@
 struct MaterialBlock;
 class CObject3D;
 class CModelViewer;
+struct GMObject;
+struct LODGroup;
 
 class CDialogEditEffects : public QDialog
 {
@@ -29,17 +31,21 @@ public slots:
 	void SetSelfIlluminate(bool b);
 	void SetHighlight(bool b);
 	void SetAmount(int v);
+	void ChangeTexture();
 
 	void ResetBlocks();
 
 private:
 	Ui::DialogEditEffects ui;
 	CObject3D* m_obj3D;
+	CModelViewer* m_modelViewer;
 	MaterialBlock* m_oldBlocks;
 	MaterialBlock* m_editing;
-	int m_materialBlockCount;
+	GMObject* m_editingObj;
+	LODGroup* m_editingGroup;
+	QMap<MaterialBlock*, QTreeWidgetItem*> m_items;
 
-	CModelViewer* m_modelViewer;
+	void _setTree();
 };
 
 #endif // DIALOGEDITEFFECTS_H
