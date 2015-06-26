@@ -30,6 +30,13 @@ public:
 			return 0;
 		}
 	}
+	const QRect& GetRect() const {
+		return m_rect;
+	}
+
+	void SetRect(const QRect& rect) {
+		m_rect = rect;
+	}
 
 protected:
 	uint m_attributes;

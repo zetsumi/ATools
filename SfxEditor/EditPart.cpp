@@ -396,6 +396,33 @@ void CMainFrame::EditPartTextureName()
 	}
 }
 
+void CMainFrame::EditPartTexture()
+{
+	if (m_currentEditPart > -1)
+	{
+		CSfxPart* part = m_sfx->m_sfx->m_parts[m_currentEditPart];
+
+		string oldFilename;
+		if (GetExtension(part->m_textureName) == "o3d")
+			oldFilename = "Model/";
+		else
+			oldFilename = "SFX/Texture/";
+		oldFilename += part->m_textureName;
+
+		const string filename = QFileDialog::getOpenFileName(this, tr("Charger une texture/model"), oldFilename, tr("Fichier texture") % " (*.dds *.tga *.bmp);; " % tr("Fichier 3D") % " (*.o3d)");
+
+		if (!filename.isEmpty())
+		{
+			ui.editPartTexture->setText(QFileInfo(filename).fileName());
+
+			part->m_textureName = ui.editPartTexture->text();
+			part->_setTexture();
+
+			_editPart();
+		}
+	}
+}
+
 void CMainFrame::EditPartTexFrame(int value)
 {
 	if (m_currentEditPart > -1)

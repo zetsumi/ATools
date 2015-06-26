@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="MainFrame.qrc">
-    <normaloff>:/MainFrame/ModelEditor.png</normaloff>:/MainFrame/ModelEditor.png</iconset>
+    <normaloff>:/MainFrame/Resources/settings.png</normaloff>:/MainFrame/Resources/settings.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -123,6 +123,16 @@
          </property>
          <property name="text">
           <string>Changer la texture</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="CWOrCCW">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>CW &lt;-&gt; CCW</string>
          </property>
         </widget>
        </item>

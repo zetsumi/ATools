@@ -23,6 +23,8 @@ CObjectPropertiesDialog::CObjectPropertiesDialog(CObject* obj, QWidget* parent)
 {
 	ui.setupUi(this);
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	QVector<int> enabledTabs;
 	switch (obj->m_type)
 	{

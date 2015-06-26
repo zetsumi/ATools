@@ -13,6 +13,8 @@ CClientExtractor::CClientExtractor(QWidget* parent, Qt::WindowFlags flags)
 {
 	ui.setupUi(this);
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	connect(ui.selectDir, SIGNAL(clicked()), this, SLOT(SelectDir()));
 	connect(ui.ok, SIGNAL(clicked()), this, SLOT(ExtractAll()));
 }

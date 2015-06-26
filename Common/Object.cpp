@@ -30,7 +30,7 @@ static const string g_root[MAX_OBJTYPE] =
 	"path"
 };
 
-CObject* CObject::CreateObject(uint type)
+CObject* CObject::CreateObject(uint type, CObject* clone)
 {
 	if (type >= MAX_OBJTYPE)
 		return null;
@@ -40,25 +40,46 @@ CObject* CObject::CreateObject(uint type)
 	{
 	case OT_MOVER:
 		obj = new CMover();
+		if (clone)
+			*(CMover*)obj = *(CMover*)clone;
 		break;
 	case OT_CTRL:
 		obj = new CCtrl();
+		if (clone)
+			*(CCtrl*)obj = *(CCtrl*)clone;
 		break;
 	case OT_ITEM:
 		obj = new CSpawnObject();
+		if (clone)
+			*(CSpawnObject*)obj = *(CSpawnObject*)clone;
 		break;
 	case OT_REGION:
 		obj = new CRegion();
+		if (clone)
+			*(CRegion*)obj = *(CRegion*)clone;
 		break;
 	case OT_PATH:
 		obj = new CPath();
+		if (clone)
+			*(CPath*)obj = *(CPath*)clone;
 		break;
 	default:
 		obj = new CObject();
+		if (clone)
+			*obj = *clone;
 		break;
 	}
 
-	obj->SetType(type);
+	if (clone)
+	{
+		obj->m_model = null;
+		obj->m_world = null;
+	}
+	else
+	{
+		obj->SetType(type);
+	}
+
 	return obj;
 }
 
@@ -68,7 +89,7 @@ CObject* CObject::CreateObject(CFile& file)
 	file.Read(type);
 
 	CObject* obj = CreateObject(type);
-	
+
 	if (obj)
 	{
 		obj->Read(file);
@@ -98,7 +119,8 @@ CObject::CObject()
 	m_world(null),
 	m_visible(false),
 	m_distToCamera(0.0f),
-	m_isUnvisible(false)
+	m_isUnvisible(false),
+	m_ID(0)
 {
 	memset(&m_bounds, 0, sizeof(m_bounds));
 }
@@ -176,7 +198,16 @@ void CObject::Write(CFile& file, const D3DXVECTOR3& posOffset)
 bool CObject::Init()
 {
 	m_modelProp = Project->GetModelProp(m_type, m_modelID);
-	return m_modelProp != null;
+
+	if (!m_modelProp)
+		return false;
+
+	if (m_modelProp->modelType != MODELTYPE_MESH
+		&& m_modelProp->modelType != MODELTYPE_ANIMATED_MESH
+		&& m_modelProp->modelType != MODELTYPE_SFX)
+		return false;
+
+	return true;
 }
 
 void CObject::ResetScale()
@@ -244,22 +275,21 @@ void CObject::RenderName()
 {
 }
 
-string CObject::GetModelFilename() const
+string CObject::GetModelFilename(ModelProp* prop)
 {
-	if (!m_modelProp)
+	if (!prop)
 		return "";
 
 	string filename;
-	if (m_modelProp->modelType == MODELTYPE_SFX)
-	{
-		if (!m_modelProp->filename.contains('_'))
-			filename = g_root[m_modelProp->type] % '_' % m_modelProp->filename % ".sfx";
-		else
-			filename = m_modelProp->filename % ".sfx";
-	}
+	if (prop->type == OT_SFX && prop->filename.contains('_'))
+		filename = prop->filename;
 	else
-		filename = g_root[m_modelProp->type] % '_' % m_modelProp->filename % ".o3d";
-	return filename;
+		filename = g_root[prop->type] % '_' % prop->filename;
+
+	if (prop->modelType == MODELTYPE_SFX)
+		return filename % ".sfx";
+	else
+		return filename % ".o3d";
 }
 
 void CObject::_loadModel()

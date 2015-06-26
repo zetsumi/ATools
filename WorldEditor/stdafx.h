@@ -10,6 +10,8 @@
 #define APP_NAME	"WorldEditor"
 #define WORLD_EDITOR
 
+#define UNDO_LIMIT	100
+
 class CMainFrame;
 class CWorldEditor;
 class CDialogWorldProperties;
@@ -17,8 +19,10 @@ class CNavigator;
 class CDialogContinentEdit;
 class CObjectPropertiesDialog;
 class CDialogEditLandscapes;
+class CEditTerrainTextureCommand;
+class CPathDeleteCommand;
 
-#define WORLD_EDITOR_FRIENDS	friend class CMainFrame; friend class CWorldEditor; friend class CNavigator; friend class CDialogWorldProperties; friend class CDialogContinentEdit; friend class CObjectPropertiesDialog; friend class CDialogEditLandscapes;
+#define WORLD_EDITOR_FRIENDS	friend class CMainFrame; friend class CWorldEditor; friend class CNavigator; friend class CDialogWorldProperties; friend class CDialogContinentEdit; friend class CObjectPropertiesDialog; friend class CDialogEditLandscapes; friend class CEditTerrainTextureCommand; friend class CPathDeleteCommand;
 
 #include <Common.h>
 

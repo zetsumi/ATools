@@ -82,6 +82,16 @@ void CD3DWidget::CleanupEnvironment()
 	}
 }
 
+LPDIRECT3DDEVICE9 CD3DWidget::GetDevice() const
+{
+	return m_device;
+}
+
+string CD3DWidget::GetDeviceStats() const
+{
+	return string::fromWCharArray(m_deviceStats);
+}
+
 QPaintEngine* CD3DWidget::paintEngine() const
 {
 	return null;
@@ -300,33 +310,35 @@ bool CD3DWidget::_initializeEnvironment()
 
 	if (SUCCEEDED(hr))
 	{
+		lstrcpy(m_deviceStats, TEXT("<u>Direct3D 9.0c device stats :</u><br/>"));
+
 		// store the device's description, beginning with type;
-		lstrcpy(m_deviceStats, DEVICETYPESTRING(pdi->DevType, false));
+		lstrcat(m_deviceStats, DEVICETYPESTRING(pdi->DevType, true));
 
 		// then VP type, including  non-HAL devices simulating hardware VP and
 		// the pure hardware VP variant...
 		if ((dwCreateFlags & D3DCREATE_SOFTWARE_VERTEXPROCESSING) == 0 &&
 			pdi->DevType != D3DDEVTYPE_HAL)
-			lstrcat(m_deviceStats, TEXT(" simulated"));
+			lstrcat(m_deviceStats, TEXT(" Simulated"));
 
 		if (dwCreateFlags & D3DCREATE_HARDWARE_VERTEXPROCESSING)
 		{
 			if (dwCreateFlags & D3DCREATE_PUREDEVICE)
-				lstrcat(m_deviceStats, TEXT(" pure"));
+				lstrcat(m_deviceStats, TEXT(" Pure"));
 
-			lstrcat(m_deviceStats, TEXT(" hardware"));
+			lstrcat(m_deviceStats, TEXT(" Hardware"));
 		}
 		else if (dwCreateFlags & D3DCREATE_MIXED_VERTEXPROCESSING)
-			lstrcat(m_deviceStats, TEXT(" mixed"));
+			lstrcat(m_deviceStats, TEXT(" Mixed"));
 		else
-			lstrcat(m_deviceStats, TEXT(" software"));
+			lstrcat(m_deviceStats, TEXT(" Software"));
 
 		lstrcat(m_deviceStats, TEXT(" VP"));
 
 		// ...and the adapter's description for HAL devices
 		if (pdi->DevType == D3DDEVTYPE_HAL)
 		{
-			lstrcat(m_deviceStats, TEXT(" on "));
+			lstrcat(m_deviceStats, TEXT("<br/>"));
 
 			// be sure not to overflow m_deviceStats when appending
 			const int nDescription = sizeof(pai->AdapterIdentifier.Description);
@@ -337,7 +349,7 @@ bool CD3DWidget::_initializeEnvironment()
 				szDescription, nDescription);
 			szDescription[nDescription - 1] = 0;
 
-			lstrcat(szDescription, TEXT(" @ "));
+			lstrcat(szDescription, TEXT("<br/>"));
 
 			// append as many characters as space is left on the stats
 			wcsncat(m_deviceStats,
@@ -349,25 +361,28 @@ bool CD3DWidget::_initializeEnvironment()
 			TCHAR  szDepthFmt[100];
 			TCHAR* szMS;
 
-			_snwprintf(szDims, 100, TEXT("%dx%d, "),
+			_snwprintf(szDims, 100, TEXT("%dx%d "),
 				m_presentParameters.BackBufferWidth,
 				m_presentParameters.BackBufferHeight);
 
 			szDims[99] = TEXT('\0');
 
-			// append as many characters as space is left on the stats
-			wcsncat(m_deviceStats, szDims,
-				(sizeof(m_deviceStats) / sizeof((m_deviceStats)[0])) - lstrlen(m_deviceStats) - 1);
+			if (m_isFullscreen)
+			{
+				// append as many characters as space is left on the stats
+				wcsncat(m_deviceStats, szDims,
+					(sizeof(m_deviceStats) / sizeof((m_deviceStats)[0])) - lstrlen(m_deviceStats) - 1);
+			}
 
 			D3DFORMAT fmt = m_settings.GetDisplayMode().Format;
 
 			// display format (including the back buffer format if they do not match)
 			if (fmt == m_presentParameters.BackBufferFormat)
-				lstrcpyn(szFmt, D3DUtil_D3DFormatToString(fmt, false), 100);
+				lstrcpyn(szFmt, D3DUtil_D3DFormatToString(fmt, true), 100);
 			else
 				_snwprintf(szFmt, 100, TEXT("%s back, %s front"),
-				D3DUtil_D3DFormatToString(m_presentParameters.BackBufferFormat, false),
-				D3DUtil_D3DFormatToString(fmt, false));
+				D3DUtil_D3DFormatToString(m_presentParameters.BackBufferFormat, true),
+				D3DUtil_D3DFormatToString(fmt, true));
 
 			szFmt[99] = TEXT('\0');
 
@@ -376,11 +391,13 @@ bool CD3DWidget::_initializeEnvironment()
 				szFmt,
 				(sizeof(m_deviceStats) / sizeof((m_deviceStats)[0])) - lstrlen(m_deviceStats) - 1);
 
+			lstrcat(m_deviceStats, TEXT("<br/>"));
+
 			// depth/stencil buffer format
 			if (m_enum.AppUsesDepthBuffer)
 			{
-				_snwprintf(szDepthFmt, 100, TEXT(" (%s)"),
-					D3DUtil_D3DFormatToString(m_settings.GetDSFormat(), false));
+				_snwprintf(szDepthFmt, 100, TEXT("%s "),
+					D3DUtil_D3DFormatToString(m_settings.GetDSFormat(), true));
 
 				szDepthFmt[99] = TEXT('\0');
 
@@ -390,8 +407,10 @@ bool CD3DWidget::_initializeEnvironment()
 					(sizeof(m_deviceStats) / sizeof((m_deviceStats)[0])) - lstrlen(m_deviceStats) - 1);
 			}
 
+			lstrcat(m_deviceStats, TEXT("<br/>"));
+
 			// multisampling type (no. of samples or nonmaskable)
-			szMS = MULTISAMPLESTRING(m_settings.GetMSType(), false);
+			szMS = MULTISAMPLESTRING(m_settings.GetMSType(), true);
 
 			// append as many characters as space is left on the stats
 			wcsncat(m_deviceStats,
@@ -413,11 +432,15 @@ bool CD3DWidget::_initializeEnvironment()
 			break;
 		}
 
-		if (InitDeviceObjects())
+		if (!InitDeviceObjects())
+			DeleteDeviceObjects();
+		else
 		{
 			m_deviceObjectsInitied = true;
 
-			if (RestoreDeviceObjects())
+			if (!RestoreDeviceObjects())
+				InvalidateDeviceObjects();
+			else
 			{
 				m_deviceObjectsRestored = true;
 				return true;
@@ -476,7 +499,7 @@ void CD3DWidget::_buildPresentParamsFromSettings()
 	}
 
 	m_presentParameters.BackBufferFormat = m_settings.GetBackBufferFormat();
-	m_presentParameters.PresentationInterval = m_settings.GetPresentInterval(); // D3DPRESENT_INTERVAL_IMMEDIATE
+	m_presentParameters.PresentationInterval = m_settings.GetPresentInterval();
 }
 
 bool CD3DWidget::_chooseInitialSettings()
@@ -528,6 +551,14 @@ bool CD3DWidget::_findBestWindowedMode(bool HAL, bool REF)
 
 	UINT i, j, k;
 
+	// prefered multisample type
+	D3DMULTISAMPLE_TYPE multisamples;
+#ifdef WORLD_EDITOR
+	multisamples = D3DMULTISAMPLE_2_SAMPLES;
+#else
+	multisamples = D3DMULTISAMPLE_4_SAMPLES;
+#endif // WORLD_EDITOR
+
 	// traverse the enumerated adapters information
 	for (i = 0; i < m_enum.AdapterInfos.Length(); i++)
 	{
@@ -557,18 +588,14 @@ bool CD3DWidget::_findBestWindowedMode(bool HAL, bool REF)
 				if (pdc->DisplayFormat != dm.Format)
 					continue;
 
-				// this device combo is better than the current best if:
-				//  (a) there's no best yet;
-				//  (b) it's a HAL and the current best is not;
-				//  (c) it's a HAL with matching backbuffer and display
-				//      formats, in which case is also the best
-				bBetter = pdcBest == NULL ||
+				bBetter = !pdcBest
+					|| (pdc->DevType == D3DDEVTYPE_HAL && pdcBest->DevType != D3DDEVTYPE_HAL)
+					|| (pdc->DevType == D3DDEVTYPE_HAL && pdc->SupportsMultiSampleType(multisamples) && !pdcBest->SupportsMultiSampleType(multisamples))
+					|| (pdc->DevType != D3DDEVTYPE_HAL && pdcBest->DevType != D3DDEVTYPE_HAL && pdc->SupportsMultiSampleType(multisamples) && !pdcBest->SupportsMultiSampleType(multisamples));
 
-					pdc->DevType == D3DDEVTYPE_HAL &&
-					pdcBest->DevType != D3DDEVTYPE_HAL;
-
-				bBest = pdc->DevType == D3DDEVTYPE_HAL &&
-					pdc->BackBufferFormat == pdc->DisplayFormat;
+				bBest = pdc->DevType == D3DDEVTYPE_HAL
+					&& pdc->BackBufferFormat == pdc->DisplayFormat
+					&& pdc->SupportsMultiSampleType(multisamples);
 
 				bBetter |= bBest;
 

@@ -438,6 +438,8 @@ bool CDataManager::_loadScript(const string& filename)
 	if (!file.Load(filename))
 		return false;
 
+	static const string beginIDS = "IDS";
+
 	int i;
 	int controlType;
 	ControlData* control;
@@ -465,12 +467,24 @@ bool CDataManager::_loadScript(const string& filename)
 
 		file.NextToken(); // {
 		window->titleID = file.GetString();
-		window->title = m_texts[window->titleID];
+		if (!window->titleID.startsWith(beginIDS))
+		{
+			window->title = window->titleID;
+			window->titleID.clear();
+		}
+		else
+			window->title = m_texts[window->titleID];
 		file.NextToken(); // }
 
 		file.NextToken(); // {
 		window->tooltipID = file.GetString();
-		window->tooltip = m_texts[window->tooltipID];
+		if (!window->tooltipID.startsWith(beginIDS))
+		{
+			window->tooltip = window->tooltipID;
+			window->tooltipID.clear();
+		}
+		else
+			window->tooltip = m_texts[window->tooltipID];
 		file.NextToken(); // }
 
 		file.NextToken(); // {
@@ -529,12 +543,24 @@ bool CDataManager::_loadScript(const string& filename)
 
 			file.NextToken(); // {
 			control->textID = file.GetString();
-			control->text = m_texts[control->textID];
+			if (!control->textID.startsWith(beginIDS))
+			{
+				control->text = control->textID;
+				control->textID.clear();
+			}
+			else
+				control->text = m_texts[control->textID];
 			file.NextToken(); // }
 
 			file.NextToken(); // {
 			control->tooltipID = file.GetString();
-			control->tooltip = m_texts[control->tooltipID];
+			if (!control->tooltipID.startsWith(beginIDS))
+			{
+				control->tooltip = control->tooltipID;
+				control->tooltipID.clear();
+			}
+			else
+				control->tooltip = m_texts[control->tooltipID];
 			file.NextToken(); // }
 
 			window->controls.Append(control);
@@ -544,6 +570,30 @@ bool CDataManager::_loadScript(const string& filename)
 		m_windows[window->ID] = window;
 		file.NextToken();
 	} while (file.TokenType() != ETokenType::End);
+
+	for (auto it = m_windows.begin(); it != m_windows.end(); it++)
+	{
+		window = it.value();
+		if (window->titleID.isEmpty())
+			window->titleID = GetNewText(window->title);
+		if (window->tooltipID.isEmpty())
+			window->tooltipID = GetNewText(window->tooltip);
+
+		for (i = 0; i < window->controls.GetSize(); i++)
+		{
+			control = window->controls[i];
+			if (control->textID.isEmpty())
+				control->textID = GetNewText(control->text);
+			if (control->tooltipID.isEmpty())
+				control->tooltipID = GetNewText(control->tooltip);
+		}
+
+		if (window->ID == 2028)
+		{
+			bool b = false;
+			b = true;
+		}
+	}
 
 	file.Close();
 	return true;

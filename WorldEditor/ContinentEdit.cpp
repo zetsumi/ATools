@@ -16,6 +16,8 @@ CDialogContinentEdit::CDialogContinentEdit(CWorld* world, QWidget *parent)
 {
 	ui.setupUi(this);
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	_updateContinentList();
 
 	connect(ui.continentList, SIGNAL(currentRowChanged(int)), this, SLOT(SelectContinent(int)));
@@ -30,14 +32,28 @@ CDialogContinentEdit::CDialogContinentEdit(CWorld* world, QWidget *parent)
 	connect(ui.endFog, SIGNAL(valueChanged(double)), this, SLOT(SetFogEnd(double)));
 	connect(ui.weather, SIGNAL(currentIndexChanged(int)), this, SLOT(SetWeather(int)));
 	connect(ui.skyTexture, SIGNAL(editingFinished()), this, SLOT(SetSkyTexture()));
-	connect(ui.cloudTexture , SIGNAL(editingFinished()), this, SLOT(SetCloudTexture()));
+	connect(ui.cloudTexture, SIGNAL(editingFinished()), this, SLOT(SetCloudTexture()));
 	connect(ui.sunTexture, SIGNAL(editingFinished()), this, SLOT(SetSunTexture()));
 	connect(ui.moonTexture, SIGNAL(editingFinished()), this, SLOT(SetMoonTexture()));
 	connect(ui.setAmbient, SIGNAL(clicked()), this, SLOT(SetAmbient()));
 	connect(ui.setDiffuse, SIGNAL(clicked()), this, SLOT(SetDiffuse()));
 
 	if (m_world->m_continents.GetSize() > 0)
-		ui.continentList->setCurrentRow(0);
+	{
+		if (m_world->m_continent)
+		{
+			for (int i = 0; i < m_world->m_continents.GetSize(); i++)
+			{
+				if (m_world->m_continents[i] == m_world->m_continent)
+				{
+					ui.continentList->setCurrentRow(i);
+					break;
+				}
+			}
+		}
+		else
+			ui.continentList->setCurrentRow(0);
+	}
 }
 
 void CDialogContinentEdit::SetAmbient()

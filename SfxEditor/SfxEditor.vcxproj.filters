@@ -150,6 +150,21 @@
     <ClCompile Include="EditPart.cpp">
       <Filter>MainFrame</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\AboutDialog.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\ShortcutsMng.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\TextFile.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Common.h">
@@ -209,6 +224,12 @@
     <ClInclude Include="..\Common\PtrArray.h">
       <Filter>Common\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\ShortcutsMng.h">
+      <Filter>Common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\TextFile.h">
+      <Filter>Common\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.qrc">
@@ -235,6 +256,9 @@
     <CustomBuild Include="DialogNewPart.h">
       <Filter>MainFrame</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Common\AboutDialog.h">
+      <Filter>Common\Utils</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SfxEditor.rc">
@@ -243,6 +267,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="sfxeditor_en.ts">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="sfxeditor_de.ts">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

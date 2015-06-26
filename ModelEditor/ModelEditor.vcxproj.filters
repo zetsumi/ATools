@@ -39,11 +39,17 @@
     <Filter Include="Common\Graphics\Model">
       <UniqueIdentifier>{8ca74f50-9ddc-465d-b914-cf3a2b1b6dd6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Convert">
-      <UniqueIdentifier>{b62e6004-79fb-495f-809a-cdef05890aef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MainFrame\UI">
       <UniqueIdentifier>{ba4ad07a-f946-458d-9286-588adfa491bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Export">
+      <UniqueIdentifier>{a19e505f-b18b-4ad3-a7be-df6c95211ab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Import">
+      <UniqueIdentifier>{b62e6004-79fb-495f-809a-cdef05890aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Utils">
+      <UniqueIdentifier>{67eb6d53-b9e2-408a-8fa2-8beeacdace46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,10 +132,7 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Importer.cpp">
-      <Filter>Convert</Filter>
-    </ClCompile>
-    <ClCompile Include="Exporter.cpp">
-      <Filter>Convert</Filter>
+      <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="DialogEditEffects.cpp">
       <Filter>MainFrame</Filter>
@@ -151,6 +154,57 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_SkinAuto.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\TextFile.cpp">
+      <Filter>Common\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\SoundMng.cpp">
+      <Filter>Common\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SoundMng.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SoundMng.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DAEExporter.cpp">
+      <Filter>Export</Filter>
+    </ClCompile>
+    <ClCompile Include="Exporter.cpp">
+      <Filter>Export</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJExporter.cpp">
+      <Filter>Export</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportUtils.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportMaterial.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportAnim.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportSkel.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportGeometry.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\AboutDialog.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\ShortcutsMng.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionAuto.cpp">
+      <Filter>MainFrame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,10 +248,7 @@
       <Filter>Common\Graphics\Model</Filter>
     </ClInclude>
     <ClInclude Include="Importer.h">
-      <Filter>Convert</Filter>
-    </ClInclude>
-    <ClInclude Include="Exporter.h">
-      <Filter>Convert</Filter>
+      <Filter>Import</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_DialogEditEffects.h">
       <Filter>MainFrame\UI</Filter>
@@ -207,6 +258,24 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_SkinAuto.h">
       <Filter>MainFrame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\TextFile.h">
+      <Filter>Common\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="DAEExporter.h">
+      <Filter>Export</Filter>
+    </ClInclude>
+    <ClInclude Include="Exporter.h">
+      <Filter>Export</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJExporter.h">
+      <Filter>Export</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportUtils.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\ShortcutsMng.h">
+      <Filter>Common\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +309,12 @@
     <CustomBuild Include="SkinAuto.h">
       <Filter>MainFrame</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Common\SoundMng.h">
+      <Filter>Common\IO</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Common\AboutDialog.h">
+      <Filter>Common\Utils</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ModelEditor.rc">
@@ -251,6 +326,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="modeleditor_en.ts">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="modeleditor_de.ts">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

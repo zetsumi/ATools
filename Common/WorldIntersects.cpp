@@ -28,7 +28,7 @@ bool CWorld::PickTerrain(const QPoint& mousePos, D3DXVECTOR3& out)
 	int z, x;
 	D3DXVECTOR3 v1, v2, v3, v4, length, intersect, normal, ray, line1, line2;
 	float dist;
-	float nearDist = FAR_PLANE;
+	float nearDist = g_global3D.farPlane;
 	bool pick = false;
 
 	do
@@ -89,7 +89,7 @@ bool CWorld::PickTerrain(const QPoint& mousePos, D3DXVECTOR3& out)
 			}
 		}
 		length = origin - cur;
-	} while (D3DXVec3Length(&length) < FAR_PLANE);
+	} while (D3DXVec3Length(&length) < g_global3D.farPlane);
 
 	if (out.x < 0.0f)
 		out.x = 0.0f;
@@ -109,7 +109,7 @@ CObject* CWorld::PickObject(const QPoint& mousePos)
 	GetPickRay(mousePos, origin, dir);
 
 	CObject* obj = null;
-	float dist = FAR_PLANE, tempDist;
+	float dist = g_global3D.farPlane, tempDist;
 	int i;
 
 	for (i = 0; i < m_cullObjCount; i++)

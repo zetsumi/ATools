@@ -14,18 +14,49 @@
 #include <Motion.h>
 #include <Object3D.h>
 #include "Importer.h"
-#include "Exporter.h"
+#include "DAEExporter.h"
+#include "OBJExporter.h"
 #include "DialogEditEffects.h"
+#include <SoundMng.h>
+#include <TextFile.h>
+#include <AboutDialog.h>
+#include <ShortcutsMng.h>
 
 CMainFrame::CMainFrame(QWidget *parent)
 	: QMainWindow(parent),
 	m_mesh(null),
 	m_motionList(null),
 	m_timeline(null),
-	m_inEnglish(false),
-	m_languageActionGroup(null)
+	m_language(LANG_FRE),
+	m_languageActionGroup(null),
+	m_soundMng(null),
+	m_fillModeActionGroup(null),
+	m_importScaleFactor(1.0f),
+	m_referenceModelID(SEX_SEXLESS),
+	m_status(null)
+{
+}
+
+CMainFrame::~CMainFrame()
+{
+	CloseFile();
+	Delete(m_soundMng);
+	Delete(m_status);
+	Delete(m_modelViewer);
+	Delete(m_motionList);
+	Delete(m_languageActionGroup);
+	Delete(m_fillModeActionGroup);
+}
+
+bool CMainFrame::Initialize()
 {
 	ui.setupUi(this);
+
+	m_modelViewer = new CModelViewer(this);
+	setCentralWidget(m_modelViewer);
+
+	if (!m_modelViewer->CreateEnvironment())
+		return false;
 
 	m_status = new QLabel(tr("Prêt"));
 	m_status->setStyleSheet("color: white;");
@@ -46,17 +77,14 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_timeline->AddRow(tr("Son"), Qt::blue);
 	m_timeline->AddRow(tr("Tremblement"), Qt::green);
 
-	m_modelViewer = new CModelViewer(this);
-	setCentralWidget(m_modelViewer);
-
 	m_motionList = new QStringListModel(ui.motionList);
 	ui.motionList->setModel(m_motionList);
 
-	if (!m_modelViewer->CreateEnvironment())
-	{
-		Delete(m_modelViewer);
-		qFatal("Loading failed !");
-	}
+	if (CTextFile::LoadDefine("defineSound.h", true))
+		m_soundsList = CTextFile::GetDefineList("SND_");
+
+	m_soundMng = new CSoundMng();
+	m_soundMng->LoadScript("Client/sound.inc");
 
 	Assimp::Importer importer;
 	aiString extList;
@@ -67,20 +95,18 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_languageActionGroup = new QActionGroup(ui.menuLangage);
 	m_languageActionGroup->addAction(ui.actionFran_ais);
 	m_languageActionGroup->addAction(ui.actionEnglish);
+	m_languageActionGroup->addAction(ui.actionDeutsch);
+
+	m_fillModeActionGroup = new QActionGroup(ui.menuAffichage);
+	m_fillModeActionGroup->addAction(ui.actionSolide);
+	m_fillModeActionGroup->addAction(ui.actionLigne);
+	m_fillModeActionGroup->addAction(ui.actionPoint);
 
 	_connectWidgets();
-
+	_setShortcuts();
 	CloseFile();
 	_loadSettings();
-}
-
-CMainFrame::~CMainFrame()
-{
-	CloseFile();
-	Delete(m_status);
-	Delete(m_modelViewer);
-	Delete(m_motionList);
-	Delete(m_languageActionGroup);
+	return true;
 }
 
 void CMainFrame::_connectWidgets()
@@ -90,6 +116,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionQt, SIGNAL(triggered()), this, SLOT(AboutQt()));
 	connect(ui.actionGrille, SIGNAL(triggered(bool)), this, SLOT(ShowGrid(bool)));
 	connect(ui.actionObjet_de_collision, SIGNAL(triggered(bool)), this, SLOT(ShowCollObj(bool)));
+	connect(ui.actionOs, SIGNAL(triggered(bool)), this, SLOT(ShowBones(bool)));
 	connect(ui.actionTextures_additionnelles, SIGNAL(triggered()), this, SLOT(LoadTextureEx()));
 	connect(ui.actionJouer, SIGNAL(triggered(bool)), this, SLOT(Play(bool)));
 	connect(ui.motionList, SIGNAL(activated(const QModelIndex&)), this, SLOT(PlayMotion(const QModelIndex&)));
@@ -106,6 +133,28 @@ void CMainFrame::_connectWidgets()
 	connect(m_languageActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(SetLanguage(QAction*)));
 	connect(ui.actionCW_CCW, SIGNAL(triggered()), this, SLOT(ChangeCW()));
 	connect(ui.actionSkin_auto, SIGNAL(triggered()), this, SLOT(SkinAuto()));
+	connect(ui.actionVolume_sonore, SIGNAL(triggered()), this, SLOT(SetSoundVolume()));
+	connect(m_fillModeActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(SetFillMode(QAction*)));
+	connect(ui.actionTaille_l_import, SIGNAL(triggered()), this, SLOT(SetScaleFactor()));
+	connect(ui.actionModel_de_r_f_rence, SIGNAL(triggered()), this, SLOT(SetReferenceModel()));
+	connect(ui.actionCollision_auto, SIGNAL(triggered()), this, SLOT(CollisionAuto()));
+}
+
+void CMainFrame::_setShortcuts()
+{
+	CShortcutsMng mng;
+	mng.Add(ui.actionQuitter, "ExitApp");
+	mng.Add(ui.actionEnregistrer, "SaveFile");
+	mng.Add(ui.actionPlein_cran, "Fullscreen");
+	mng.Add(ui.action_propos, "About");
+	mng.Add(ui.actionGrille, "ShowGrid");
+	mng.Add(ui.actionFermer, "CloseFile");
+	mng.Add(ui.actionOuvrir, "OpenFile");
+	mng.Add(ui.action_diter_les_effets, "EditEffects");
+	mng.Add(ui.actionTaille_l_import, "ImportScale");
+	mng.Add(ui.actionJouer, "PlayPause");
+	mng.Add(ui.actionTextures_additionnelles, "ATEX");
+	mng.Load();
 }
 
 void CMainFrame::CloseFile()
@@ -116,20 +165,28 @@ void CMainFrame::CloseFile()
 			Delete(m_mesh->m_elements[i].obj);
 		Delete(m_mesh->m_motion);
 		Delete(m_mesh->m_skeleton);
+
+		Delete(m_mesh);
 	}
 
-	Delete(m_mesh);
 	setWindowTitle(tr("ModelEditor"));
-	m_motionList->setStringList(QStringList());
-	m_modelViewer->SetMesh(null);
-	m_modelViewer->SetAutoRefresh(false);
-	m_timeline->SetFrameCount(0);
 	ui.actionJouer->setChecked(false);
 	m_assimpImport = false;
 	m_meshSex = SEX_SEXLESS;
+	if (m_motionList)
+		m_motionList->setStringList(QStringList());
+	if (m_timeline)
+		m_timeline->SetFrameCount(0);
+	if (m_soundMng)
+		m_soundMng->Stop();
+	if (m_modelViewer)
+	{
+		m_modelViewer->SetMesh(null);
+		m_modelViewer->SetAutoRefresh(false);
 
-	if (!m_modelViewer->IsAutoRefresh())
-		m_modelViewer->RenderEnvironment();
+		if (!m_modelViewer->IsAutoRefresh())
+			m_modelViewer->RenderEnvironment();
+	}
 }
 
 void CMainFrame::SetBackgroundColor()
@@ -138,6 +195,24 @@ void CMainFrame::SetBackgroundColor()
 	if (color.isValid())
 	{
 		g_global3D.backgroundColor = D3DCOLOR_ARGB(255, color.red(), color.green(), color.blue());
+		if (!m_modelViewer->IsAutoRefresh())
+			m_modelViewer->RenderEnvironment();
+	}
+}
+
+void CMainFrame::SetReferenceModel()
+{
+	QStringList models;
+	models.push_back("Male"); // SEX_MALE
+	models.push_back("Female"); // SEX_FEMALE
+	models.push_back("None"); // SEX_SEXLESS
+
+	bool ok = false;
+	const int newModelID = models.indexOf(QInputDialog::getItem(this, tr("Model de référence"), tr("Model de référence :"), models, m_referenceModelID, false, &ok));
+	if (ok)
+	{
+		m_referenceModelID = newModelID;
+		m_modelViewer->SetReferenceModelID(m_referenceModelID);
 		if (!m_modelViewer->IsAutoRefresh())
 			m_modelViewer->RenderEnvironment();
 	}
@@ -168,10 +243,50 @@ void CMainFrame::_loadSettings()
 		}
 		if (settings.contains("WindowState"))
 			restoreState(settings.value("WindowState").toByteArray());
-		if (settings.contains("Language") && settings.value("Language") == "English")
+		if (settings.contains("Language"))
 		{
-			ui.actionEnglish->setChecked(true);
-			SetLanguage(ui.actionEnglish);
+			switch (settings.value("Language").toInt())
+			{
+			case LANG_ENG:
+				ui.actionEnglish->setChecked(true);
+				SetLanguage(ui.actionEnglish);
+				break;
+			case LANG_GER:
+				ui.actionDeutsch->setChecked(true);
+				SetLanguage(ui.actionDeutsch);
+				break;
+			}
+		}
+		if (settings.contains("SoundVolume"))
+			m_soundMng->SetVolume(settings.value("SoundVolume").toInt());
+		if (settings.contains("ShowBones"))
+		{
+			g_global3D.showBones = settings.value("ShowBones").toBool();
+			ui.actionOs->setChecked(g_global3D.showBones);
+		}
+		if (settings.contains("FillMode"))
+		{
+			g_global3D.fillMode = (D3DFILLMODE)settings.value("FillMode").toUInt();
+			switch (g_global3D.fillMode)
+			{
+			case D3DFILL_SOLID:
+				ui.actionSolide->setChecked(true);
+				break;
+			case D3DFILL_WIREFRAME:
+				ui.actionLigne->setChecked(true);
+				break;
+			case D3DFILL_POINT:
+				ui.actionPoint->setChecked(true);
+				break;
+			}
+		}
+		if (settings.contains("ImportScaleFactor"))
+			m_importScaleFactor = settings.value("ImportScaleFactor").toFloat();
+		if (settings.contains("ReferenceModel"))
+		{
+			m_referenceModelID = settings.value("ReferenceModel").toInt();
+			if (m_modelViewer)
+				m_modelViewer->SetReferenceModelID(m_referenceModelID);
 		}
 
 		if (m_modelViewer && !m_modelViewer->IsAutoRefresh())
@@ -183,13 +298,18 @@ void CMainFrame::SetLanguage(QAction* action)
 {
 	if (action == ui.actionFran_ais)
 	{
-		m_inEnglish = false;
+		m_language = LANG_FRE;
 		m_translator.load("", "");
 	}
 	else if (action == ui.actionEnglish)
 	{
-		m_inEnglish = true;
-		m_translator.load("modeleditor_en.qm", "platforms/English");
+		m_language = LANG_ENG;
+		m_translator.load("modeleditor_en.qm", "Plugins/languages/English");
+	}
+	else if (action == ui.actionDeutsch)
+	{
+		m_language = LANG_GER;
+		m_translator.load("modeleditor_de.qm", "Plugins/languages/Deutsch");
 	}
 
 	qApp->installTranslator(&m_translator);
@@ -215,13 +335,47 @@ void CMainFrame::closeEvent(QCloseEvent* event)
 		settings.setValue("ShowCollObj", g_global3D.renderCollisions);
 		settings.setValue("WindowGeometry", saveGeometry());
 		settings.setValue("WindowState", saveState());
-		settings.setValue("Language", m_inEnglish ? "English" : "French");
+		settings.setValue("Language", m_language);
+		settings.setValue("SoundVolume", m_soundMng->GetVolume());
+		settings.setValue("ShowBones", g_global3D.showBones);
+		settings.setValue("FillMode", (uint)g_global3D.fillMode);
+		settings.setValue("ImportScaleFactor", m_importScaleFactor);
+		settings.setValue("ReferenceModel", m_referenceModelID);
 	}
 
 	QMainWindow::closeEvent(event);
 }
 
-void CMainFrame::_openFile(const string& filename)
+void CMainFrame::SetFillMode(QAction* action)
+{
+	if (action == ui.actionSolide)
+		g_global3D.fillMode = D3DFILL_SOLID;
+	else if (action == ui.actionLigne)
+		g_global3D.fillMode = D3DFILL_WIREFRAME;
+	else if (action == ui.actionPoint)
+		g_global3D.fillMode = D3DFILL_POINT;
+
+	if (!m_modelViewer->IsAutoRefresh())
+		m_modelViewer->RenderEnvironment();
+}
+
+void CMainFrame::SetSoundVolume()
+{
+	bool ok = false;
+	const int volume = QInputDialog::getInt(this, tr("Volume sonore"), tr("Volume sonore (0~100) :"), m_soundMng->GetVolume(), 0, 100, 10, &ok);
+	if (ok)
+		m_soundMng->SetVolume(volume);
+}
+
+void CMainFrame::SetScaleFactor()
+{
+	bool ok = false;
+	const double factor = QInputDialog::getDouble(this, tr("Taille à l'import"), tr("Multiplier la taille lors de l'import par :"), (double)m_importScaleFactor, 0.0000001, 9999999.0, 7, &ok);
+	if (ok)
+		m_importScaleFactor = (float)factor;
+}
+
+void CMainFrame::OpenFile(const string& filename)
 {
 	bool resetView = true;
 
@@ -305,7 +459,7 @@ void CMainFrame::_openFile(const string& filename)
 		CloseFile();
 		m_mesh = new CAnimatedMesh(m_modelViewer->GetDevice());
 
-		CImporter importer(m_mesh);
+		CImporter importer(m_mesh, m_importScaleFactor);
 		if (!importer.Import(filename))
 			Delete(m_mesh);
 		else
@@ -332,9 +486,9 @@ void CMainFrame::_openFile(const string& filename)
 						{
 							if (attributes[i].type & MA_HIT)
 								m_timeline->AddKey(0, i);
-							else if (attributes[i].type & MA_SOUND)
+							if (attributes[i].type & MA_SOUND)
 								m_timeline->AddKey(1, i);
-							else if (attributes[i].type & MA_QUAKE)
+							if (attributes[i].type & MA_QUAKE)
 								m_timeline->AddKey(2, i);
 						}
 					}
@@ -365,6 +519,10 @@ void CMainFrame::_saveFile(const string& filename)
 	if (GetExtension(filename) == "dae")
 	{
 		result = CDAEExporter(m_mesh).Export(filename);
+	}
+	else if (GetExtension(filename) == "obj")
+	{
+		result = COBJExporter(m_mesh).Export(filename);
 	}
 	else if (GetExtension(filename) == "ani" && m_mesh->m_motion)
 	{
@@ -406,12 +564,17 @@ void CMainFrame::OpenFile()
 {
 	string dir = ModelMng->GetModelPath();
 	if (!m_filename.isEmpty())
-		dir += m_filename;
+	{
+		 string tempFilename = m_filename;
+		 if (GetExtension(tempFilename) == "ani")
+			 tempFilename.replace(".ani", ".dae");
+		 dir += tempFilename;
+	}
 
-	const QString filename = QFileDialog::getOpenFileName(this, tr("Charger un model"), dir, tr("Fichiers 3D (") % m_supportedImportFiles % ")");
+	const QString filename = QFileDialog::getOpenFileName(this, tr("Charger un model"), dir, tr("Fichier 3D") % " (" % m_supportedImportFiles % ")");
 
 	if (!filename.isEmpty())
-		_openFile(filename);
+		OpenFile(filename);
 }
 
 void CMainFrame::SaveFile()
@@ -422,12 +585,24 @@ void CMainFrame::SaveFile()
 	string filename;
 
 	if (m_mesh->m_motion)
-		filename = QFileDialog::getSaveFileName(this, tr("Enregistrer l'animation/le model"), ModelMng->GetModelPath() % m_motionName, tr("Fichier d'animation (*.ani);; Fichier 3D (*.o3d *.dae)"));
+		filename = QFileDialog::getSaveFileName(this, tr("Enregistrer l'animation/le model"), ModelMng->GetModelPath() % m_motionName, tr("Fichier d'animation") % " (*.ani);; " % tr("Fichier 3D") % " (*.o3d *.dae *.obj)");
 	else
-		filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le model"), ModelMng->GetModelPath() % m_filename.remove(".o3d").remove(".ani"), tr("Fichier 3D (*.o3d *.dae)"));
+	{
+		string tempFilename = m_filename;
+		if (GetExtension(tempFilename) == "ani")
+			tempFilename.replace(".ani", ".dae");
+
+		filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le model"), ModelMng->GetModelPath() % tempFilename, tr("Fichier 3D") % " (*.o3d *.dae *.obj)");
+	}
 
 	if (!filename.isEmpty())
+	{
+		QFileInfo fileInfo(filename);
+		ModelMng->SetModelPath(fileInfo.path() % '/');
+		TextureMng->SetModelTexturePath(fileInfo.path() % '/');
+		m_filename = fileInfo.fileName();
 		_saveFile(filename);
+	}
 }
 
 void CMainFrame::EditEffects()
@@ -449,8 +624,7 @@ void CMainFrame::EditEffects()
 
 void CMainFrame::About()
 {
-	QMessageBox::about(this, tr("À propos"),
-		"ATools v" % string::number(VERSION) % '.' % string::number(SUB_VERSION) % tr("\n\nPar Aishiro"));
+	CAboutDialog(this, m_modelViewer).exec();
 }
 
 void CMainFrame::AboutQt()
@@ -474,17 +648,31 @@ void CMainFrame::ShowCollObj(bool show)
 		m_modelViewer->RenderEnvironment();
 }
 
+void CMainFrame::ShowBones(bool show)
+{
+	g_global3D.showBones = show;
+
+	if (!m_modelViewer->IsAutoRefresh())
+		m_modelViewer->RenderEnvironment();
+}
+
 void CMainFrame::LoadTextureEx()
 {
 	if (!m_mesh)
 		return;
 
 	bool ok = false;
-	int id = QInputDialog::getInt(nullptr, tr("Textures additionnelles"), tr("N° des textures :"), m_mesh->GetTextureEx(), 0, 7, 1, &ok);
+	int id = QInputDialog::getInt(this, tr("Textures additionnelles"), tr("N° des textures :"), m_mesh->GetTextureEx(), 0, 7, 1, &ok);
 
 	if (ok)
+		SetTextureEx(id);
+}
+
+void CMainFrame::SetTextureEx(int index)
+{
+	if (m_mesh)
 	{
-		m_mesh->SetTextureEx(id);
+		m_mesh->SetTextureEx(index);
 
 		if (!m_modelViewer->IsAutoRefresh())
 			m_modelViewer->RenderEnvironment();
@@ -536,8 +724,14 @@ void CMainFrame::MotionAttributeModified(int row, int frame, bool removed)
 			{
 				if (type == MA_SOUND)
 				{
+					const string currentID = CTextFile::GetDefineText(attributes[frame].soundID, "SND_");
+
+					int index = m_soundsList.indexOf(currentID);
+					if (index == -1)
+						index = m_soundsList.indexOf("SND_NONE");
+
 					bool ok = false;
-					int id = QInputDialog::getInt(this, tr("ID du son"), tr("ID du son :"), attributes[frame].soundID, 0, 2147483647, 1, &ok);
+					const string id = QInputDialog::getItem(this, tr("ID du son"), tr("ID du son :"), m_soundsList, index, true, &ok);
 
 					if (!ok)
 					{
@@ -545,7 +739,7 @@ void CMainFrame::MotionAttributeModified(int row, int frame, bool removed)
 						return;
 					}
 
-					attributes[frame].soundID = id;
+					attributes[frame].soundID = CTextFile::GetDefine(id);
 				}
 
 				attributes[frame].type |= type;
@@ -557,6 +751,8 @@ void CMainFrame::MotionAttributeModified(int row, int frame, bool removed)
 
 void CMainFrame::PlayMotion(const QModelIndex & index)
 {
+	m_soundMng->Stop();
+	m_modelViewer->ChangeMotion();
 	const QString motion = m_motionList->stringList().at(index.row());
 
 	if (m_mesh)
@@ -587,9 +783,9 @@ void CMainFrame::PlayMotion(const QModelIndex & index)
 					{
 						if (attributes[i].type & MA_HIT)
 							m_timeline->AddKey(0, i);
-						else if (attributes[i].type & MA_SOUND)
+						if (attributes[i].type & MA_SOUND)
 							m_timeline->AddKey(1, i);
-						else if (attributes[i].type & MA_QUAKE)
+						if (attributes[i].type & MA_QUAKE)
 							m_timeline->AddKey(2, i);
 					}
 				}
@@ -611,13 +807,18 @@ void CMainFrame::Play(bool play)
 			m_modelViewer->SetAutoRefresh(true);
 	}
 	else
+	{
+		m_soundMng->Stop();
 		m_modelViewer->SetAutoRefresh(false);
+	}
 
+	m_modelViewer->ChangeMotion();
 	m_modelViewer->RenderEnvironment();
 }
 
 void CMainFrame::Stop()
 {
+	m_soundMng->Stop();
 	ui.actionJouer->setChecked(false);
 	m_modelViewer->SetAutoRefresh(false);
 	ui.motionList->clearSelection();
@@ -711,7 +912,7 @@ void CMainFrame::dragMoveEvent(QDragMoveEvent* event)
 void CMainFrame::dropEvent(QDropEvent* event)
 {
 	if (m_dragFilename.size() > 0)
-		_openFile(m_dragFilename);
+		OpenFile(m_dragFilename);
 }
 
 void CMainFrame::changeEvent(QEvent* event)

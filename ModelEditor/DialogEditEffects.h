@@ -32,6 +32,7 @@ public slots:
 	void SetHighlight(bool b);
 	void SetAmount(int v);
 	void ChangeTexture();
+	void ChangeCW();
 
 	void ResetBlocks();
 

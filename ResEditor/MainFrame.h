@@ -19,6 +19,10 @@ public:
 	CMainFrame(QWidget *parent = 0);
 	virtual ~CMainFrame();
 
+	bool Initialize();
+
+	void OpenFile(const string& filename);
+
 	public slots:
 	void NewFile();
 	void CloseFile();
@@ -49,16 +53,15 @@ private:
 	int m_viewMode;
 	QActionGroup* m_sortActionGroup;
 	QActionGroup* m_viewActionGroup;
-
 	QTranslator m_translator;
-	bool m_inEnglish;
+	int m_language;
 	QActionGroup* m_languageActionGroup;
 
-	void _openFile(const string& filename);
 	void _saveFile(const string& filename);
 
 	void _connectWidgets();
 	void _loadSettings();
+	void _setShortcuts();
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent* event);

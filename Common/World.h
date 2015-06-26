@@ -7,12 +7,12 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#define FAR_PLANE	1024.0f
-#define NEAR_PLANE	0.5f
 #define MAP_SIZE	128
 #define NUM_PATCHES_PER_SIDE	16
 #define PATCH_SIZE (MAP_SIZE/NUM_PATCHES_PER_SIDE)
-#define LIGHTMAP_SIZE ((PATCH_SIZE-1)*NUM_PATCHES_PER_SIDE)
+
+#define LIGHTMAP_SIZE ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE)
+#define LIGHTMAP_UNITY ((float)(MAP_SIZE * MPU) / (float)LIGHTMAP_SIZE)
 
 #define MASK_WATERFRAME	0xfc
 
@@ -110,10 +110,11 @@ public:
 	CWorld(LPDIRECT3DDEVICE9 device);
 	~CWorld();
 
-	bool Load(const string& filename);
 	void Create(int width, int height, int textureID, float heightMap, int MPU, bool indoor, const string& bitmap);
+	bool Load(const string& filename);
 	bool Save(const string& filename);
 
+	void UpdateContinent();
 	void Render();
 
 	void WorldPosToLand(const D3DXVECTOR3& pos, int& x, int& z) const;
@@ -122,29 +123,29 @@ public:
 	CLandscape* GetLand(const D3DXVECTOR3& v) const;
 	bool VecInWorld(const D3DXVECTOR3& v) const;
 	bool VecInWorld(float x, float z) const;
+
+	CTexture* GetSeacloudTexture() const;
+	const D3DXVECTOR2& GetSeacloudPos() const;
+	const D3DXVECTOR3& GetCameraPos() const;
+	int GetWidth() const;
+	int GetHeight() const;
 	float GetHeight(float x, float z) const;
+	float GetHeight_fast(float x, float z) const;
+	float GetHeightAttribute(float x, float z) const;
 	WaterHeight* GetWaterHeight(float x, float z);
-
-	CTexture* GetSeacloudTexture() const { return m_seacloudTexture; }
-	const D3DXVECTOR2& GetSeacloudPos() const { return m_seacloudPos; }
-
-	bool PickTerrain(const QPoint& mousePos, D3DXVECTOR3& out);
-	CObject* PickObject(const QPoint& mousePos);
-	void SelectObjects(const QRect& rect);
 
 	void AddObject(CObject* obj);
 	void DeleteObject(CObject* obj);
+	CObject* GetObject(objid id) const;
+	CObject* GetObject(objid id, uint type) const;
+	CPtrArray<CPath>* GetPath(int ID) const;
+	const CPtrArray<CObject>& GetObjects(uint type) const;
 	void SpawnObject(CObject* obj, bool addSpawn);
 	void UpdateSpawns();
 	void MoveObject(CObject* obj, const D3DXVECTOR3& newPos);
-
-#ifdef WORLD_EDITOR
-	void EditHeight(const D3DXVECTOR3& pos, const QPoint& mousePos, float baseHeight);
-	void SetHeight(float x, float z, float height);
-	void EditColor(const D3DXVECTOR3& pos);
-	void EditWater(const D3DXVECTOR3& pos);
-	void EditTexture(const D3DXVECTOR3& pos);
-#endif // WORLD_EDITOR
+	bool PickTerrain(const QPoint& mousePos, D3DXVECTOR3& out);
+	CObject* PickObject(const QPoint& mousePos);
+	void SelectObjects(const QRect& rect);
 
 private:
 	LPDIRECT3DDEVICE9 m_device;
@@ -186,6 +187,7 @@ private:
 	CObjectArray m_objects;
 	CPtrArray<Continent> m_continents;
 	CPathArray m_paths;
+	objid m_nextObjectID;
 
 	void _initialize();
 	bool _loadWldFile(const string& filename);

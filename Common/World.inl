@@ -51,4 +51,29 @@ inline bool CWorld::VecInWorld(float x, float z) const
 	return (x >= 0.0f) && (z >= 0.0f) && (x <= m_width * MAP_SIZE * MPU) && (z <= m_height * MAP_SIZE * MPU);
 }
 
+inline CTexture* CWorld::GetSeacloudTexture() const
+{
+	return m_seacloudTexture;
+}
+
+inline const D3DXVECTOR2& CWorld::GetSeacloudPos() const
+{
+	return m_seacloudPos;
+}
+
+inline const D3DXVECTOR3& CWorld::GetCameraPos() const
+{
+	return m_cameraPos;
+}
+
+inline int CWorld::GetWidth() const
+{
+	return m_width;
+}
+
+inline int CWorld::GetHeight() const
+{
+	return m_height;
+}
+
 #endif // WORLD_INL

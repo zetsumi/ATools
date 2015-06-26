@@ -102,6 +102,8 @@ CDialogNewWorld::CDialogNewWorld(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	m_textureWidget = new CTextureWidget(this);
 	ui.horizontalLayout->addWidget(m_textureWidget);
 
@@ -121,14 +123,14 @@ void CDialogNewWorld::SelectTexture(const QString& texture)
 
 void CDialogNewWorld::OpenBitmap()
 {
-	const string filename = QFileDialog::getOpenFileName(this, tr("Ouvrir une image"), "", tr("Fichier image (*.bmp *.png)"));
+	const string filename = QFileDialog::getOpenFileName(this, tr("Ouvrir une image"), "", tr("Fichier image") % " (*.bmp *.png)");
 	ui.lineEdit->setText(filename);
 }
 
 void CDialogNewWorld::CreateWorld(CWorld* world)
 {
 	world->Create(ui.spinBox_2->value(), ui.spinBox_3->value(), m_terrainTexture,
-		(float)ui.spinBox->value(), ui.checkBox->isChecked() ? ui.spinBox_4->value() : 4, ui.checkBox->isChecked(), ui.lineEdit->text());
+		(float)ui.spinBox->value(), ui.spinBox_4->value(), ui.checkBox->isChecked(), ui.lineEdit->text());
 }
 
 CDialogNewWorld::~CDialogNewWorld()

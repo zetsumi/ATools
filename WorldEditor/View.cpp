@@ -10,9 +10,44 @@
 #include <ModelMng.h>
 #include <World.h>
 #include "Navigator.h"
+#include <AboutDialog.h>
+
+void CMainFrame::SetFarPlane()
+{
+	bool ok = false;
+
+	HideDialogs();
+	const float farPlane = (float)QInputDialog::getDouble(this, tr("Champ de vision"), tr("Longueur maximale :"), (float)g_global3D.farPlane, 2.0, 9999999.0, 3, &ok);
+	ShowDialogs();
+
+	if (ok)
+	{
+		g_global3D.farPlane = farPlane;
+
+		if (m_world)
+			m_world->m_visibilityLand = (int)(g_global3D.farPlane / (MAP_SIZE * MPU));
+
+		if (!m_editor->IsAutoRefresh())
+			m_editor->RenderEnvironment();
+	}
+}
+
+void CMainFrame::SetFillMode(QAction* action)
+{
+	if (action == ui.actionSolide)
+		g_global3D.fillMode = D3DFILL_SOLID;
+	else if (action == ui.actionWireframe)
+		g_global3D.fillMode = D3DFILL_WIREFRAME;
+
+	if (!m_editor->IsAutoRefresh())
+		m_editor->RenderEnvironment();
+}
 
 void CMainFrame::SetStatusBarInfo(const D3DXVECTOR3& pos, int landX, int landY, int layerCount, const string& obj, const string& texture, int waterHeight)
 {
+	if (!m_curX)
+		return;
+
 	m_curX->setText("X = " % QString::number(pos.x, 'f', 3));
 	m_curY->setText("Y = " % QString::number(pos.y, 'f', 3));
 	m_curZ->setText("Z = " % QString::number(pos.z, 'f', 3));
@@ -50,6 +85,15 @@ void CMainFrame::Animate(bool animate)
 void CMainFrame::ShowTerrain(bool show)
 {
 	g_global3D.renderTerrain = show;
+	if (!m_editor->IsAutoRefresh())
+		m_editor->RenderEnvironment();
+}
+
+void CMainFrame::ShowEditionLight(bool light)
+{
+	g_global3D.editionLight = light;
+	if (m_world)
+		m_world->_setLight(false);
 	if (!m_editor->IsAutoRefresh())
 		m_editor->RenderEnvironment();
 }
@@ -259,8 +303,7 @@ void CMainFrame::SwitchFullscreen(bool fullscreen)
 void CMainFrame::About()
 {
 	HideDialogs();
-	QMessageBox::about(this, tr("À propos"),
-		"ATools v" % string::number(VERSION) % '.' % string::number(SUB_VERSION) % tr(" par Aishiro\n\nSplashscreen et logo par Neyiox"));
+	CAboutDialog(this, m_editor).exec();
 	ShowDialogs();
 }
 

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Skin auto</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="MainFrame.qrc">
+    <normaloff>:/MainFrame/Resources/ModelEditor.png</normaloff>:/MainFrame/Resources/ModelEditor.png</iconset>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
@@ -75,6 +79,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="MainFrame.qrc"/>
+ </resources>
  <connections/>
 </ui>

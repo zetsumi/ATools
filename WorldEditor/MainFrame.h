@@ -18,9 +18,13 @@ class CLandscape;
 class CDialogWorldProperties;
 class CDialogContinentEdit;
 class CObject;
+class CEditCommand;
 
 enum EEditMode
 {
+	EDIT_CAMERA_POS,
+	EDIT_CAMERA_ROT,
+	EDIT_CAMERA_ZOOM,
 	EDIT_TERRAIN_HEIGHT,
 	EDIT_TERRAIN_TEXTURE,
 	EDIT_TERRAIN_COLOR,
@@ -51,17 +55,28 @@ public:
 	CMainFrame(QWidget *parent = 0);
 	~CMainFrame();
 
+	bool Initialize();
+
+	void OpenFile(const string& filename);
+
 	void UpdateNavigator();
 	void UpdateWorldEditor();
 	void UpdateContinentVertices();
+	void UpdatePatrolList();
 
 	void SetStatusBarInfo(const D3DXVECTOR3& pos, int landX, int landY, int layerCount, const string& obj, const string& texture, int waterHeight = -1);
+	void SetLayerInfos(CLandscape* land);
+	void RotateObjects(int key);
+
+	void AddCommand(CEditCommand* command);
+
+	void HideDialogs();
+	void ShowDialogs();
 
 	EEditMode GetEditMode() const;
 	void GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size);
 	void GetTerrainHeightEditInfos(int& mode, bool& rounded, int& radius, int& hardness, bool& useFixedheight, float& fixedHeight, int& attribute);
 	int GetTerrainHeightEditMode() const;
-	void SetLayerInfos(CLandscape* land);
 	CLandscape* GetCurrentInfoLand();
 	int GetTextureEditRadius() const;
 	void GetTextureColorEditInfos(int& radius, int& hardness, QColor& color);
@@ -71,16 +86,14 @@ public:
 	bool IsSelectionLocked() const;
 	EEditAxis GetEditAxis() const;
 	bool UseGrid() const;
-	int GetGridSize();
+	float GetGridSize();
 	QMenu* GetObjectMenu() const;
 	QMenu* GetNoObjectMenu() const;
 	QAction* GetObjPropertiesAction() const;
 	bool UseGravity() const;
-	void RotateObjects(int key);
 	int GetCurrentPatrol() const;
-
-	void HideDialogs();
-	void ShowDialogs();
+	void GetAddObjSettings(bool& rot, float& minRot, float& maxRot, bool& scale, float& minScale, float& maxScale);
+	bool IsEditingContinents() const;
 
 public slots:
 	void NewFile();
@@ -153,6 +166,15 @@ public slots:
 	void GenerateList();
 	void TranslateObjects();
 	void RotateObjects();
+	void ShowEditionLight(bool light);
+	void ScaleObjects();
+	void SetAddObjectsSettings();
+	void ResetDefaultEditionColor();
+	void DeleteAllObjects();
+	void SetFillMode(QAction* action);
+	void SetFarPlane();
+	void SetGravityEnabled(bool gravity);
+	void SetOnGridEnabled(bool grid);
 
 private:
 	Ui::MainFrameClass ui;
@@ -185,24 +207,33 @@ private:
 	QStandardItem* m_addObject;
 	QActionGroup* m_actionEditAxis;
 	EEditAxis m_editAxis;
-	int m_gridSize;
+	float m_gridSize;
 	CPtrArray<CObject> m_clipboardObjects;
 	QMenu* m_objectMenu;
 	QMenu* m_noObjectMenu;
 	QAction* m_objPropertiesAction;
 	int m_currentPatrol;
-
+	QUndoStack* m_undoStack;
+	QAction* m_actionEditModel;
+	bool m_addObjRandomScale,
+		m_addObjRandomRot;
+	float m_addObjRandomScaleMin,
+		m_addObjRandomRotMin,
+		m_addObjRandomScaleMax,
+		m_addObjRandomRotMax;
 	QTranslator m_translator;
-	bool m_inEnglish;
+	int m_language;
 	QActionGroup* m_languageActionGroup;
-
-	void _openFile(const string& filename);
+	QActionGroup* m_fillModeActionGroup;
 
 	void _connectWidgets();
 	void _loadSettings();
 	void _updateLastOpenFiles();
+	void _setShortcuts();
 
 	void _writeObjectsList(QTextStream& out, int objType, const string& filename, const string& name, const string& defBegin);
+
+	void _editModel(QStandardItem* element);
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent* event);

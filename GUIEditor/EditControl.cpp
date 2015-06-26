@@ -603,7 +603,7 @@ void CMainFrame::SetControlTexture()
 	if (CWndControl::s_selection.GetSize() <= 0 || !CWndControl::s_selection[0])
 		return;
 
-	const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"), "Theme/Default/" % CWndControl::s_selection[0]->GetTextureName(), tr("Fichier texture (*.bmp *.tga)"));
+	const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"), "Theme/Default/" % CWndControl::s_selection[0]->GetTextureName(), tr("Fichier texture") % " (*.bmp *.tga)");
 	if (!texture.isEmpty())
 	{
 		ui.editControlTexture->setText(QFileInfo(texture).fileName());

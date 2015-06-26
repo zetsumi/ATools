@@ -155,7 +155,7 @@ void CObject3D::Render(const D3DXMATRIX* world, int lod, float currentFrame, int
 	if (m_group->updates)
 		_animate(currentFrame, nextFrame);
 
-	if (m_frameCount && !m_externBones && m_motion)
+	if (m_boneCount && m_baseBones)
 	{
 		if (m_motion)
 			m_motion->Animate(m_baseBones, currentFrame, nextFrame);
@@ -700,7 +700,7 @@ bool CObject3D::Load(const string& filename)
 
 	if (nameLen > 64)
 	{
-		qWarning(("Internal filename too long in '" % filename % "'").toLocal8Bit());
+		qCritical(("Internal filename too long in '" % filename % "'").toLocal8Bit());
 		file.Close();
 		return false;
 	}
@@ -708,7 +708,7 @@ bool CObject3D::Load(const string& filename)
 	name[nameLen] = '\0';
 	if (strcmpi(QFileInfo(filename).fileName().toLocal8Bit().data(), name) != 0)
 	{
-		qWarning(("External filename isn't correct in '" % filename % "'").toLocal8Bit());
+		qCritical(("External filename isn't correct in '" % filename % "'").toLocal8Bit());
 		file.Close();
 		return false;
 	}
@@ -717,7 +717,7 @@ bool CObject3D::Load(const string& filename)
 	file.Read(ver);
 	if (ver < VER_MESH)
 	{
-		qWarning(("Object3D version no more supported in '" % filename % "'").toLocal8Bit());
+		qCritical(("Object3D version no more supported in '" % filename % "'").toLocal8Bit());
 		file.Close();
 		return false;
 	}

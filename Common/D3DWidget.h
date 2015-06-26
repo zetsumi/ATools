@@ -24,7 +24,8 @@ public:
 	bool IsAutoRefresh() const;
 	void SetAutoRefresh(bool autoRefresh);
 
-	LPDIRECT3DDEVICE9 GetDevice() const { return m_device; }
+	LPDIRECT3DDEVICE9 GetDevice() const;
+	string GetDeviceStats() const;
 
 public slots:
 	bool RenderEnvironment();
@@ -43,7 +44,7 @@ protected:
 	LPDIRECT3D9 m_d3d;
 	bool m_isFullscreen;
 	LPDIRECT3DDEVICE9 m_device;
-	wchar_t m_deviceStats[256];
+	wchar_t m_deviceStats[512];
 
 private:
 	D3DPRESENT_PARAMETERS m_presentParameters;

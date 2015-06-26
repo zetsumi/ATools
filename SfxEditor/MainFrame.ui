@@ -24,7 +24,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="MainFrame.qrc">
-    <normaloff>:/MainFrame/SfxEditor.png</normaloff>:/MainFrame/SfxEditor.png</iconset>
+    <normaloff>:/MainFrame/Resources/SfxEditor.png</normaloff>:/MainFrame/Resources/SfxEditor.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -64,8 +64,13 @@
      <property name="title">
       <string>Langage</string>
      </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/language.png</normaloff>:/MainFrame/Resources/language.png</iconset>
+     </property>
      <addaction name="actionFran_ais"/>
      <addaction name="actionEnglish"/>
+     <addaction name="actionDeutsch"/>
     </widget>
     <addaction name="actionGrille"/>
     <addaction name="actionModel_3D"/>
@@ -419,7 +424,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Ok</string>
+          <string>...</string>
          </property>
         </widget>
        </item>
@@ -1795,46 +1800,37 @@
   <action name="actionOuvrir">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/open_file.png</normaloff>:/MainFrame/Resources/open_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/open.png</normaloff>:/MainFrame/Resources/open.png</iconset>
    </property>
    <property name="text">
     <string>Ouvrir</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionFusionner">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/open_file.png</normaloff>:/MainFrame/Resources/open_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/merge.png</normaloff>:/MainFrame/Resources/merge.png</iconset>
    </property>
    <property name="text">
     <string>Fusionner</string>
    </property>
    <property name="toolTip">
     <string>Fusionner</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionFermer">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/close_file.png</normaloff>:/MainFrame/Resources/close_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/close.png</normaloff>:/MainFrame/Resources/close.png</iconset>
    </property>
    <property name="text">
     <string>Fermer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionEnregistrer_sous">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_file_as.png</normaloff>:/MainFrame/Resources/save_file_as.png</iconset>
+     <normaloff>:/MainFrame/Resources/save_as.png</normaloff>:/MainFrame/Resources/save_as.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer sous</string>
@@ -1842,20 +1838,14 @@
    <property name="toolTip">
     <string>Enregistrer sous</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+S</string>
-   </property>
   </action>
   <action name="actionQuitter">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_exit.png</normaloff>:/MainFrame/Resources/app_exit.png</iconset>
+     <normaloff>:/MainFrame/Resources/quit.png</normaloff>:/MainFrame/Resources/quit.png</iconset>
    </property>
    <property name="text">
     <string>Quitter</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionGrille">
@@ -1867,7 +1857,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGrid.png</normaloff>:/MainFrame/Resources/option_showGrid.png</iconset>
+     <normaloff>:/MainFrame/Resources/grid.png</normaloff>:/MainFrame/Resources/grid.png</iconset>
    </property>
    <property name="text">
     <string>Grille</string>
@@ -1879,13 +1869,11 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/play.png</normaloff>:/MainFrame/Resources/play.png</iconset>
+     <normaloff>:/MainFrame/Resources/play.png</normaloff>
+     <normalon>:/MainFrame/Resources/pause.png</normalon>:/MainFrame/Resources/play.png</iconset>
    </property>
    <property name="text">
     <string>Jouer</string>
-   </property>
-   <property name="shortcut">
-    <string>Space</string>
    </property>
   </action>
   <action name="actionStop">
@@ -1908,14 +1896,11 @@
    <property name="text">
     <string>Plein écran</string>
    </property>
-   <property name="shortcut">
-    <string>F11</string>
-   </property>
   </action>
   <action name="action_propos">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>À propos</string>
@@ -1924,7 +1909,7 @@
   <action name="actionQt">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>Qt</string>
@@ -1933,13 +1918,10 @@
   <action name="actionEnregistrer">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_file.png</normaloff>:/MainFrame/Resources/save_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/save.png</normaloff>:/MainFrame/Resources/save.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionModel_3D">
@@ -1965,9 +1947,6 @@
    <property name="text">
     <string>Ajouter une partie</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
   </action>
   <action name="actionSupprimer_la_partie">
    <property name="icon">
@@ -1981,7 +1960,7 @@
   <action name="actionCouleur_du_fond">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_backgroundColor.png</normaloff>:/MainFrame/Resources/option_backgroundColor.png</iconset>
+     <normaloff>:/MainFrame/Resources/background_color.png</normaloff>:/MainFrame/Resources/background_color.png</iconset>
    </property>
    <property name="text">
     <string>Couleur du fond</string>
@@ -2012,6 +1991,18 @@
    </property>
    <property name="text">
     <string>English</string>
+   </property>
+  </action>
+  <action name="actionDeutsch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/language_german.png</normaloff>:/MainFrame/Resources/language_german.png</iconset>
+   </property>
+   <property name="text">
+    <string>Deutsch</string>
    </property>
   </action>
  </widget>

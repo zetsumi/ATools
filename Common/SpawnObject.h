@@ -37,6 +37,13 @@ public:
 	virtual DWORD GetRectColor() {
 		return 0xffffff00; // item
 	}
+	const QRect& GetRect() const {
+		return m_rect;
+	}
+
+	void SetRect(const QRect& rect) {
+		m_rect = rect;
+	}
 
 protected:
 	bool m_isRespawn;

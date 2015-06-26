@@ -464,3 +464,25 @@ string CTextFile::GetDefineText(int value, const string& defBegin)
 	}
 	return string::number(value);
 }
+
+QStringList CTextFile::GetDefineList(const string& defBegin)
+{
+	QStringList list;
+	for (auto it = s_defines.begin(); it != s_defines.end(); it++)
+		if (it.key().startsWith(defBegin))
+			list.push_back(it.key());
+	list.sort();
+	return list;
+}
+
+int CTextFile::GetDefine(const string& define)
+{
+	auto it = s_defines.constFind(define);
+	if (it != s_defines.constEnd())
+		return it.value();
+	else
+	{
+		qCritical((define % " not found").toLocal8Bit());
+		return 0;
+	}
+}

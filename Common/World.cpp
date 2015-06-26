@@ -50,7 +50,8 @@ CWorld::CWorld(LPDIRECT3DDEVICE9 device)
 	m_skybox(null),
 	m_cullObjCount(0),
 	m_cullSfxCount(0),
-	m_continent(null)
+	m_continent(null),
+	m_nextObjectID(1)
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -115,6 +116,8 @@ bool CWorld::Load(const string& filename)
 	{
 		if (!_loadCntFile(temp))
 			return false;
+
+		UpdateContinent();
 	}
 	temp = m_filename % ".pat";
 	if (QFileInfo(temp).exists())
@@ -164,7 +167,7 @@ void CWorld::_initialize()
 	memset(m_lands, 0, sizeof(CLandscape*) * m_width * m_height);
 
 	MPU = m_MPU;
-	m_visibilityLand = (int)(FAR_PLANE / (MAP_SIZE * MPU));
+	m_visibilityLand = (int)(g_global3D.farPlane / (MAP_SIZE * MPU));
 
 	if (m_seaCloudTextureName == STR_DEFAULT)
 		m_seacloudTexture = Project->GetTerrain(SEACLOUD_DEFAULT_TEXTURE_ID);
@@ -184,7 +187,7 @@ void CWorld::Create(int width, int height, int textureID, float heightMap, int M
 	m_MPU = MPU;
 	m_inDoor = indoor;
 
-	m_cameraPos = D3DXVECTOR3(-56.0f, heightMap + 100.0f, -56.0f);
+	m_cameraPos = D3DXVECTOR3(MPU * -14, heightMap + MPU * 25, MPU * -14);
 	m_cameraAngle.x = 45.0f;
 	m_cameraAngle.y = -30.0f;
 
@@ -244,6 +247,12 @@ void CWorld::AddObject(CObject* obj)
 	if (!obj)
 		return;
 
+	if (!obj->m_ID)
+	{
+		obj->m_ID = m_nextObjectID;
+		m_nextObjectID++;
+	}
+
 	m_objects[obj->m_type].Append(obj);
 
 	CLandscape* land = GetLand(obj->m_pos);
@@ -257,6 +266,44 @@ void CWorld::AddObject(CObject* obj)
 			&& ((CSpawnObject*)obj)->m_isRespawn)
 			SpawnObject(obj, true);
 	}
+}
+
+CObject* CWorld::GetObject(objid id) const
+{
+	int j;
+	for (int i = 0; i < MAX_OBJTYPE; i++)
+	{
+		for (j = 0; j < m_objects[i].GetSize(); j++)
+		{
+			if (m_objects[i].GetAt(j)->m_ID == id)
+				return m_objects[i].GetAt(j);
+		}
+	}
+	return null;
+}
+
+CObject* CWorld::GetObject(objid id, uint type) const
+{
+	for (int i = 0; i < m_objects[type].GetSize(); i++)
+	{
+		if (m_objects[type].GetAt(i)->m_ID == id)
+			return m_objects[type].GetAt(i);
+	}
+	return null;
+}
+
+CPtrArray<CPath>* CWorld::GetPath(int ID) const
+{
+	auto it = m_paths.find(ID);
+	if (it != m_paths.end())
+		return it.value();
+	else
+		return null;
+}
+
+const CPtrArray<CObject>& CWorld::GetObjects(uint type) const
+{
+	return m_objects[type];
 }
 
 void CWorld::MoveObject(CObject* obj, const D3DXVECTOR3& newPos)

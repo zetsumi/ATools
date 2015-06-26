@@ -116,6 +116,14 @@ public:
 		return -1;
 	}
 
+	bool Contains(const Type& ptr) const
+	{
+		for (int i = 0; i < m_size; i++)
+			if (m_data[i] == ptr)
+				return true;
+		return false;
+	}
+
 	void Sort(int(*compar)(const Type*, const Type*))
 	{
 		if (m_size > 1)
@@ -126,6 +134,9 @@ private:
 	int m_size;
 	int m_dataSize;
 	Type* m_data;
+
+	CPtrArray(const CPtrArray&);
+	CPtrArray& operator=(const CPtrArray&);
 };
 
 #endif // PTRARRAY_H

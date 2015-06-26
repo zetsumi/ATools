@@ -2,14 +2,42 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>CAboutDialog</name>
+    <message>
+        <location filename="../Common/AboutDialog.cpp" line="26"/>
+        <source>À propos</source>
+        <translation>About</translation>
+    </message>
+    <message>
+        <location filename="../Common/AboutDialog.cpp" line="42"/>
+        <source>Par</source>
+        <translation>By</translation>
+    </message>
+    <message>
+        <location filename="../Common/AboutDialog.cpp" line="45"/>
+        <source>Splashscreen et logo par</source>
+        <translation>Splashscreen and logo by</translation>
+    </message>
+    <message>
+        <location filename="../Common/AboutDialog.cpp" line="46"/>
+        <source>Icônes de</source>
+        <translation>Icons by</translation>
+    </message>
+    <message>
+        <location filename="../Common/AboutDialog.cpp" line="47"/>
+        <source>Contributez sur</source>
+        <translation>Contribute on</translation>
+    </message>
+</context>
+<context>
     <name>CDialogContinentEdit</name>
     <message>
-        <location filename="ContinentEdit.cpp" line="49"/>
+        <location filename="ContinentEdit.cpp" line="65"/>
         <source>Couleur ambiante</source>
         <translation>Ambiant color</translation>
     </message>
     <message>
-        <location filename="ContinentEdit.cpp" line="67"/>
+        <location filename="ContinentEdit.cpp" line="83"/>
         <source>Couleur diffuse</source>
         <translation>Diffuse color</translation>
     </message>
@@ -17,25 +45,26 @@
 <context>
     <name>CDialogNewWorld</name>
     <message>
-        <location filename="NewWorld.cpp" line="124"/>
+        <location filename="NewWorld.cpp" line="126"/>
         <source>Ouvrir une image</source>
+        <oldsource>   de Ouvrir une image</oldsource>
         <translation>Open a picture</translation>
     </message>
     <message>
-        <location filename="NewWorld.cpp" line="124"/>
-        <source>Fichier image (*.bmp *.png)</source>
-        <translation>Picture file (*.bmp *.png)</translation>
+        <location filename="NewWorld.cpp" line="126"/>
+        <source>Fichier image</source>
+        <translation>Picture file</translation>
     </message>
 </context>
 <context>
     <name>CDialogWorldProperties</name>
     <message>
-        <location filename="WorldProperties.cpp" line="325"/>
+        <location filename="WorldProperties.cpp" line="327"/>
         <source>Couleur ambiante</source>
         <translation>Ambiant color</translation>
     </message>
     <message>
-        <location filename="WorldProperties.cpp" line="337"/>
+        <location filename="WorldProperties.cpp" line="339"/>
         <source>Couleur diffuse</source>
         <translation>Diffuse color</translation>
     </message>
@@ -43,58 +72,75 @@
 <context>
     <name>CMainFrame</name>
     <message>
-        <location filename="MainFrame.cpp" line="116"/>
-        <location filename="Settings.cpp" line="241"/>
+        <location filename="MainFrame.cpp" line="157"/>
+        <location filename="Settings.cpp" line="647"/>
         <source>Ajouter aux favoris</source>
         <translation>Add to favorites</translation>
     </message>
     <message>
-        <location filename="MainFrame.cpp" line="118"/>
-        <location filename="Settings.cpp" line="242"/>
+        <location filename="MainFrame.cpp" line="159"/>
+        <location filename="Settings.cpp" line="648"/>
         <source>Retirer des favoris</source>
         <translation>Remove from favorites</translation>
     </message>
     <message>
-        <location filename="MainFrame.cpp" line="152"/>
-        <location filename="Settings.cpp" line="240"/>
+        <location filename="MainFrame.cpp" line="163"/>
+        <source>Éditer</source>
+        <translation>Edit</translation>
+    </message>
+    <message>
+        <location filename="MainFrame.cpp" line="204"/>
+        <location filename="Settings.cpp" line="646"/>
         <source>Propriétés</source>
         <translation>Properties</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="126"/>
+        <location filename="EditFiles.cpp" line="159"/>
         <source>Charger une map</source>
         <translation>Load a map</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="126"/>
-        <location filename="EditFiles.cpp" line="221"/>
-        <location filename="EditFiles.cpp" line="248"/>
-        <location filename="EditFiles.cpp" line="271"/>
-        <source>Fichier world (*.wld)</source>
-        <translation>World file (*.wld)</translation>
-    </message>
-    <message>
-        <location filename="EditFiles.cpp" line="182"/>
+        <location filename="EditFiles.cpp" line="261"/>
         <source>Nouvelle map</source>
         <translation>New map</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="198"/>
+        <location filename="EditFiles.cpp" line="277"/>
         <source>Enregistrer l&apos;image</source>
         <translation>Save picture</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="198"/>
-        <source>Fichier image (*.png *.bmp)</source>
-        <translation>Picture file (*.png *.bmp)</translation>
-    </message>
-    <message>
-        <location filename="EditFiles.cpp" line="202"/>
+        <location filename="EditFiles.cpp" line="151"/>
+        <location filename="EditFiles.cpp" line="175"/>
+        <location filename="EditFiles.cpp" line="223"/>
+        <location filename="EditFiles.cpp" line="246"/>
+        <location filename="EditFiles.cpp" line="281"/>
         <source>Attention</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="202"/>
+        <location filename="EditFiles.cpp" line="151"/>
+        <location filename="EditFiles.cpp" line="175"/>
+        <location filename="EditFiles.cpp" line="223"/>
+        <location filename="EditFiles.cpp" line="246"/>
+        <source>Êtes vous sûr de vouloir fermer la map sans l&apos;avoir sauvegardé ?</source>
+        <translation>Are you sure to close the map without saving it ?</translation>
+    </message>
+    <message>
+        <location filename="EditFiles.cpp" line="159"/>
+        <location filename="EditFiles.cpp" line="300"/>
+        <location filename="EditFiles.cpp" line="327"/>
+        <location filename="EditFiles.cpp" line="353"/>
+        <source>Fichier world</source>
+        <translation>World file</translation>
+    </message>
+    <message>
+        <location filename="EditFiles.cpp" line="277"/>
+        <source>Fichier image</source>
+        <translation>Picture file</translation>
+    </message>
+    <message>
+        <location filename="EditFiles.cpp" line="281"/>
         <source>Cet map est très grande et son rendu complet va prendre plusieurs minutes.
 Afin d&apos;éviter une surconsommation de mémoire, les fichiers vont être chargés et déchargés plusieurs fois.
 Le travail non enregistré sera perdu. Souhaitez-vous enregistrer votre travail ?</source>
@@ -103,93 +149,89 @@ To avoid memory consumption, the files will be loaded and unloaded several times
 Unsaved work will be lost. Would you like to save your work?</translation>
     </message>
     <message>
-        <location filename="EditFiles.cpp" line="221"/>
-        <location filename="EditFiles.cpp" line="248"/>
-        <location filename="EditFiles.cpp" line="271"/>
+        <location filename="EditFiles.cpp" line="300"/>
+        <location filename="EditFiles.cpp" line="327"/>
+        <location filename="EditFiles.cpp" line="353"/>
         <source>Enregistrer la map</source>
         <translation>Save the map</translation>
     </message>
     <message>
-        <location filename="EditInfos.cpp" line="91"/>
+        <location filename="EditInfos.cpp" line="138"/>
         <source>Taille de la grille</source>
         <translation>Grid size</translation>
     </message>
     <message>
-        <location filename="EditInfos.cpp" line="91"/>
+        <location filename="EditInfos.cpp" line="138"/>
         <source>Taille :</source>
         <translation>Size :</translation>
     </message>
     <message>
-        <location filename="EditInfos.cpp" line="135"/>
+        <location filename="EditInfos.cpp" line="182"/>
         <source>Couleur d&apos;édition</source>
         <translation>Edit color</translation>
     </message>
     <message>
         <location filename="View.cpp" line="20"/>
+        <source>Champ de vision</source>
+        <translation>View range</translation>
+    </message>
+    <message>
+        <location filename="View.cpp" line="20"/>
+        <source>Longueur maximale :</source>
+        <translation>Maximum view range :</translation>
+    </message>
+    <message>
+        <location filename="View.cpp" line="55"/>
         <source>Nombre de calques = </source>
         <translation>Layer count = </translation>
     </message>
     <message>
-        <location filename="View.cpp" line="22"/>
+        <location filename="View.cpp" line="57"/>
         <source>Objet = </source>
         <translation>Object = </translation>
     </message>
     <message>
-        <location filename="View.cpp" line="24"/>
+        <location filename="View.cpp" line="59"/>
         <source>Hauteur de l&apos;eau = </source>
         <translation>Water height = </translation>
     </message>
     <message>
-        <location filename="View.cpp" line="26"/>
+        <location filename="View.cpp" line="61"/>
         <source>Hauteur de l&apos;eau =</source>
         <translation>Water height =</translation>
     </message>
     <message>
-        <location filename="View.cpp" line="219"/>
+        <location filename="View.cpp" line="263"/>
         <source>Heure en jeu</source>
         <translation>Game time</translation>
     </message>
     <message>
-        <location filename="View.cpp" line="219"/>
+        <location filename="View.cpp" line="263"/>
         <source>Définissez l&apos;heure en jeu :</source>
         <translation>Set the time in game :</translation>
     </message>
     <message>
-        <location filename="View.cpp" line="262"/>
-        <source>À propos</source>
-        <translation>About</translation>
-    </message>
-    <message>
-        <location filename="View.cpp" line="263"/>
-        <source> par Aishiro
-
-Splashscreen et logo par Neyiox</source>
-        <translation> by Aishiro
-
-Splashscreen and logo by Neyiox</translation>
-    </message>
-    <message>
-        <location filename="View.cpp" line="270"/>
+        <location filename="View.cpp" line="313"/>
         <source>À propos de Qt</source>
         <translation>About Qt</translation>
     </message>
     <message>
-        <location filename="Settings.cpp" line="171"/>
+        <location filename="Settings.cpp" line="501"/>
         <source>Quitter</source>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="Settings.cpp" line="171"/>
+        <location filename="Settings.cpp" line="501"/>
         <source>Êtes vous sûr de vouloir quitter ?</source>
         <translation>Are you sure you want to quit ?</translation>
     </message>
     <message>
-        <location filename="Settings.cpp" line="236"/>
+        <location filename="Settings.cpp" line="642"/>
         <source>WorldEditor</source>
         <translation>WorldEditor</translation>
     </message>
     <message>
-        <location filename="Settings.cpp" line="238"/>
+        <location filename="Settings.cpp" line="644"/>
         <source>WorldEditor - </source>
         <translation>WorldEditor - </translation>
     </message>
@@ -200,8 +242,8 @@ Splashscreen and logo by Neyiox</translation>
     </message>
     <message>
         <location filename="WorldList.cpp" line="21"/>
-        <source>Fichier texte (*.txt)</source>
-        <translation>Text file (*.txt)</translation>
+        <source>Fichier texte</source>
+        <translation>Text file</translation>
     </message>
     <message>
         <location filename="WorldList.cpp" line="41"/>
@@ -244,36 +286,40 @@ Splashscreen and logo by Neyiox</translation>
         <translation>// Code mdlDyna.inc</translation>
     </message>
     <message>
-        <location filename="ObjectEdition.cpp" line="46"/>
+        <location filename="MainEdition.cpp" line="284"/>
         <source>Rotation</source>
         <translation>Rotation</translation>
     </message>
     <message>
-        <source>Angle : </source>
-        <translation type="vanished">Angle : </translation>
-    </message>
-    <message>
-        <location filename="ObjectEdition.cpp" line="105"/>
+        <location filename="MainEdition.cpp" line="347"/>
         <source>Translation</source>
         <translation>Translation</translation>
     </message>
     <message>
-        <location filename="ObjectEdition.cpp" line="54"/>
-        <location filename="ObjectEdition.cpp" line="113"/>
+        <location filename="MainEdition.cpp" line="292"/>
+        <location filename="MainEdition.cpp" line="355"/>
+        <location filename="MainEdition.cpp" line="413"/>
         <source>X: </source>
         <translation>X: </translation>
     </message>
     <message>
-        <location filename="ObjectEdition.cpp" line="62"/>
-        <location filename="ObjectEdition.cpp" line="121"/>
+        <location filename="MainEdition.cpp" line="300"/>
+        <location filename="MainEdition.cpp" line="363"/>
+        <location filename="MainEdition.cpp" line="421"/>
         <source>Y: </source>
         <translation>Y: </translation>
     </message>
     <message>
-        <location filename="ObjectEdition.cpp" line="70"/>
-        <location filename="ObjectEdition.cpp" line="129"/>
+        <location filename="MainEdition.cpp" line="308"/>
+        <location filename="MainEdition.cpp" line="371"/>
+        <location filename="MainEdition.cpp" line="429"/>
         <source>Z: </source>
         <translation>Z: </translation>
+    </message>
+    <message>
+        <location filename="MainEdition.cpp" line="405"/>
+        <source>Redimension</source>
+        <translation>Scale</translation>
     </message>
 </context>
 <context>
@@ -408,866 +454,746 @@ Splashscreen and logo by Neyiox</translation>
 <context>
     <name>MainFrameClass</name>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1337"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1496"/>
         <source>WorldEditor</source>
         <translation>WorldEditor</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1338"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1541"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1497"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1676"/>
         <source>Nouveau</source>
         <translation>New</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1339"/>
-        <source>Ctrl+N</source>
-        <translation>Ctrl+N</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1340"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1498"/>
         <source>Ouvrir</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1341"/>
-        <source>Ctrl+O</source>
-        <translation>Ctrl+O</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1342"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1499"/>
         <source>Fermer</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1343"/>
-        <source>Ctrl+F</source>
-        <translation>Ctrl+F</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1344"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1346"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1500"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1502"/>
         <source>Enregistrer</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1348"/>
-        <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1349"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1504"/>
         <source>Enregistrer sous...</source>
         <translation>Save as...</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1351"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1506"/>
         <source>Enregistrer sous</source>
         <translation>Save as</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1353"/>
-        <source>Ctrl+Alt+S</source>
-        <translation>Ctrl+Alt+S</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1354"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1508"/>
         <source>Quitter</source>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1355"/>
-        <source>Ctrl+Q</source>
-        <translation>Ctrl+Q</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1356"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1509"/>
         <source>À propos</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1357"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1510"/>
         <source>Qt</source>
         <translation>Qt</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1358"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1511"/>
         <source>Plein écran</source>
         <translation>Fullscreen</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1359"/>
-        <source>F11</source>
-        <translation>F11</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1360"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1537"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1512"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1672"/>
         <source>Terrain</source>
         <translation>Terrain</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1361"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1513"/>
         <source>Terrain LOD</source>
         <translation>Terrain LOD</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1362"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1397"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1525"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1514"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1543"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1659"/>
         <source>Eau et nuages</source>
         <translation>Water and clouds</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1363"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1515"/>
         <source>Animer</source>
         <translation>Animate</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1364"/>
-        <source>Ctrl+A</source>
-        <translation>Ctrl+A</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1365"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1516"/>
         <source>Attributs du terrain</source>
         <translation>Terrain attributes</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1366"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1517"/>
         <source>Grille des landscapes</source>
         <translation>Landscapes grid</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1367"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1518"/>
         <source>Grille des patchs</source>
         <translation>Patches grid</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1368"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1519"/>
         <source>Grille des unités</source>
         <translation>Unity grid</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1369"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1520"/>
         <source>Lumière</source>
         <translation>Lighting</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1370"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1521"/>
         <source>Brouillard</source>
         <translation>Fog</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1371"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1522"/>
         <source>Heure en jeu</source>
         <translation>Game time</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1372"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1523"/>
         <source>Ciel</source>
         <translation>Sky</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1373"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1536"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1524"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1671"/>
         <source>Objets</source>
         <translation>Objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1374"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1525"/>
         <source>Type mover (monstres)</source>
         <translation>Type mover (monsters)</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1375"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1526"/>
         <source>Type objet</source>
         <translation>Type object</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1376"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1527"/>
         <source>Type région</source>
         <translation>Type region</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1377"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1528"/>
         <source>Zones de spawn</source>
         <translation>Spawn areas</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1378"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1529"/>
         <source>Noms des movers</source>
         <translation>Mover names</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1379"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1530"/>
         <source>Objets LOD</source>
         <translation>Objects LOD</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1380"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1531"/>
         <source>Simulation des spawns</source>
         <translation>Spawn simulation</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1381"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1532"/>
         <source>Vue d&apos;en haut</source>
         <translation>Top view</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1382"/>
-        <source>B</source>
-        <translation>B</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1383"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1533"/>
         <source>Vue de face</source>
         <translation>Side view</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1384"/>
-        <source>N</source>
-        <translation>N</translation>
-    </message>
-    <message>
-        <source>Générer une image</source>
-        <translation type="vanished">Generate a picture</translation>
-    </message>
-    <message>
-        <source>Générer une bigmap</source>
-        <translation type="vanished">Generate a bigmap</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1385"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1534"/>
         <source>Bigmap</source>
         <translation>Bigmap</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1386"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1535"/>
         <source>Type mover (PNJ)</source>
         <translation>Type mover (NPC)</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1387"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1536"/>
         <source>Type item</source>
         <translation>Type item</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1388"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1537"/>
         <source>Type control</source>
         <translation>Type control</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1389"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1538"/>
         <source>Type SFX</source>
         <translation>Type SFX</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1390"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1539"/>
         <source>Collisions</source>
         <translation>Collisions</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1391"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1540"/>
         <source>Hauteur du terrain</source>
         <translation>Terrain height</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1392"/>
-        <source>H</source>
-        <translation>H</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1393"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1541"/>
         <source>Texture du terrain</source>
         <translation>Terrain texture</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1394"/>
-        <source>T</source>
-        <translation>T</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1395"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1542"/>
         <source>Couleur du terrain</source>
         <translation>Terrain color</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1396"/>
-        <source>C</source>
-        <translation>C</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1398"/>
-        <source>A</source>
-        <translation>A</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1399"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1544"/>
         <source>Propriétés du monde</source>
         <translation>World properties</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1400"/>
-        <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1401"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1545"/>
         <source>Édition des continents</source>
         <translation>Continents edition</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1402"/>
-        <source>Ctrl+W</source>
-        <translation>Ctrl+W</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1403"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1546"/>
         <source>Vertices du continent</source>
         <translation>Continent vertices</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1404"/>
-        <source>V</source>
-        <translation>V</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1405"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1547"/>
         <source>Ajouter des objets</source>
         <translation>Add objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1406"/>
-        <source>P</source>
-        <translation>P</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1407"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1548"/>
         <source>Sélectionner des objets</source>
         <translation>Select objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1408"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1549"/>
         <source>Déplacer les objets</source>
         <translation>Move objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1409"/>
-        <source>M</source>
-        <translation>M</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1410"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1550"/>
         <source>Tourner les objets</source>
         <translation>Rotate objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1411"/>
-        <source>R</source>
-        <translation>R</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1412"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1551"/>
         <source>Redimensionner les objets</source>
         <translation>Scale objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1413"/>
-        <source>S</source>
-        <translation>S</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1414"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1418"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1552"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1416"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1554"/>
         <source>Éditer sur l&apos;axe X</source>
         <translation>Edit on X axis</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1419"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1423"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1556"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1421"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1558"/>
         <source>Éditer sur l&apos;axe Y</source>
         <translation>Edit on Y axis</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1424"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1428"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1560"/>
         <source>Z</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1426"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1562"/>
         <source>Éditer sur l&apos;axe Z</source>
         <translation>Edit on Z axis</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1429"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1564"/>
         <source>XZ</source>
         <translation>XZ</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1431"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1566"/>
         <source>Éditer sur les axes X et Z</source>
         <translation>Edit on X and Z axis</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1433"/>
-        <source>W</source>
-        <translation>W</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1434"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1568"/>
         <source>Verrouiller la sélection</source>
         <translation>Lock selection</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1435"/>
-        <source>Space</source>
-        <translation>Space</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1436"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1438"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1569"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1571"/>
         <source>Ramener sur le sol</source>
         <translation>Set on land</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1440"/>
-        <source>O</source>
-        <translation>O</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1441"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1573"/>
         <source>Placer sur la grille</source>
         <translation>Set on grid</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1442"/>
-        <source>G</source>
-        <translation>G</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1443"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1574"/>
         <source>Taille de la grille</source>
         <translation>Grid size</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1444"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1575"/>
         <source>Taille et rotation aléatoires</source>
         <translation>Random rotation and scale</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1445"/>
-        <source>Ctrl+Alt+R</source>
-        <translation>Ctrl+Alt+R</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1470"/>
-        <source>Ctrl+R</source>
-        <translation>Ctrl+R</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1446"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1576"/>
         <source>Copier</source>
         <translation>Copy</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1447"/>
-        <source>Ctrl+C</source>
-        <translation>Ctrl+C</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1448"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1577"/>
         <source>Couper</source>
         <translation>Cut</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1449"/>
-        <source>Ctrl+X</source>
-        <translation>Ctrl+X</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1450"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1578"/>
         <source>Coller</source>
         <translation>Paste</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1451"/>
-        <source>Ctrl+V</source>
-        <translation>Ctrl+V</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1452"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1579"/>
         <source>Supprimer les objets</source>
         <translation>Delete objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1453"/>
-        <source>Del</source>
-        <translation>Del</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1454"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1580"/>
         <source>Cacher les objets</source>
         <translation>Hide objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1455"/>
-        <source>Ctrl+H</source>
-        <translation>Ctrl+H</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1456"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1581"/>
         <source>Afficher tous les objets cachés</source>
         <translation>Show all hidden objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1457"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1582"/>
         <source>Cacher les objets au dessus</source>
         <translation>Hide upstairs objects</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1458"/>
-        <source>Ctrl+U</source>
-        <translation>Ctrl+U</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1459"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1583"/>
         <source>Français</source>
         <translation>Français</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1460"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1584"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1461"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1585"/>
         <source>Gravité</source>
         <translation>Gravity</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1462"/>
-        <source>Ctrl+G</source>
-        <translation>Ctrl+G</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1463"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1586"/>
         <source>Boîte de dialogue pour les erreurs</source>
         <translation>Message box for errors</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1464"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1587"/>
         <source>Minimaps</source>
         <translation>Minimaps</translation>
     </message>
     <message>
-        <source>Générer les minimaps</source>
-        <translation type="vanished">Generate minimaps</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1465"/>
-        <source>Ctrl+M</source>
-        <translation>Ctrl+M</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1466"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1588"/>
         <source>Liste</source>
         <translation>List</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1467"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1589"/>
         <source>Translation</source>
         <translation>Translation</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1468"/>
-        <source>Ctrl+T</source>
-        <translation>Ctrl+T</translation>
-    </message>
-    <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1469"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1590"/>
         <source>Rotation</source>
         <translation>Rotation</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1471"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1591"/>
+        <source>Deutsch</source>
+        <translation>Deutsch</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1592"/>
+        <source>Annuler</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1593"/>
+        <source>Rétablir</source>
+        <translation>Restore</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1594"/>
+        <source>Lumière d&apos;édition</source>
+        <translation>Edition light</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1595"/>
+        <source>Redimension</source>
+        <translation>Scale</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1596"/>
+        <source>Paramètres d&apos;ajout d&apos;objets</source>
+        <translation>Adding objects settings</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1597"/>
+        <source>Supprimer tous les objets</source>
+        <translation>Delete all objects</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1598"/>
+        <source>Solide</source>
+        <translation>Solid</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1599"/>
+        <source>Wireframe</source>
+        <translation>Wireframe</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1600"/>
+        <source>Champ de vision</source>
+        <translation>View range</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1601"/>
+        <source>Déplacer caméra</source>
+        <translation>Move camera</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1602"/>
+        <source>Tourner caméra</source>
+        <translation>Rotate camera</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1603"/>
+        <source>Zoomer caméra</source>
+        <translation>Zoom camera</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1604"/>
         <source>Barre d&apos;outils</source>
         <translation>Tool bar</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1472"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1605"/>
         <source>Éléments du jeu</source>
         <translation>Game elements</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1473"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1606"/>
         <source>Navigateur</source>
         <translation>Navigator</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1474"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1607"/>
         <source>Édition du terrain</source>
         <translation>Terrain edition</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1475"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1608"/>
         <source>Mode</source>
         <translation>Mode</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1481"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1614"/>
         <source>Forme de la brosse</source>
         <translation>Brush form</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1482"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1615"/>
         <source>Ronde</source>
         <translation>Round</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1483"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1616"/>
         <source>Carré</source>
         <translation>Square</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1484"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1499"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1617"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1632"/>
         <source>Rayon :</source>
         <translation>Radius :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1485"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1618"/>
         <source>7</source>
         <translation>7</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1486"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1619"/>
         <source>Hauteur fixe</source>
         <translation>Fixed height</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1487"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1504"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1512"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1620"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1637"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1645"/>
         <source>50</source>
         <translation>50</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1488"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1501"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1509"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1621"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1634"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1642"/>
         <source>Dureté :</source>
         <translation>Hardness :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1489"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1622"/>
         <source>Attribut :</source>
         <translation>Attribute :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1492"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1625"/>
         <source>Aucun</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1493"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1626"/>
         <source>Pas de marche</source>
         <translation>No walk</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1494"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1627"/>
         <source>Pas de vol</source>
         <translation>No fly</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1495"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1628"/>
         <source>Pas de mouvement</source>
         <translation>No move</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1496"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1629"/>
         <source>Mourir</source>
         <translation>Die</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1498"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1631"/>
         <source>Hauteur</source>
         <translation>Height</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1500"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1633"/>
         <source>Mode :</source>
         <translation>Mode :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1502"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1635"/>
         <source>Alpha :</source>
         <translation>Alpha :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1503"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1513"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1636"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1646"/>
         <source>4</source>
         <translation>4</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1505"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1638"/>
         <source>255</source>
         <translation>255</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1506"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1639"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1507"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1640"/>
         <source>Vide</source>
         <translation>Empty</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1508"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1641"/>
         <source>Texture</source>
         <translation>Texture</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1510"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1643"/>
         <source>Rayon : </source>
         <translation>Radius :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1511"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1644"/>
         <source>Couleur : </source>
         <translation>Color : </translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1514"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1647"/>
         <source>Changer</source>
         <translation>Change</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1515"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1648"/>
+        <source>Défaut</source>
+        <translation>Default</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1649"/>
         <source>Couleur</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1516"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1650"/>
         <source>Enlever</source>
         <translation>Remove</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1517"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1651"/>
         <source>Eau</source>
         <translation>Water</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1518"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1652"/>
         <source>Nuages</source>
         <translation>Clouds</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1519"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1653"/>
         <source>Texture de l&apos;eau : </source>
         <translation>Water texture : </translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1520"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1654"/>
         <source>Hauteur de l&apos;eau : </source>
         <translation>Water height : </translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1521"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1655"/>
         <source>Optimiser</source>
         <translation>Optimize</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1522"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1656"/>
         <source>Taille :</source>
         <translation>Size :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1523"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1657"/>
         <source>Remplir la map</source>
         <translation>Fill the map</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1524"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1658"/>
         <source>1</source>
         <translation>1</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1526"/>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1542"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1660"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1677"/>
         <source>Supprimer</source>
         <translation>Delete</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1527"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1661"/>
         <source>Calques</source>
         <translation>Layers</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1528"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1662"/>
         <source>Fichier</source>
         <translation>File</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1529"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1663"/>
         <source>Fichiers récents...</source>
         <translation>Recent files...</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1530"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1664"/>
         <source>Générer...</source>
         <translation>Generate...</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1531"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1665"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1532"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1666"/>
         <source>Affichage</source>
         <translation>View</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1533"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1667"/>
         <source>Langage</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1534"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1668"/>
         <source>Avancé</source>
         <translation>Advanced</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1535"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1669"/>
+        <source>Types d&apos;objets</source>
+        <translation>Objects types</translation>
+    </message>
+    <message>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1670"/>
         <source>Fenêtres</source>
         <translation>Windows</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1538"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1673"/>
         <source>Monde</source>
         <translation>World</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1539"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1674"/>
         <source>Barre d&apos;options</source>
         <translation>Option bar</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_MainFrame.h" line="1540"/>
+        <location filename="GeneratedFiles/ui_MainFrame.h" line="1675"/>
         <source>Chemins</source>
         <translation>Paths</translation>
     </message>
@@ -1275,47 +1201,47 @@ Splashscreen and logo by Neyiox</translation>
 <context>
     <name>NewWorldDialog</name>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="186"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="185"/>
         <source>Nouvelle map</source>
         <translation>New map</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="187"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="186"/>
         <source>Texture :</source>
         <translation>Texture :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="188"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="187"/>
         <source>Image pour la hauteur :</source>
         <translation>Picture for heightmap :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="189"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="188"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="190"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="189"/>
         <source>Hauteur de base :</source>
         <translation>Base height :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="191"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="190"/>
         <source>Largeur :</source>
         <translation>Width :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="192"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="191"/>
         <source>Longueur :</source>
         <translation>Height :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="193"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="192"/>
         <source>MPU :</source>
         <translation>MPU :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_NewWorld.h" line="194"/>
+        <location filename="GeneratedFiles/ui_NewWorld.h" line="193"/>
         <source>Donjon :</source>
         <translation>Dungeon :</translation>
     </message>
@@ -1715,44 +1641,49 @@ Splashscreen and logo by Neyiox</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="MainFrame.cpp" line="112"/>
-        <location filename="Settings.cpp" line="244"/>
+        <location filename="MainFrame.cpp" line="153"/>
+        <location filename="Settings.cpp" line="650"/>
         <source>Favoris</source>
         <translation>Favorites</translation>
     </message>
     <message>
+        <location filename="Settings.cpp" line="651"/>
         <location filename="../Common/Project.cpp" line="32"/>
-        <location filename="Settings.cpp" line="245"/>
         <source>Objet</source>
         <translation>Object</translation>
     </message>
     <message>
+        <location filename="Settings.cpp" line="652"/>
         <location filename="../Common/Project.cpp" line="36"/>
-        <location filename="Settings.cpp" line="246"/>
         <source>Terrain</source>
         <translation>Terrain</translation>
+    </message>
+    <message>
+        <location filename="Settings.cpp" line="653"/>
+        <source>Éditer</source>
+        <translation>Edit</translation>
     </message>
 </context>
 <context>
     <name>RandomDialog</name>
     <message>
-        <location filename="GeneratedFiles/ui_Random.h" line="129"/>
+        <location filename="GeneratedFiles/ui_Random.h" line="132"/>
         <source>Taille et rotation aléatoires</source>
         <translation>Random rotation and scale</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_Random.h" line="130"/>
+        <location filename="GeneratedFiles/ui_Random.h" line="133"/>
         <source>Rotation :</source>
         <translation>Rotation :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_Random.h" line="131"/>
+        <location filename="GeneratedFiles/ui_Random.h" line="134"/>
         <source>Taille :</source>
         <translation>Scale :</translation>
     </message>
     <message>
-        <location filename="GeneratedFiles/ui_Random.h" line="132"/>
-        <location filename="GeneratedFiles/ui_Random.h" line="133"/>
+        <location filename="GeneratedFiles/ui_Random.h" line="135"/>
+        <location filename="GeneratedFiles/ui_Random.h" line="136"/>
         <source>~</source>
         <translation>~</translation>
     </message>

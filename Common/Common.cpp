@@ -6,10 +6,20 @@
 
 #include <stdafx.h>
 #include "Common.h"
+#include <time.h>
 
 #ifdef WORLD_EDITOR
 #include <MainFrame.h>
 #endif // WORLD_EDITOR
+
+float RoundFloat(float value, float round)
+{
+	const float mod = fmod(value, round);
+	if (mod > round / 2.0f)
+		return value - mod + round;
+	else
+		return value - mod;
+}
 
 string GetExtension(const string& filename)
 {
@@ -25,6 +35,7 @@ void CustomMsgHandler(QtMsgType type, const QMessageLogContext &context, const Q
 
 void InstallMsgHandler()
 {
+	srand(time(null));
 	qInstallMessageHandler(CustomMsgHandler);
 }
 
@@ -77,7 +88,7 @@ void CustomMsgHandler(QtMsgType type, const QMessageLogContext &context, const Q
 	flux << msg << endl;
 
 #ifdef WORLD_EDITOR
-	if (MainFrame->MsgBoxForErrors())
+	if (MainFrame->MsgBoxForErrors() && (type == QtCriticalMsg || type == QtFatalMsg))
 	{
 		MainFrame->HideDialogs();
 #endif // WORLD_EDITOR

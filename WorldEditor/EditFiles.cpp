@@ -14,10 +14,40 @@
 #include "WorldProperties.h"
 #include "ContinentEdit.h"
 #include <Skybox.h>
+#include <GameElements.h>
+#include <Project.h>
+#include <Object.h>
+
+void CMainFrame::_editModel(QStandardItem* element)
+{
+	if (!element)
+		return;
+
+	if (element->type() == GAMEELE_MODEL)
+	{
+		CModelElement* modelElement = (CModelElement*)element;
+		ModelProp* prop = modelElement->GetModel();
+
+		if (!prop)
+			return;
+
+		QProcess* process = new QProcess(this);
+		if (prop->modelType == MODELTYPE_SFX)
+			process->start("SfxEditor.exe", QStringList("SFX/" % CObject::GetModelFilename(prop)));
+		else
+		{
+			QStringList args("Model/" % CObject::GetModelFilename(prop));
+			if (prop->textureEx != ATEX_00)
+				args.append(string::number(prop->textureEx));
+			process->start("ModelEditor.exe", args);
+		}
+	}
+}
 
 void CMainFrame::HideDialogs()
 {
-	m_editor->MouseLost();
+	if (m_editor)
+		m_editor->MouseLost();
 	if (m_dialogWorldProperties)
 		m_dialogWorldProperties->hide();
 	if (m_dialogContinentEdit)
@@ -68,6 +98,7 @@ void CMainFrame::EditContinents()
 		m_dialogContinentEdit = new CDialogContinentEdit(m_world, this);
 		connect(m_dialogContinentEdit, SIGNAL(finished(int)), this, SLOT(DialogEditContinentsClosed(int)));
 		m_dialogContinentEdit->show();
+		g_global3D.continentVertices = true;
 	}
 }
 
@@ -75,12 +106,10 @@ void CMainFrame::DialogEditContinentsClosed(int result)
 {
 	m_dialogContinentEdit = null;
 	ui.action_dition_des_continents->setChecked(false);
+	g_global3D.continentVertices = false;
 	if (m_world)
 	{
-		m_world->m_continent = null;
-		if (m_world->m_skybox)
-			m_world->m_skybox->LoadTextures();
-		m_world->_setLight(false);
+		m_world->UpdateContinent();
 		UpdateWorldEditor();
 	}
 }
@@ -91,7 +120,7 @@ void CMainFrame::UpdateContinentVertices()
 		m_dialogContinentEdit->UpdateVertexList();
 }
 
-void CMainFrame::_openFile(const string& filename)
+void CMainFrame::OpenFile(const string& filename)
 {
 	CloseFile();
 
@@ -104,14 +133,7 @@ void CMainFrame::_openFile(const string& filename)
 		m_lastOpenFilenames.removeAll(filename);
 		m_lastOpenFilenames.push_front(filename);
 		_updateLastOpenFiles();
-
-		QListWidgetItem* item;
-		for (auto it = m_world->m_paths.begin(); it != m_world->m_paths.end(); it++)
-		{
-			item = new QListWidgetItem("Path " % string::number(it.key()), ui.patrolList);
-			item->setData(Qt::UserRole + 1, it.key());
-			ui.patrolList->addItem(item);
-		}
+		UpdatePatrolList();
 	}
 	else
 		Delete(m_world);
@@ -123,15 +145,43 @@ void CMainFrame::_openFile(const string& filename)
 void CMainFrame::OpenFile()
 {
 	HideDialogs();
-	const string filename = QFileDialog::getOpenFileName(this, tr("Charger une map"), m_filename.isEmpty() ? "World/" : m_filename, tr("Fichier world (*.wld)"));
+
+	if (m_world && !m_undoStack->isClean())
+	{
+		QMessageBox::Button result = QMessageBox::question(this, tr("Attention"), tr("Êtes vous sûr de vouloir fermer la map sans l'avoir sauvegardé ?"));
+		if (result != QMessageBox::Yes)
+		{
+			ShowDialogs();
+			return;
+		}
+	}
+
+	const string filename = QFileDialog::getOpenFileName(this, tr("Charger une map"), m_filename.isEmpty() ? "World/" : m_filename, tr("Fichier world") % " (*.wld)");
+
 	ShowDialogs();
 
 	if (!filename.isEmpty())
-		_openFile(filename);
+	{
+		m_undoStack->clear();
+		OpenFile(filename);
+	}
 }
 
 void CMainFrame::CloseFile()
 {
+	if (m_world && !m_undoStack->isClean())
+	{
+		HideDialogs();
+		QMessageBox::Button result = QMessageBox::question(this, tr("Attention"), tr("Êtes vous sûr de vouloir fermer la map sans l'avoir sauvegardé ?"));
+		if (result != QMessageBox::Yes)
+		{
+			ShowDialogs();
+			return;
+		}
+		ShowDialogs();
+		m_undoStack->clear();
+	}
+
 	Delete(m_world);
 	Delete(m_dialogWorldProperties);
 	Delete(m_dialogContinentEdit);
@@ -139,12 +189,14 @@ void CMainFrame::CloseFile()
 	ui.action_dition_des_continents->setChecked(false);
 	setWindowTitle("WorldEditor");
 	m_filename.clear();
-	m_navigator->SetWorld(m_world);
-	m_editor->SetWorld(m_world);
+	if (m_navigator)
+		m_navigator->SetWorld(m_world);
+	if (m_editor)
+		m_editor->SetWorld(m_world);
 	SetStatusBarInfo(D3DXVECTOR3(0, 0, 0), 0, 0, 0, "", "");
 	SetLayerInfos(null);
-	ui.patrolList->clear();
 	m_currentPatrol = -1;
+	UpdatePatrolList();
 }
 
 void CMainFrame::_updateLastOpenFiles()
@@ -165,17 +217,44 @@ void CMainFrame::_updateLastOpenFiles()
 
 void CMainFrame::OpenLastFile(QAction* action)
 {
+	if (m_world && !m_undoStack->isClean())
+	{
+		HideDialogs();
+		QMessageBox::Button result = QMessageBox::question(this, tr("Attention"), tr("Êtes vous sûr de vouloir fermer la map sans l'avoir sauvegardé ?"));
+		if (result != QMessageBox::Yes)
+		{
+			ShowDialogs();
+			return;
+		}
+		ShowDialogs();
+	}
+
 	auto it = m_lastOpenFilesActions.find(action);
 	if (it != m_lastOpenFilesActions.end())
-		_openFile(it.value());
+	{
+		m_undoStack->clear();
+		OpenFile(it.value());
+	}
 }
 
 void CMainFrame::NewFile()
 {
 	HideDialogs();
+
+	if (m_world && !m_undoStack->isClean())
+	{
+		QMessageBox::Button result = QMessageBox::question(this, tr("Attention"), tr("Êtes vous sûr de vouloir fermer la map sans l'avoir sauvegardé ?"));
+		if (result != QMessageBox::Yes)
+		{
+			ShowDialogs();
+			return;
+		}
+	}
+
 	CDialogNewWorld dialog(this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
+		m_undoStack->clear();
 		CloseFile();
 		m_world = new CWorld(m_editor->GetDevice());
 		dialog.CreateWorld(m_world);
@@ -195,11 +274,11 @@ void CMainFrame::SaveBigmap()
 		return;
 
 	HideDialogs();
-	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), "", tr("Fichier image (*.png *.bmp)"));
+	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), "", tr("Fichier image") % " (*.png *.bmp)");
 
 	if (!filename.isEmpty() && m_world->m_width * m_world->m_height > 100 && !m_filename.isEmpty())
 	{
-		if(QMessageBox::question(this, tr("Attention"), tr("Cet map est très grande et son rendu complet va prendre plusieurs minutes.\n" \
+		if (QMessageBox::question(this, tr("Attention"), tr("Cet map est très grande et son rendu complet va prendre plusieurs minutes.\n" \
 			"Afin d'éviter une surconsommation de mémoire, les fichiers vont être chargés et déchargés plusieurs fois.\n" \
 			"Le travail non enregistré sera perdu. Souhaitez-vous enregistrer votre travail ?")) == QMessageBox::Yes)
 			m_world->Save(m_filename);
@@ -218,7 +297,7 @@ void CMainFrame::SaveMinimaps()
 	if (m_filename.isEmpty())
 	{
 		HideDialogs();
-		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), "World/", tr("Fichier world (*.wld)"));
+		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), "World/", tr("Fichier world") % " (*.wld)");
 		ShowDialogs();
 
 		if (!m_filename.isEmpty())
@@ -245,7 +324,7 @@ void CMainFrame::SaveFile()
 	if (m_filename.isEmpty())
 	{
 		HideDialogs();
-		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), "World/", tr("Fichier world (*.wld)"));
+		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), "World/", tr("Fichier world") % " (*.wld)");
 		ShowDialogs();
 
 		if (!m_filename.isEmpty())
@@ -259,7 +338,10 @@ void CMainFrame::SaveFile()
 	}
 
 	if (!m_filename.isEmpty())
+	{
 		m_world->Save(m_filename);
+		m_undoStack->setClean();
+	}
 }
 
 void CMainFrame::SaveFileAs()
@@ -268,7 +350,7 @@ void CMainFrame::SaveFileAs()
 		return;
 
 	HideDialogs();
-	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), m_filename.isEmpty() ? "World/" : m_filename, tr("Fichier world (*.wld)"));
+	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer la map"), m_filename.isEmpty() ? "World/" : m_filename, tr("Fichier world") % " (*.wld)");
 	ShowDialogs();
 
 	if (!filename.isEmpty())
@@ -280,6 +362,7 @@ void CMainFrame::SaveFileAs()
 		_updateLastOpenFiles();
 
 		m_world->Save(m_filename);
+		m_undoStack->setClean();
 	}
 }
 
@@ -329,7 +412,7 @@ void CMainFrame::dragMoveEvent(QDragMoveEvent* event)
 void CMainFrame::dropEvent(QDropEvent* event)
 {
 	if (m_dragFilename.size() > 0)
-		_openFile(m_dragFilename);
+		OpenFile(m_dragFilename);
 }
 
 void CMainFrame::changeEvent(QEvent* event)

@@ -43,6 +43,8 @@ namespace D3D
 		DWORDARRAY PresentIntervals;		// List of D3DPRESENT_INTERVALs
 
 		DSMSConflictArray DSMSConflicts;	// List of DSMSConflicts
+
+		bool SupportsMultiSampleType(D3DMULTISAMPLE_TYPE multisamples);
 	};
 
 	typedef CTArray<DeviceCombo> DeviceComboArray;

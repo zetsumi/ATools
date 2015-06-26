@@ -17,7 +17,7 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_MAINICO             ICON                    "ResEditor.ico"
+IDI_MAINICO             ICON                    "Resources\ResEditor.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -49,8 +49,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1, 1, 0, 0
-PRODUCTVERSION 1, 1, 0, 0
+FILEVERSION 1, 2, 0, 0
+PRODUCTVERSION 1, 2, 0, 0
 FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 FILEFLAGS 0x1L
@@ -67,12 +67,12 @@ BLOCK "040c04b0"
 BEGIN
 VALUE "CompanyName", "ATools"
 VALUE "FileDescription", "ATools - ResEditor"
-VALUE "FileVersion", "1.1.0.0"
+VALUE "FileVersion", "1.2.0.0"
 VALUE "InternalName", "ResEditor.exe"
 VALUE "LegalCopyright", "ATools - Open Source"
 VALUE "OriginalFilename", "ResEditor.exe"
 VALUE "ProductName", "ResEditor"
-VALUE "ProductVersion", "1.1.0.0"
+VALUE "ProductVersion", "1.2.0.0"
 END
 END
 BLOCK "VarFileInfo"

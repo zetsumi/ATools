@@ -18,7 +18,7 @@ void CMainFrame::GenerateList()
 		return;
 
 	HideDialogs();
-	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer une liste"), m_filename.isEmpty() ? "" : m_filename.replace(".wld", ".list.txt"), tr("Fichier texte (*.txt)"));
+	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer une liste"), m_filename.isEmpty() ? "" : m_filename.replace(".wld", ".list.txt"), tr("Fichier texte") % " (*.txt)");
 	ShowDialogs();
 
 	if (!filename.isEmpty())

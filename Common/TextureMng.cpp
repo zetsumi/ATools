@@ -13,61 +13,58 @@ CTextureMng::CTextureMng(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 {
 	TextureMng = this;
-#ifndef GUI_EDITOR
 	m_modelTexturePath = "Model/";
-#ifndef MODEL_EDITOR
 	m_sfxTexturePath = "SFX/Texture/";
-#endif // MODEL_EDITOR
-#endif // GUI_EDITOR
 }
 
 CTextureMng::~CTextureMng()
 {
-#ifdef GUI_EDITOR
 	for (auto it = m_guiTextures.begin(); it != m_guiTextures.end(); it++)
 		Delete(it.value());
-#else // GUI_EDITOR
 	for (auto it = m_modelTextures.begin(); it != m_modelTextures.end(); it++)
 		Delete(it.value());
-#ifndef MODEL_EDITOR
 	for (auto it = m_sfxTextures.begin(); it != m_sfxTextures.end(); it++)
 		Delete(it.value());
-#endif // MODEL_EDITOR
-#endif // GUI_EDITOR
-
-#ifdef WORLD_EDITOR
 	for (auto it = m_terrainTextures.begin(); it != m_terrainTextures.end(); it++)
 		Delete(it.value());
 	for (auto it = m_weatherTextures.begin(); it != m_weatherTextures.end(); it++)
 		Delete(it.value());
-#endif // WORLD_EDITOR
 
 	TextureMng = null;
 }
 
-#ifdef GUI_EDITOR
+void CTextureMng::SetModelTexturePath(const string& path)
+{
+	m_modelTexturePath = path;
+}
+
+void CTextureMng::SetSfxTexturePath(const string& path)
+{
+	m_sfxTexturePath = path;
+}
+
+string CTextureMng::GetSfxTexturePath() const
+{
+	return m_sfxTexturePath;
+}
+
 CTexture* CTextureMng::GetGUITexture(const string& filename)
 {
 	const string name = filename.toLower();
 
-	auto it = m_guiTextures.find(name);
-	if (it != m_guiTextures.end())
+	QMap<string, CTexture*>::const_iterator it = m_guiTextures.constFind(name);
+	if (it != m_guiTextures.constEnd())
 		return it.value();
 
 	CTexture* texture = new CTexture(m_device);
 
-	bool nonPowerOfTwo = false;
-	const string ext = GetExtension(filename);
-	if (ext == "tga"
-		|| ext == "bmp")
-		nonPowerOfTwo = true;
+	bool powerOfTwo = true;
 
-	if (!texture->Load("Theme/Default/" % filename,
-		0,
-		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
-		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
-		0xffff00ff,
-		nonPowerOfTwo))
+	const string ext = GetExtension(filename);
+	if (ext == "tga" || ext == "bmp")
+		powerOfTwo = false;
+
+	if (!texture->Load("Theme/Default/" % filename, 0, 0xffff00ff, powerOfTwo))
 	{
 		qWarning(("Can't load GUI texture from file 'Theme/Default/" % filename % "'").toLocal8Bit().data());
 		Delete(texture);
@@ -76,18 +73,13 @@ CTexture* CTextureMng::GetGUITexture(const string& filename)
 	m_guiTextures[name] = texture;
 	return texture;
 }
-#else // GUI_EDITOR
-void CTextureMng::SetModelTexturePath(const string& path)
-{
-	m_modelTexturePath = path;
-}
 
 CTexture* CTextureMng::GetModelTexture(const string& filename)
 {
 	const string name = filename.toLower();
 
-	auto it = m_modelTextures.find(name);
-	if (it != m_modelTextures.end())
+	QMap<string, CTexture*>::const_iterator it = m_modelTextures.constFind(name);
+	if (it != m_modelTextures.constEnd())
 		return it.value();
 
 	string filepath;
@@ -149,23 +141,12 @@ CTexture* CTextureMng::GetModelTexture(const string& filename)
 	return texture;
 }
 
-#ifndef MODEL_EDITOR
-void CTextureMng::SetSfxTexturePath(const string& path)
-{
-	m_sfxTexturePath = path;
-}
-
-string CTextureMng::GetSfxTexturePath() const
-{
-	return m_sfxTexturePath;
-}
-
 CTexture* CTextureMng::GetSfxTexture(const string& filename)
 {
 	const string name = filename.toLower();
 
-	auto it = m_sfxTextures.find(name);
-	if (it != m_sfxTextures.end())
+	QMap<string, CTexture*>::const_iterator it = m_sfxTextures.constFind(name);
+	if (it != m_sfxTextures.constEnd())
 		return it.value();
 
 	CTexture* texture = new CTexture(m_device);
@@ -179,16 +160,13 @@ CTexture* CTextureMng::GetSfxTexture(const string& filename)
 	m_sfxTextures[name] = texture;
 	return texture;
 }
-#endif // MODEL_EDITOR
-#endif // GUI_EDITOR
 
-#ifdef WORLD_EDITOR
 CTexture* CTextureMng::GetTerrainTexture(const string& filename)
 {
 	const string name = filename.toLower();
 
-	auto it = m_terrainTextures.find(name);
-	if (it != m_terrainTextures.end())
+	QMap<string, CTexture*>::const_iterator it = m_terrainTextures.constFind(name);
+	if (it != m_terrainTextures.constEnd())
 		return it.value();
 
 	string filepath;
@@ -206,7 +184,7 @@ CTexture* CTextureMng::GetTerrainTexture(const string& filename)
 				filepath = "World/Texture/";
 		}
 		else
-			filepath = "World/Texturelow/";
+			filepath = "World/TextureLow/";
 	}
 	else
 		filepath = "World/TextureMid/";
@@ -227,8 +205,8 @@ CTexture* CTextureMng::GetWeatherTexture(const string& filename)
 {
 	const string name = filename.toLower();
 
-	auto it = m_weatherTextures.find(name);
-	if (it != m_weatherTextures.end())
+	QMap<string, CTexture*>::const_iterator it = m_weatherTextures.constFind(name);
+	if (it != m_weatherTextures.constEnd())
 		return it.value();
 
 	CTexture* texture = new CTexture(m_device);
@@ -242,7 +220,6 @@ CTexture* CTextureMng::GetWeatherTexture(const string& filename)
 	m_weatherTextures[name] = texture;
 	return texture;
 }
-#endif // WORLD_EDITOR
 
 CTexture::CTexture()
 	: m_device(null),
@@ -287,35 +264,31 @@ void CTexture::SetDevice(LPDIRECT3DDEVICE9 device)
 
 bool CTexture::Load(const string& filename,
 	uint mipLevels,
-	DWORD filter,
-	DWORD mipFilter,
 	D3DCOLOR colorKey,
-	bool nonPowerOfTwo)
+	bool powerOfTwo)
 {
-	QFile file(filename);
+	CFile file;
 
-	if (!file.open(QIODevice::ReadOnly))
+	if (!file.Open(filename, QIODevice::ReadOnly, false))
 		return false;
 
 	Release();
 
-	const QByteArray data = file.readAll();
-
 	D3DXIMAGE_INFO infos;
-	const HRESULT hr = D3DXCreateTextureFromFileInMemoryEx(m_device, data.constData(),
-		(uint)data.size(),
-		nonPowerOfTwo ? D3DX_DEFAULT_NONPOW2 : D3DX_DEFAULT,
-		nonPowerOfTwo ? D3DX_DEFAULT_NONPOW2 : D3DX_DEFAULT,
+	const HRESULT hr = D3DXCreateTextureFromFileInMemoryEx(m_device, file.GetBuffer(),
+		(uint)file.GetSize(),
+		powerOfTwo ? D3DX_DEFAULT : D3DX_DEFAULT_NONPOW2,
+		powerOfTwo ? D3DX_DEFAULT : D3DX_DEFAULT_NONPOW2,
 		mipLevels,
 		0,
 		D3DFMT_UNKNOWN,
 		D3DPOOL_MANAGED,
-		filter,
-		mipFilter,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
+		D3DX_FILTER_TRIANGLE | D3DX_FILTER_MIRROR,
 		colorKey,
 		&infos, null, &m_texture);
 
-	file.close();
+	file.Close();
 
 	if (SUCCEEDED(hr))
 	{

@@ -22,6 +22,8 @@
 #include <Region.h>
 #include "ObjectProperties.h"
 #include <Path.h>
+#include "TerrainEdition.h"
+#include "ObjectEdition.h"
 
 struct BrushVertex
 {
@@ -33,19 +35,33 @@ struct BrushVertex
 CWorldEditor::CWorldEditor(QWidget* parent, Qt::WindowFlags flags)
 	: CD3DWidget(parent, flags)
 {
+	setMinimumSize(QSize(MINIMAP_SIZE, MINIMAP_SIZE));
 	m_textureMng = null;
 	m_modelMng = null;
 	m_world = null;
 	m_render2D = null;
 	m_pickObject = null;
 	m_addObject = null;
-	m_editSpawn = -1;
-	setMinimumSize(QSize(MINIMAP_SIZE, MINIMAP_SIZE));
+	m_zoomingCamera = false;
+	m_terrainEditHeightCommand = null;
+	m_waterEditCommand = null;
+	m_terrainEditColorCommand = null;
+	m_terrainEditTextureCommand = null;
+	m_objectTransformCommand = null;
+	m_objectEditRectCommand = null;
+	m_duplicateCommand = null;
 }
 
 CWorldEditor::~CWorldEditor()
 {
 	Destroy();
+	Delete(m_terrainEditHeightCommand);
+	Delete(m_waterEditCommand);
+	Delete(m_terrainEditColorCommand);
+	Delete(m_terrainEditTextureCommand);
+	Delete(m_objectTransformCommand);
+	Delete(m_objectEditRectCommand);
+	Delete(m_duplicateCommand);
 }
 
 bool CWorldEditor::InitDeviceObjects()
@@ -95,7 +111,7 @@ void CWorldEditor::InvalidateDeviceObjects()
 
 bool CWorldEditor::Render()
 {
-	m_device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_world ? m_world->m_fogColor : g_global3D.backgroundColor, 1.0f, 0L);
+	m_device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_world && !g_global3D.editionLight ? m_world->m_fogColor : g_global3D.backgroundColor, 1.0f, 0L);
 
 	if (FAILED(m_device->BeginScene()))
 		return false;
@@ -191,7 +207,7 @@ bool CWorldEditor::Render()
 										z + ((float)MPU) / 2.0f);
 								}
 								else
-									vertices[vertexCount].p = D3DXVECTOR3(x, m_world->GetHeight(x, z), z);
+									vertices[vertexCount].p = D3DXVECTOR3(x, m_world->GetHeight_fast(x, z), z);
 								vertices[vertexCount].c = color;
 								vertexCount++;
 							}
@@ -201,16 +217,15 @@ bool CWorldEditor::Render()
 				else
 				{
 					const int radius = MainFrame->GetTextureEditRadius();
-					const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-					const float posX = (int)((m_terrainPos.x + (unity / 2.0f)) / unity) * unity;
-					const float posZ = (int)((m_terrainPos.z + (unity / 2.0f)) / unity) * unity;
-					const float radius1 = (float)((radius - 1) * unity);
-					const float radius3 = (float)((radius - 2) * unity);
+					const float posX = (int)((m_terrainPos.x + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY) * LIGHTMAP_UNITY;
+					const float posZ = (int)((m_terrainPos.z + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY) * LIGHTMAP_UNITY;
+					const float radius1 = (float)((radius - 1) * LIGHTMAP_UNITY);
+					const float radius3 = (float)((radius - 2) * LIGHTMAP_UNITY);
 
 					float x, z;
-					for (x = posX - radius1; x - 0.1f < posX + radius1; x += unity)
+					for (x = posX - radius1; x - 0.1f < posX + radius1; x += LIGHTMAP_UNITY)
 					{
-						for (z = posZ - radius1; z - 0.1f < posZ + radius1; z += unity)
+						for (z = posZ - radius1; z - 0.1f < posZ + radius1; z += LIGHTMAP_UNITY)
 						{
 							if (m_world->VecInWorld(x, z))
 							{
@@ -235,20 +250,15 @@ bool CWorldEditor::Render()
 				}
 			}
 
-			if (editMode == EDIT_TERRAIN_TEXTURE
-				&& MainFrame->GetEditTexture() != -1)
+			if (editMode == EDIT_TERRAIN_TEXTURE && MainFrame->GetEditTexture() != -1)
 			{
 				const QRect rect(width() - 95, 10, 85, 85);
 				m_render2D->RenderRoundRect(rect.adjusted(-1, -1, 2, 2), 0xff000000);
-
-				m_device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 				m_render2D->RenderTexture(rect, Project->GetTerrain(MainFrame->GetEditTexture()), 255, false);
 			}
 
 			if (m_selectRect && m_selectRectPos != m_lastMousePos)
-			{
 				m_render2D->RenderRect(QRect(m_selectRectPos, m_lastMousePos).normalized(), 0xffffff00);
-			}
 		}
 	}
 
@@ -256,269 +266,7 @@ bool CWorldEditor::Render()
 	return true;
 }
 
-void CWorldEditor::mouseMoveEvent(QMouseEvent * event)
-{
-	const QPoint mousePos(event->x(), event->y());
-
-	if (!m_world || g_global3D.renderMinimap)
-		return;
-
-	const EEditMode editMode = MainFrame->GetEditMode();
-	const QPoint mouseMove = m_lastMousePos - mousePos;
-
-	if (m_rotatingCamera)
-	{
-		m_world->m_cameraAngle.x -= (float)mouseMove.x() / 4.0f;
-		m_world->m_cameraAngle.y += (float)mouseMove.y() / 4.0f;
-
-		if (m_world->m_cameraAngle.y > 89.9f)
-			m_world->m_cameraAngle.y = 89.9f;
-		else if (m_world->m_cameraAngle.y < -89.9f)
-			m_world->m_cameraAngle.y = -89.9f;
-
-		event->accept();
-	}
-
-	if (m_movingCamera)
-	{
-		m_world->m_cameraPos -= (m_moveVector * (float)mouseMove.y() + m_moveCrossVector * (float)mouseMove.x());
-		MainFrame->UpdateNavigator();
-	}
-
-	D3DXVECTOR3 globalMove = m_terrainPos;
-	_updateTerrainPos3D(mousePos);
-	globalMove -= m_terrainPos;
-
-	CObject* obj;
-	if (m_editSpawn != -1)
-	{
-		if (g_global3D.renderObjects && m_pickingTerrain && CWorld::s_selection.GetSize() >= 1)
-		{
-			obj = CWorld::s_selection[CWorld::s_selection.GetSize() - 1];
-			if (obj->m_visible)
-			{
-				const QPoint pos((int)(m_terrainPos.z + ((float)MPU / 2.0f)) / MPU * MPU,
-					(int)(m_terrainPos.x + ((float)MPU / 2.0f)) / MPU * MPU);
-
-				QRect rect;
-				if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-					rect = ((CSpawnObject*)obj)->m_rect;
-				else if (obj->m_type == OT_REGION)
-					rect = ((CRegion*)obj)->m_rect;
-
-				rect = rect.normalized();
-
-				switch (m_editSpawn)
-				{
-				case 0:
-					rect.setBottomRight(pos);
-					break;
-				case 1:
-					rect.setBottomLeft(pos);
-					break;
-				case 2:
-					rect.setTopRight(pos);
-					break;
-				case 3:
-					rect.setTopLeft(pos);
-					break;
-				}
-
-				rect = rect.normalized();
-
-				if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-					((CSpawnObject*)obj)->m_rect = rect;
-				else if (obj->m_type == OT_REGION)
-					((CRegion*)obj)->m_rect = rect;
-			}
-		}
-	}
-	else if (m_editing)
-	{
-		if (m_pickingTerrain)
-		{
-			switch (editMode)
-			{
-			case EDIT_TERRAIN_HEIGHT:
-				m_world->EditHeight((MainFrame->GetTerrainHeightEditMode() != 0) ? m_terrainPos : m_editTerrainPos, mouseMove, m_editTerrainPos.y);
-				break;
-			case EDIT_TERRAIN_TEXTURE:
-			{
-				const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-				QPoint editTexturePos((int)(m_terrainPos.x / unity + 0.5f), (int)(m_terrainPos.z / unity + 0.5f));
-				if (editTexturePos != m_editTexturePos)
-				{
-					m_world->EditTexture(m_terrainPos);
-					m_editTexturePos = editTexturePos;
-				}
-
-			}
-			break;
-			case EDIT_TERRAIN_COLOR:
-			{
-				const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-				QPoint editTexturePos((int)(m_terrainPos.x / unity + 0.5f), (int)(m_terrainPos.z / unity + 0.5f));
-				if (editTexturePos != m_editTexturePos)
-				{
-					m_world->EditColor(m_terrainPos);
-					m_editTexturePos = editTexturePos;
-				}
-
-			}
-			break;
-			case EDIT_TERRAIN_WATER:
-				m_world->EditWater(m_terrainPos);
-				break;
-			}
-		}
-
-		if (editMode == EDIT_SELECT_OBJECTS || editMode == EDIT_MOVE_OBJECTS || editMode == EDIT_SCALE_OBJECTS || editMode == EDIT_ROTATE_OBJECTS)
-		{
-			EEditAxis axis = MainFrame->GetEditAxis();
-			D3DXVECTOR3 temp;
-			const int objCount = CWorld::s_selection.GetSize();
-			const bool gravity = MainFrame->UseGravity();
-
-			if (editMode == EDIT_ROTATE_OBJECTS || (QApplication::queryKeyboardModifiers() & Qt::AltModifier))
-			{
-				RotateObjects(axis, (float)(mouseMove.y()) / -3.0f);
-			}
-			else if (editMode == EDIT_MOVE_OBJECTS && (m_pickingTerrain || axis == EDIT_Y))
-			{
-				const bool useGrid = MainFrame->UseGrid();
-				const int gridSize = MainFrame->GetGridSize();
-
-				for (int i = 0; i < objCount; i++)
-				{
-					obj = CWorld::s_selection[i];
-					temp = obj->m_basePos;
-
-					switch (axis)
-					{
-					case EDIT_XZ:
-						temp.x -= globalMove.x;
-						temp.z -= globalMove.z;
-						break;
-					case  EDIT_X:
-						temp.x -= globalMove.x;
-						break;
-					case EDIT_Z:
-						temp.z -= globalMove.z;
-						break;
-					case EDIT_Y:
-						temp.y += (float)mouseMove.y() / 12.0f;
-						break;
-					}
-
-					if (temp.x < 0.0f)
-						temp.x = 0.0f;
-					else if (temp.x >= (float)(m_world->m_width * MAP_SIZE * MPU))
-						temp.x = (float)(m_world->m_width * MAP_SIZE * MPU) - 0.0001f;
-					if (temp.z < 0.0f)
-						temp.z = 0.0f;
-					else if (temp.z >= (float)(m_world->m_height * MAP_SIZE * MPU))
-						temp.z = (float)(m_world->m_height * MAP_SIZE * MPU) - 0.0001f;
-
-					obj->m_basePos = temp;
-
-					if (useGrid)
-					{
-						switch (axis)
-						{
-						case EDIT_XZ:
-							temp.x = (int)(temp.x + (float)gridSize / 2.0f) / gridSize * gridSize;
-							temp.z = (int)(temp.z + (float)gridSize / 2.0f) / gridSize * gridSize;
-							break;
-						case  EDIT_X:
-							temp.x = (int)(temp.x + (float)gridSize / 2.0f) / gridSize * gridSize;
-							break;
-						case EDIT_Z:
-							temp.z = (int)(temp.z + (float)gridSize / 2.0f) / gridSize * gridSize;
-							break;
-						case EDIT_Y:
-							temp.y = (int)(temp.y + (float)gridSize / 2.0f) / gridSize * gridSize;
-							break;
-						}
-					}
-
-					if (gravity)
-					{
-						temp.y = m_world->GetHeight(temp.x, temp.z);
-						obj->m_basePos.y = temp.y;
-					}
-
-					m_world->MoveObject(obj, temp);
-				}
-			}
-			else if (editMode == EDIT_SCALE_OBJECTS)
-			{
-				float factor = 0.0f;
-
-				if (mousePos.y() > m_editBasePos.y())
-					factor = (float)(mousePos.y() - m_editBasePos.y()) / -100.0f + 1.0f;
-				else
-					factor = (float)(m_editBasePos.y() - mousePos.y()) / 100.0f + 1.0f;
-
-				for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-				{
-					obj = CWorld::s_selection[i];
-					temp = obj->m_scale;
-
-					switch (axis)
-					{
-					case EDIT_XZ:
-						temp = obj->m_baseScale * factor;
-						break;
-					case  EDIT_X:
-						temp.x = obj->m_baseScale.x * factor;
-						break;
-					case EDIT_Z:
-						temp.z = obj->m_baseScale.z * factor;
-						break;
-					case EDIT_Y:
-						temp.y = obj->m_baseScale.y * factor;
-						break;
-					}
-
-					obj->SetScale(temp);
-				}
-			}
-		}
-	}
-
-	_updateMouse3D(mousePos);
-
-	if (!IsAutoRefresh())
-		RenderEnvironment();
-
-	m_lastMousePos = mousePos;
-}
-
-void CWorldEditor::wheelEvent(QWheelEvent *event)
-{
-	if (!m_world || g_global3D.renderMinimap)
-		return;
-
-	const float phiRadian = m_world->m_cameraAngle.y * M_PI / 180.0f;
-	const float thetaRadian = m_world->m_cameraAngle.x * M_PI / 180.0f;
-	D3DXVECTOR3 lookAt;
-	lookAt.x = cos(phiRadian) * sin(thetaRadian);
-	lookAt.y = sin(phiRadian);
-	lookAt.z = cos(phiRadian) * cos(thetaRadian);
-	m_world->m_cameraPos += lookAt * (float)event->delta() / 60.0f;
-
-	event->accept();
-
-	if (!IsAutoRefresh())
-		RenderEnvironment();
-
-	_updateTerrainPos3D(m_lastMousePos);
-	_updateMouse3D(m_lastMousePos);
-
-	MainFrame->UpdateNavigator();
-}
-
-void CWorldEditor::mousePressEvent(QMouseEvent * event)
+void CWorldEditor::mousePressEvent(QMouseEvent* event)
 {
 	const QPoint mousePos(event->x(), event->y());
 
@@ -536,7 +284,8 @@ void CWorldEditor::mousePressEvent(QMouseEvent * event)
 
 	_updateTerrainPos3D(m_lastMousePos);
 
-	if (event->button() == Qt::MiddleButton && m_pickingTerrain)
+	if ((event->button() == Qt::MiddleButton || (event->button() == Qt::LeftButton && editMode == EDIT_CAMERA_POS))
+		&& m_pickingTerrain)
 	{
 		m_movingCamera = true;
 		m_moveVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -574,61 +323,46 @@ void CWorldEditor::mousePressEvent(QMouseEvent * event)
 
 	if (event->button() == Qt::LeftButton)
 	{
-		if (editMode == EDIT_ADD_OBJECTS && m_pickingTerrain)
+		if (editMode == EDIT_CAMERA_ROT)
 		{
-			CWorld::s_selection.RemoveAll();
-			CObject* newObj, *obj;
-			for (int i = 0; i < m_addObjects.GetSize(); i++)
+			m_rotatingCamera = true;
+		}
+		else if (editMode == EDIT_CAMERA_POS)
+		{
+		}
+		else if (editMode == EDIT_CAMERA_ZOOM)
+		{
+			m_zoomingCamera = true;
+		}
+		else if (editMode == EDIT_ADD_OBJECTS && m_pickingTerrain)
+		{
+			if (m_addObjects.GetSize() > 0)
 			{
-				obj = m_addObjects[i];
-				if (obj->m_type == OT_PATH && MainFrame->GetCurrentPatrol() == -1)
-					continue;
+				const int patrolIndex = MainFrame->GetCurrentPatrol();
 
-				newObj = CObject::CreateObject(obj->m_type);
-				newObj->m_modelID = obj->m_modelID;
-				newObj->SetPos(obj->GetPos());
-				newObj->SetRot(obj->GetRot());
-				if (newObj->Init())
+				CObjectCreateCommand* command = new CObjectCreateCommand(m_world);
+
+				CObject* obj;
+				for (int i = 0; i < m_addObjects.GetSize(); i++)
 				{
-					newObj->ResetScale();
-					m_world->AddObject(newObj);
-
-					if (CWorld::s_selection.Find(newObj) == -1)
-						CWorld::s_selection.Append(newObj);
-
-					if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-						((CSpawnObject*)newObj)->m_rect = ((CSpawnObject*)obj)->m_rect;
-					else if (obj->m_type == OT_REGION)
-						((CRegion*)newObj)->m_rect = ((CRegion*)obj)->m_rect;
-
-					if (newObj->m_type == OT_MOVER)
-					{
-						CMover* mover = (CMover*)newObj;
-						mover->m_belligerence = mover->m_moverProp->belligerence;
-						mover->m_AIInterface = mover->m_moverProp->AI;
-						mover->m_name = mover->m_moverProp->name;
-					}
+					obj = m_addObjects[i];
 
 					if (obj->m_type == OT_PATH)
 					{
-						auto it = m_world->m_paths.find(MainFrame->GetCurrentPatrol());
-						if (it != m_world->m_paths.end())
-						{
-							CPath* path = (CPath*)newObj;
-							path->m_index = it.value()->GetSize();
-							it.value()->Append(path);
-						}
+						if (patrolIndex != -1)
+							command->AddCreateObject(obj, patrolIndex);
 					}
+					else
+						command->AddCreateObject(obj);
 				}
-				else
-					Delete(newObj);
+
+				command->Apply();
+				MainFrame->AddCommand(command);
 			}
 		}
 		else if (editMode == EDIT_SELECT_OBJECTS || editMode == EDIT_MOVE_OBJECTS || editMode == EDIT_SCALE_OBJECTS || editMode == EDIT_ROTATE_OBJECTS)
 		{
-			bool editObjects = true;
 			CObject* obj;
-
 			if (g_global3D.renderObjects && m_pickingTerrain && CWorld::s_selection.GetSize() >= 1)
 			{
 				obj = CWorld::s_selection[CWorld::s_selection.GetSize() - 1];
@@ -666,81 +400,109 @@ void CWorldEditor::mousePressEvent(QMouseEvent * event)
 							screenRect = QRect(QPoint((int)out.x - 2, (int)out.y - 2), QSize(6, 6));
 							if (screenRect.contains(mousePos))
 							{
-								m_editSpawn = i;
-								editObjects = false;
+								m_objectEditRectCommand = new CObjectEditRectCommand(m_world, obj, i);
+								break;
 							}
 						}
 					}
 				}
 			}
 
-			if (editObjects)
+			if (!m_objectEditRectCommand)
 			{
-				if (MainFrame->IsSelectionLocked())
+				const Qt::KeyboardModifiers keyModifiers = QApplication::queryKeyboardModifiers();
+				const bool selectionLocked = MainFrame->IsSelectionLocked();
+
+				if ((keyModifiers & Qt::ShiftModifier)
+					&& CWorld::s_selection.GetSize() > 0
+					&& (m_pickObject || selectionLocked)
+					&& editMode != EDIT_SELECT_OBJECTS)
 				{
-					if (CWorld::s_selection.GetSize() > 0)
-						m_editing = true;
+					m_duplicateCommand = new CObjectDeleteCommand(m_world);
+
+					CObject* obj, *newObj;
+					for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+					{
+						obj = CWorld::s_selection[i];
+						if (obj && (obj->GetType() != OT_PATH || MainFrame->GetCurrentPatrol() != -1))
+						{
+							newObj = CObject::CreateObject(obj->GetType(), obj);
+							newObj->SetID(0);
+							m_duplicateCommand->AddCreateObject(newObj);
+						}
+					}
+
+					m_duplicateCommand->Apply();
+					m_editing = true;
 				}
 				else
 				{
-					if (m_pickObject)
+					if (selectionLocked)
 					{
-						if (CWorld::s_selection.Find(m_pickObject) != -1)
-						{
+						if (CWorld::s_selection.GetSize() > 0)
 							m_editing = true;
-						}
-						else
-						{
-							if (!(QApplication::queryKeyboardModifiers() & Qt::ControlModifier))
-								CWorld::s_selection.RemoveAll();
-
-							if (CWorld::s_selection.Find(m_pickObject) == -1)
-								CWorld::s_selection.Append(m_pickObject);
-							m_editing = true;
-						}
 					}
 					else
 					{
-						m_selectRect = true;
-						m_selectRectPos = mousePos;
+						if (m_pickObject)
+						{
+							if (CWorld::s_selection.Find(m_pickObject) != -1)
+								m_editing = true;
+							else
+							{
+								if (!(keyModifiers & Qt::ControlModifier))
+									CWorld::s_selection.RemoveAll();
+
+								if (CWorld::s_selection.Find(m_pickObject) == -1)
+									CWorld::s_selection.Append(m_pickObject);
+								m_editing = true;
+							}
+						}
+						else
+						{
+							m_selectRect = true;
+							m_selectRectPos = mousePos;
+						}
 					}
 				}
 			}
 
+			if (editMode == EDIT_MOVE_OBJECTS && MainFrame->GetEditAxis() != EDIT_Y && !m_pickingTerrain)
+				m_editing = false;
+
+			if (editMode == EDIT_SELECT_OBJECTS)
+				m_editing = false;
+
 			if (m_editing)
 			{
 				m_editBasePos = mousePos;
-				for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-				{
-					obj = CWorld::s_selection[i];
-					obj->m_baseScale = obj->m_scale;
-					obj->m_basePos = obj->m_pos;
-				}
-				if (editMode == EDIT_MOVE_OBJECTS && MainFrame->GetEditAxis() != EDIT_Y && !m_pickingTerrain)
-					m_editing = false;
+				m_objectTransformCommand = new CObjectTransformCommand(m_world);
 			}
 		}
 		else if (m_pickingTerrain)
 		{
 			m_editing = true;
 			m_editTerrainPos = m_terrainPos;
-			const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-			m_editTexturePos = QPoint((int)(m_terrainPos.x / unity + 0.5f), (int)(m_terrainPos.z / unity + 0.5f));
+			m_editTexturePos = QPoint((int)(m_terrainPos.x / LIGHTMAP_UNITY + 0.5f), (int)(m_terrainPos.z / LIGHTMAP_UNITY + 0.5f));
 
 			switch (editMode)
 			{
 			case EDIT_TERRAIN_HEIGHT:
+				m_terrainEditHeightCommand = new CEditTerrainHeightCommand(m_world);
 				if (MainFrame->GetTerrainHeightEditMode() != 0)
-					m_world->EditHeight(m_terrainPos, QPoint(0, 0), m_editTerrainPos.y);
+					m_terrainEditHeightCommand->Edit(m_terrainPos, QPoint(0, 0), m_editTerrainPos.y);
 				break;
 			case EDIT_TERRAIN_TEXTURE:
-				m_world->EditTexture(m_terrainPos);
+				m_terrainEditTextureCommand = new CEditTerrainTextureCommand(m_world);
+				m_terrainEditTextureCommand->Edit(m_terrainPos);
 				break;
 			case EDIT_TERRAIN_COLOR:
-				m_world->EditColor(m_terrainPos);
+				m_terrainEditColorCommand = new CEditTerrainColorCommand(m_world);
+				m_terrainEditColorCommand->Edit(m_terrainPos);
 				break;
 			case EDIT_TERRAIN_WATER:
-				m_world->EditWater(m_terrainPos);
+				m_waterEditCommand = new CEditWaterCommand(m_world);
+				m_waterEditCommand->Edit(m_terrainPos);
 				break;
 			}
 		}
@@ -756,7 +518,141 @@ void CWorldEditor::mousePressEvent(QMouseEvent * event)
 	m_lastMousePos = mousePos;
 }
 
-void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
+void CWorldEditor::mouseMoveEvent(QMouseEvent* event)
+{
+	const QPoint mousePos(event->x(), event->y());
+
+	if (!m_world || g_global3D.renderMinimap)
+		return;
+
+	const EEditMode editMode = MainFrame->GetEditMode();
+	const QPoint mouseMove = m_lastMousePos - mousePos;
+
+	if (m_rotatingCamera)
+	{
+		m_world->m_cameraAngle.x -= (float)mouseMove.x() / 4.0f;
+		m_world->m_cameraAngle.y += (float)mouseMove.y() / 4.0f;
+
+		if (m_world->m_cameraAngle.y > 89.9f)
+			m_world->m_cameraAngle.y = 89.9f;
+		else if (m_world->m_cameraAngle.y < -89.9f)
+			m_world->m_cameraAngle.y = -89.9f;
+
+		event->accept();
+	}
+
+	if (m_movingCamera)
+	{
+		m_world->m_cameraPos -= (m_moveVector * (float)mouseMove.y() + m_moveCrossVector * (float)mouseMove.x());
+
+		MainFrame->UpdateNavigator();
+		if (!MainFrame->IsEditingContinents())
+			m_world->UpdateContinent();
+	}
+
+	if (m_zoomingCamera && mouseMove.y() != 0)
+	{
+		const float phiRadian = m_world->m_cameraAngle.y * M_PI / 180.0f;
+		const float thetaRadian = m_world->m_cameraAngle.x * M_PI / 180.0f;
+		D3DXVECTOR3 lookAt;
+		lookAt.x = cos(phiRadian) * sin(thetaRadian);
+		lookAt.y = sin(phiRadian);
+		lookAt.z = cos(phiRadian) * cos(thetaRadian);
+		m_world->m_cameraPos += lookAt * (float)mouseMove.y() / 2.0f;
+
+		MainFrame->UpdateNavigator();
+		if (!MainFrame->IsEditingContinents())
+			m_world->UpdateContinent();
+	}
+
+	D3DXVECTOR3 globalMove = m_terrainPos;
+	_updateTerrainPos3D(mousePos);
+	globalMove -= m_terrainPos;
+
+	if (m_objectEditRectCommand)
+	{
+		if (g_global3D.renderObjects && m_pickingTerrain && CWorld::s_selection.GetSize() >= 1)
+		{
+			CObject* obj = CWorld::s_selection[CWorld::s_selection.GetSize() - 1];
+			if (obj->m_visible)
+				m_objectEditRectCommand->Edit(m_terrainPos);
+		}
+	}
+	else if (m_editing)
+	{
+		if (m_pickingTerrain)
+		{
+			switch (editMode)
+			{
+			case EDIT_TERRAIN_HEIGHT:
+				if (m_terrainEditHeightCommand)
+					m_terrainEditHeightCommand->Edit((MainFrame->GetTerrainHeightEditMode() != 0) ? m_terrainPos : m_editTerrainPos, mouseMove, m_editTerrainPos.y);
+				break;
+			case EDIT_TERRAIN_TEXTURE:
+				if (m_terrainEditTextureCommand)
+				{
+					const QPoint editTexturePos((int)(m_terrainPos.x / LIGHTMAP_UNITY + 0.5f), (int)(m_terrainPos.z / LIGHTMAP_UNITY + 0.5f));
+					if (editTexturePos != m_editTexturePos)
+					{
+						m_terrainEditTextureCommand->Edit(m_terrainPos);
+						m_editTexturePos = editTexturePos;
+					}
+
+				}
+				break;
+			case EDIT_TERRAIN_COLOR:
+				if (m_terrainEditColorCommand)
+				{
+					const QPoint editTexturePos((int)(m_terrainPos.x / LIGHTMAP_UNITY + 0.5f), (int)(m_terrainPos.z / LIGHTMAP_UNITY + 0.5f));
+					if (editTexturePos != m_editTexturePos)
+					{
+						m_terrainEditColorCommand->Edit(m_terrainPos);
+						m_editTexturePos = editTexturePos;
+					}
+				}
+				break;
+			case EDIT_TERRAIN_WATER:
+				if (m_waterEditCommand)
+					m_waterEditCommand->Edit(m_terrainPos);
+				break;
+			}
+		}
+
+		if (m_objectTransformCommand && (editMode == EDIT_SELECT_OBJECTS || editMode == EDIT_MOVE_OBJECTS || editMode == EDIT_SCALE_OBJECTS || editMode == EDIT_ROTATE_OBJECTS))
+		{
+			EEditAxis axis = MainFrame->GetEditAxis();
+
+			if (editMode == EDIT_ROTATE_OBJECTS || (QApplication::queryKeyboardModifiers() & Qt::AltModifier))
+			{
+				m_objectTransformCommand->EditRotate(axis, (float)(mouseMove.y()) / -3.0f);
+			}
+			else if (editMode == EDIT_MOVE_OBJECTS && (m_pickingTerrain || axis == EDIT_Y))
+			{
+				m_objectTransformCommand->EditTranslate(axis, globalMove, (float)mouseMove.y() / 12.0f);
+			}
+			else if (editMode == EDIT_SCALE_OBJECTS)
+			{
+				float factor = 0.0f;
+
+				if (mousePos.y() > m_editBasePos.y())
+					factor = (float)(mousePos.y() - m_editBasePos.y()) / -100.0f + 1.0f;
+				else
+					factor = (float)(m_editBasePos.y() - mousePos.y()) / 100.0f + 1.0f;
+
+				m_objectTransformCommand->EditScale(axis, factor);
+			}
+		}
+	}
+
+	_updateMouse3D(mousePos);
+
+	if (!IsAutoRefresh())
+		RenderEnvironment();
+
+	m_lastMousePos = mousePos;
+}
+
+void CWorldEditor::mouseReleaseEvent(QMouseEvent* event)
 {
 	const QPoint mousePos(event->x(), event->y());
 	const EEditMode editMode = MainFrame->GetEditMode();
@@ -766,7 +662,7 @@ void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
 		if (m_lastRightClickPos == mousePos)
 		{
 			if (editMode == EDIT_CONTINENT && m_world && m_world->m_continent
-				&& m_world->m_continent->vertices.size() > 0)
+				&& m_world->m_continent->vertices.size() > 0 && g_global3D.continentVertices)
 			{
 				m_world->m_continent->vertices.removeLast();
 				MainFrame->UpdateContinentVertices();
@@ -824,7 +720,7 @@ void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
 	else if (event->button() == Qt::LeftButton)
 	{
 		if (editMode == EDIT_CONTINENT && m_world && m_world->m_continent
-			&& m_pickingTerrain && m_world->m_continent->vertices.size() < MAX_CONTINENT_VERTICES)
+			&& m_pickingTerrain && m_world->m_continent->vertices.size() < MAX_CONTINENT_VERTICES  && g_global3D.continentVertices)
 		{
 			m_world->m_continent->vertices.push_back(D3DXVECTOR3((int)(m_terrainPos.x + 0.5f), (int)(m_terrainPos.y + 0.5f), (int)(m_terrainPos.z + 0.5f)));
 			MainFrame->UpdateContinentVertices();
@@ -840,8 +736,57 @@ void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
 
 		m_editing = false;
 		m_selectRect = false;
-		m_editSpawn = -1;
+		m_zoomingCamera = false;
 		m_editTexturePos = QPoint(-1, -1);
+
+		if (editMode == EDIT_CAMERA_ROT)
+			m_rotatingCamera = false;
+		else if (editMode == EDIT_CAMERA_POS)
+			m_movingCamera = false;
+
+		if (m_terrainEditHeightCommand)
+		{
+			MainFrame->AddCommand(m_terrainEditHeightCommand);
+			m_terrainEditHeightCommand = null;
+		}
+		if (m_waterEditCommand)
+		{
+			MainFrame->AddCommand(m_waterEditCommand);
+			m_waterEditCommand = null;
+		}
+		if (m_terrainEditColorCommand)
+		{
+			MainFrame->AddCommand(m_terrainEditColorCommand);
+			m_terrainEditColorCommand = null;
+		}
+		if (m_terrainEditTextureCommand)
+		{
+			MainFrame->AddCommand(m_terrainEditTextureCommand);
+			m_terrainEditTextureCommand = null;
+		}
+		if (m_objectEditRectCommand)
+		{
+			MainFrame->AddCommand(m_objectEditRectCommand);
+			m_objectEditRectCommand = null;
+		}
+		if (m_objectTransformCommand)
+		{
+			if (m_duplicateCommand)
+			{
+				if (!m_objectTransformCommand->IsEmpty())
+					m_objectTransformCommand->Apply(m_duplicateCommand);
+				Delete(m_objectTransformCommand);
+			}
+			else
+				MainFrame->AddCommand(m_objectTransformCommand);
+			m_objectTransformCommand = null;
+		}
+		if (m_duplicateCommand)
+		{
+			MainFrame->AddCommand(m_duplicateCommand);
+			m_duplicateCommand = null;
+		}
+
 		event->accept();
 	}
 
@@ -849,14 +794,84 @@ void CWorldEditor::mouseReleaseEvent(QMouseEvent * event)
 		RenderEnvironment();
 }
 
+void CWorldEditor::wheelEvent(QWheelEvent *event)
+{
+	if (!m_world || g_global3D.renderMinimap)
+		return;
+
+	const float phiRadian = m_world->m_cameraAngle.y * M_PI / 180.0f;
+	const float thetaRadian = m_world->m_cameraAngle.x * M_PI / 180.0f;
+	D3DXVECTOR3 lookAt;
+	lookAt.x = cos(phiRadian) * sin(thetaRadian);
+	lookAt.y = sin(phiRadian);
+	lookAt.z = cos(phiRadian) * cos(thetaRadian);
+	m_world->m_cameraPos += lookAt * (float)event->delta() / 60.0f;
+
+	if (!MainFrame->IsEditingContinents())
+		m_world->UpdateContinent();
+
+	event->accept();
+
+	if (!IsAutoRefresh())
+		RenderEnvironment();
+
+	_updateTerrainPos3D(m_lastMousePos);
+	_updateMouse3D(m_lastMousePos);
+
+	MainFrame->UpdateNavigator();
+}
+
 void CWorldEditor::MouseLost()
 {
 	m_rotatingCamera = false;
 	m_movingCamera = false;
 	m_editing = false;
+	m_zoomingCamera = false;
 	m_selectRect = false;
 	m_editTexturePos = QPoint(-1, -1);
-	m_editSpawn = -1;
+
+	if (m_terrainEditHeightCommand)
+	{
+		MainFrame->AddCommand(m_terrainEditHeightCommand);
+		m_terrainEditHeightCommand = null;
+	}
+	if (m_waterEditCommand)
+	{
+		MainFrame->AddCommand(m_waterEditCommand);
+		m_waterEditCommand = null;
+	}
+	if (m_terrainEditColorCommand)
+	{
+		MainFrame->AddCommand(m_terrainEditColorCommand);
+		m_terrainEditColorCommand = null;
+	}
+	if (m_terrainEditTextureCommand)
+	{
+		MainFrame->AddCommand(m_terrainEditTextureCommand);
+		m_terrainEditTextureCommand = null;
+	}
+	if (m_objectEditRectCommand)
+	{
+		MainFrame->AddCommand(m_objectEditRectCommand);
+		m_objectEditRectCommand = null;
+	}
+	if (m_objectTransformCommand)
+	{
+		if (m_duplicateCommand)
+		{
+			if (!m_objectTransformCommand->IsEmpty())
+				m_objectTransformCommand->Apply(m_duplicateCommand);
+			Delete(m_objectTransformCommand);
+		}
+		else
+			MainFrame->AddCommand(m_objectTransformCommand);
+		m_objectTransformCommand = null;
+	}
+	if (m_duplicateCommand)
+	{
+		MainFrame->AddCommand(m_duplicateCommand);
+		m_duplicateCommand = null;
+	}
 }
 
 void CWorldEditor::_updateMouse3D(const QPoint& pt)
@@ -891,7 +906,12 @@ void CWorldEditor::_updateMouse3D(const QPoint& pt)
 
 	m_pickObject = m_world->PickObject(pt);
 	if (m_pickObject)
+	{
 		objectName = m_pickObject->GetModelFilename();
+#ifndef NDEBUG
+		objectName += " (ID: " % string::number(m_pickObject->GetID()) % ')';
+#endif // NDEBUG
+	}
 
 	MainFrame->SetStatusBarInfo(m_terrainPos,
 		landX,
@@ -925,7 +945,6 @@ void CWorldEditor::SetWorld(CWorld* world)
 	m_addObject = null;
 	CWorld::s_selection.RemoveAll();
 	m_selectRect = false;
-	m_editSpawn = -1;
 
 	if (!IsAutoRefresh())
 		RenderEnvironment();
@@ -1093,8 +1112,18 @@ void CWorldEditor::_updateAddObjects()
 				}
 			}
 
+			D3DXVECTOR3 newPos = m_terrainPos;
+
+			if (MainFrame->UseGrid())
+			{
+				const float gridSize = MainFrame->GetGridSize();
+				newPos.x = RoundFloat(newPos.x, gridSize);
+				newPos.y = RoundFloat(newPos.y, gridSize);
+				newPos.z = RoundFloat(newPos.z, gridSize);
+			}
+
 			for (i = 0; i < m_addObjects.GetSize(); i++)
-				m_world->MoveObject(m_addObjects[i], m_terrainPos);
+				m_world->MoveObject(m_addObjects[i], newPos);
 		}
 	}
 	else if (m_addObjects.GetSize() > 0)
@@ -1103,76 +1132,6 @@ void CWorldEditor::_updateAddObjects()
 			m_world->DeleteObject(m_addObjects[i]);
 		m_addObjects.RemoveAll();
 		m_addObject = null;
-	}
-}
-
-void CWorldEditor::RotateObjects(int axis, float factor)
-{
-	if (!m_world || g_global3D.renderMinimap)
-		return;
-
-	const int objCount = CWorld::s_selection.GetSize();
-	if (!objCount)
-		return;
-
-	D3DXVECTOR3 temp, temp2;
-	const bool gravity = MainFrame->UseGravity();
-	CObject* obj;
-	const float s = sin(D3DXToRadian(factor));
-	const float c = cos(D3DXToRadian(factor));
-	float x, z;
-
-	D3DXVECTOR3 centroid(0, 0, 0);
-	if (objCount > 1)
-	{
-		for (int i = 0; i < objCount; i++)
-			centroid += CWorld::s_selection[i]->m_pos;
-		centroid /= (float)objCount;
-	}
-
-	for (int i = 0; i < objCount; i++)
-	{
-		obj = CWorld::s_selection[i];
-		temp = obj->m_pos;
-		temp2 = obj->m_rot;
-
-		if (objCount > 1)
-		{
-			temp2.y += factor;
-			temp.x -= centroid.x;
-			temp.z -= centroid.z;
-			x = temp.x * c - temp.z * s;
-			z = temp.x * s + temp.z * c;
-			temp.x = x + centroid.x;
-			temp.z = z + centroid.z;
-
-			if (gravity)
-				temp.y = m_world->GetHeight(temp.x, temp.z);
-
-			m_world->MoveObject(obj, temp);
-			obj->m_basePos = temp;
-		}
-		else
-		{
-			switch (axis)
-			{
-			case EDIT_X:
-				temp2.x += factor;
-				break;
-			case EDIT_XZ:
-			case EDIT_Y:
-				temp2.y += factor;
-				break;
-			case EDIT_Z:
-				temp2.z += factor;
-				break;
-			}
-		}
-
-		temp2.x = fmod(temp2.x, 360.0f);
-		temp2.y = fmod(temp2.y, 360.0f);
-		temp2.z = fmod(temp2.z, 360.0f);
-		obj->SetRot(temp2);
 	}
 }
 
@@ -1199,6 +1158,7 @@ void CWorldEditor::SaveBigmap(const string& filename)
 	g_global3D.fog = false;
 	g_global3D.terrainLOD = false;
 	m_world->m_cameraPos.y = 1000.0f;
+	m_world->m_continent = null;
 
 	SetAutoRefresh(false);
 
@@ -1238,6 +1198,9 @@ void CWorldEditor::SaveBigmap(const string& filename)
 	g_global3D.fog = oldFog;
 	g_global3D.terrainLOD = oldTerrainLOD;
 
+	if (!MainFrame->IsEditingContinents())
+		m_world->UpdateContinent();
+
 	if (QFileInfo("~minimap_temp.png").exists())
 		QFile::remove("~minimap_temp.png");
 
@@ -1269,6 +1232,7 @@ void CWorldEditor::SaveMinimaps()
 	g_global3D.fog = false;
 	g_global3D.terrainLOD = false;
 	m_world->m_cameraPos.y = 1000.0f;
+	m_world->m_continent = null;
 
 	wchar_t temp[2048];
 	int tempSize;
@@ -1313,6 +1277,9 @@ void CWorldEditor::SaveMinimaps()
 	m_world->m_cameraPos = oldCamPos;
 	g_global3D.fog = oldFog;
 	g_global3D.terrainLOD = oldTerrainLOD;
+
+	if (!MainFrame->IsEditingContinents())
+		m_world->UpdateContinent();
 
 	MainFrame->UpdateNavigator();
 	RenderEnvironment();

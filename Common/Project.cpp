@@ -535,7 +535,8 @@ bool CProject::_loadCharacter(const string& filename)
 		"SetBuffSkill",
 		"SetLang",
 		"SetOutput",
-		"AddTeleport"
+		"AddTeleport",
+		";"
 	};
 
 	int block;
@@ -658,8 +659,11 @@ bool CProject::_loadCharacter(const string& filename)
 					file.NextToken();
 					file.NextToken();
 					file.NextToken();
-					file.NextToken();
-					file.NextToken();
+					if (file.TokenType() != ETokenType::Delimiter || file.Token() != keys[28])
+					{
+						file.NextToken();
+						file.NextToken();
+					}
 				}
 				else if (tok == keys[14])
 				{
@@ -694,8 +698,11 @@ bool CProject::_loadCharacter(const string& filename)
 					file.NextToken();
 					file.NextToken();
 					file.NextToken();
-					file.NextToken();
-					file.NextToken();
+					if (file.TokenType() != ETokenType::Delimiter || file.Token() != keys[28])
+					{
+						file.NextToken();
+						file.NextToken();
+					}
 				}
 				else if (tok == keys[18])
 				{
@@ -714,8 +721,11 @@ bool CProject::_loadCharacter(const string& filename)
 					file.NextToken();
 					file.NextToken();
 					file.NextToken();
-					file.NextToken();
-					file.NextToken();
+					if (file.TokenType() != ETokenType::Delimiter || file.Token() != keys[28])
+					{
+						file.NextToken();
+						file.NextToken();
+					}
 				}
 				else if (tok == keys[19] || tok == keys[20])
 				{
@@ -787,6 +797,7 @@ bool CProject::_loadCharacter(const string& filename)
 
 		if (!key.isEmpty())
 			m_characters[key] = character;
+
 	} while (file.TokenType() != ETokenType::End);
 
 	file.Close();

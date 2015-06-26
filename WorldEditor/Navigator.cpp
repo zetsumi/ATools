@@ -94,6 +94,9 @@ void CNavigator::mouseDoubleClickEvent(QMouseEvent* event)
 	if (m_world->m_cameraPos.y > 999.0f)
 		m_world->m_cameraPos.y = 999.0f;
 
+	if (!MainFrame->IsEditingContinents())
+		m_world->UpdateContinent();
+
 	event->accept();
 
 	MainFrame->UpdateWorldEditor();

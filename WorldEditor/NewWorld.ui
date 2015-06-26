@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="MainFrame.qrc">
-    <normaloff>:/MainFrame/WorldEditor.png</normaloff>:/MainFrame/WorldEditor.png</iconset>
+    <normaloff>:/MainFrame/Resources/new.png</normaloff>:/MainFrame/Resources/new.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -127,7 +127,7 @@
        <item row="5" column="1">
         <widget class="QSpinBox" name="spinBox_4">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="minimum">
           <number>1</number>
@@ -203,22 +203,6 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>spinBox_4</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>144</x>
-     <y>179</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>180</x>
-     <y>158</y>
     </hint>
    </hints>
   </connection>

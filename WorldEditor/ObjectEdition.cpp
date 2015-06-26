@@ -7,640 +7,774 @@
 #include "stdafx.h"
 #include "MainFrame.h"
 #include "WorldEditor.h"
+#include "ObjectEdition.h"
 #include <World.h>
-#include <Mover.h>
-#include <Ctrl.h>
-#include <Region.h>
+#include <Object.h>
 #include <ModelMng.h>
+#include <SpawnObject.h>
+#include <Region.h>
+#include <Mover.h>
+#include <Project.h>
 #include <Path.h>
 
-#include "ui_Random.h"
-
-class CCustomDoubleSpinBox : public QDoubleSpinBox
+void CObjectHideCommand::Hide()
 {
-public:
-	CCustomDoubleSpinBox(QWidget* parent = null) : QDoubleSpinBox(parent) { }
+	m_hide = true;
 
-protected:
-	virtual void keyPressEvent(QKeyEvent* event)
+	CObject* obj;
+	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
 	{
-		if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
-		{
-			((QDialog*)parent())->accept();
-			event->accept();
-			return;
-		}
-		QDoubleSpinBox::keyPressEvent(event);
+		obj = CWorld::s_selection[i];
+		if (!obj->IsUnvisible())
+			m_objects.push_back(obj->GetID());
 	}
-};
-
-void CMainFrame::RotateObjects()
-{
-	if (!m_world || CWorld::s_selection.GetSize() <= 0)
-		return;
-
-	HideDialogs();
-
-	QDialog* dialog = new QDialog(this, Qt::Window);
-	dialog->setModal(true);
-	dialog->setWindowTitle(tr("Rotation"));
-	QBoxLayout * layout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
-	dialog->setLayout(layout);
-	CCustomDoubleSpinBox* spinX = new CCustomDoubleSpinBox(dialog);
-	spinX->setMinimum(0.0);
-	spinX->setMaximum(360.0);
-	spinX->setSingleStep(10.0);
-	spinX->setDecimals(3);
-	spinX->setPrefix(tr("X: "));
-	spinX->setValue(fmod(CWorld::s_selection[0]->GetRot().x, 360.0f));
-	layout->addWidget(spinX);
-	CCustomDoubleSpinBox* spinY = new CCustomDoubleSpinBox(dialog);
-	spinY->setMinimum(0.0);
-	spinY->setMaximum(360.0);
-	spinY->setSingleStep(10.0);
-	spinY->setDecimals(3);
-	spinY->setPrefix(tr("Y: "));
-	spinY->setValue(fmod(CWorld::s_selection[0]->GetRot().y, 360.0f));
-	layout->addWidget(spinY);
-	CCustomDoubleSpinBox* spinZ = new CCustomDoubleSpinBox(dialog);
-	spinZ->setMinimum(0.0);
-	spinZ->setMaximum(360.0);
-	spinZ->setSingleStep(10.0);
-	spinZ->setDecimals(3);
-	spinZ->setPrefix(tr("Z: "));
-	spinZ->setValue(fmod(CWorld::s_selection[0]->GetRot().z, 360.0f));
-	layout->addWidget(spinZ);
-	spinY->setFocus();
-
-	if (dialog->exec() == QDialog::Accepted)
-	{
-		const D3DXVECTOR3 rot((float)spinX->value(),
-			(float)spinY->value(),
-			(float)spinZ->value());
-
-		for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-			CWorld::s_selection[i]->SetRot(rot);
-
-		UpdateWorldEditor();
-	}
-
-	Delete(dialog);
-	ShowDialogs();
+	CWorld::s_selection.RemoveAll();
+	Apply();
 }
 
-void CMainFrame::TranslateObjects()
+void CObjectHideCommand::ShowAll()
 {
-	if (!m_world || CWorld::s_selection.GetSize() <= 0)
-		return;
+	m_hide = false;
 
-	HideDialogs();
+	CObject* obj;
+	uint i;
+	int j;
+	for (i = 0; i < MAX_OBJTYPE; i++)
+	{
+		const CPtrArray<CObject>& objects = m_world->GetObjects(i);
+		for (j = 0; j < objects.GetSize(); j++)
+		{
+			obj = objects[j];
+			if (obj->IsUnvisible())
+				m_objects.push_back(obj->GetID());
+		}
+	}
+	Apply();
+}
 
-	D3DXVECTOR3 center(0.0f, 0.0f, 0.0f);
+void CObjectHideCommand::HideUpstair()
+{
+	m_hide = true;
+
+	D3DXVECTOR3 center(0, 0, 0);
 	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
 		center += CWorld::s_selection[i]->GetPos();
 	center /= (float)CWorld::s_selection.GetSize();
 
-	QDialog* dialog = new QDialog(this, Qt::Window);
-	dialog->setModal(true);
-	dialog->setWindowTitle(tr("Translation"));
-	QBoxLayout * layout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
-	dialog->setLayout(layout);
-	CCustomDoubleSpinBox* spinX = new CCustomDoubleSpinBox(dialog);
-	spinX->setMinimum(0.0);
-	spinX->setMaximum(m_world->m_width * MAP_SIZE * MPU);
-	spinX->setSingleStep(10.0);
-	spinX->setDecimals(3);
-	spinX->setPrefix(tr("X: "));
-	spinX->setValue((float)center.x);
-	layout->addWidget(spinX);
-	CCustomDoubleSpinBox* spinY = new CCustomDoubleSpinBox(dialog);
-	spinY->setMinimum(0.0);
-	spinY->setMaximum(9999.0);
-	spinY->setSingleStep(10.0);
-	spinY->setDecimals(3);
-	spinY->setPrefix(tr("Y: "));
-	spinY->setValue((float)center.y);
-	layout->addWidget(spinY);
-	CCustomDoubleSpinBox* spinZ = new CCustomDoubleSpinBox(dialog);
-	spinZ->setMinimum(0.0);
-	spinZ->setMaximum(m_world->m_height * MAP_SIZE * MPU);
-	spinZ->setSingleStep(10.0);
-	spinZ->setDecimals(3);
-	spinZ->setPrefix(tr("Z: "));
-	spinZ->setValue((float)center.z);
-	layout->addWidget(spinZ);
-	spinX->setFocus();
+	CWorld::s_selection.RemoveAll();
 
-	if (dialog->exec() == QDialog::Accepted)
+	CObject* obj;
+	uint i;
+	int j;
+	for (i = 0; i < MAX_OBJTYPE; i++)
 	{
-		center.x -= (float)spinX->value();
-		center.y -= (float)spinY->value();
-		center.z -= (float)spinZ->value();
-
-		D3DXVECTOR3 temp;
-		CObject* obj;
-		for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+		const CPtrArray<CObject>& objects = m_world->GetObjects(i);
+		for (j = 0; j < objects.GetSize(); j++)
 		{
-			obj = CWorld::s_selection[i];
-			temp = obj->GetPos();
-			temp -= center;
-			m_world->MoveObject(obj, temp);
+			obj = objects[j];
+			if (!obj->IsUnvisible())
+			{
+				const D3DXVECTOR3& pos = obj->GetPos();
+
+				if (pos.y < center.y)
+					continue;
+
+				if (D3DXVec2Length(&(D3DXVECTOR2(pos.x, pos.z) - D3DXVECTOR2(center.x, center.z))) > 100.0f)
+					continue;
+
+				m_objects.push_back(obj->GetID());
+			}
 		}
-
-		UpdateWorldEditor();
 	}
-
-	Delete(dialog);
-	ShowDialogs();
+	Apply();
 }
 
-void CMainFrame::AddPath()
+void CObjectHideCommand::Apply(bool undo)
 {
-	if (!m_world)
-		return;
-
-	int i;
-	for (i = 0; i < INT_MAX; i++)
-		if (m_world->m_paths.find(i) == m_world->m_paths.end())
-			break;
-
-	m_world->m_paths[i] = new CPtrArray<CPath>();
-
-	QListWidgetItem* item = new QListWidgetItem("Path " % string::number(i), ui.patrolList);
-	item->setData(Qt::UserRole + 1, i);
-	ui.patrolList->addItem(item);
-}
-
-void CMainFrame::RemovePath()
-{
-	if (!m_world)
-		return;
-
-	m_currentPatrol = -1;
-	const int current = ui.patrolList->currentRow();
-	if (current == -1)
-		return;
-
-	QListWidgetItem* item = ui.patrolList->takeItem(current);
-	if (!item)
-		return;
-
-	const int index = item->data(Qt::UserRole + 1).toInt();
-	Delete(item);
-
-	auto it = m_world->m_paths.find(index);
-	if (it != m_world->m_paths.end())
+	CObject* obj;
+	for (size_t i = 0; i < m_objects.size(); i++)
 	{
-		CObject* obj;
-		while (it.value()->GetSize() > 0)
+		obj = m_world->GetObject(m_objects[i]);
+		if (obj)
 		{
-			obj = (CObject*)it.value()->GetAt(0);
+			obj->SetUnvisible(undo ? !m_hide : m_hide);
+
+			if (g_global3D.spawnAllMovers
+				&& (obj->GetType() == OT_MOVER || obj->GetType() == OT_ITEM || obj->GetType() == OT_CTRL)
+				&& ((CSpawnObject*)obj)->IsRespawn())
+				m_world->SpawnObject(obj, undo ? m_hide : !m_hide);
+
 			const int find = CWorld::s_selection.Find(obj);
 			if (find != -1)
 				CWorld::s_selection.RemoveAt(find);
-			m_world->DeleteObject(obj);
-		}
-		Delete(m_world->m_paths[index]);
-		m_world->m_paths.remove(index);
-
-		CMover* mover;
-		for (int i = 0; i < m_world->m_objects[OT_MOVER].GetSize(); i++)
-		{
-			mover = (CMover*)m_world->m_objects[OT_MOVER].GetAt(i);
-			if (mover->m_patrolIndex == index)
-				mover->m_patrolIndex = -1;
 		}
 	}
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
 }
 
-void CMainFrame::SetCurrentPath(int row)
+CObjectDeleteCommand::~CObjectDeleteCommand()
 {
-	if (!m_world)
-		return;
-
-	QListWidgetItem* item = ui.patrolList->item(row);
-	if (!item)
-		return;
-
-	const int index = item->data(Qt::UserRole + 1).toInt();
-
-	auto it = m_world->m_paths.find(index);
-	if (it != m_world->m_paths.end())
-		m_currentPatrol = index;
-	else
-		m_currentPatrol = -1;
+	for (int i = 0; i < m_objects.GetSize(); i++)
+		Delete(m_objects[i]);
 }
 
-void CMainFrame::keyPressEvent(QKeyEvent* event)
+void CObjectDeleteCommand::DeleteSelection()
 {
-	if (m_editor && m_world && (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right))
-	{
-		RotateObjects(event->key());
-		event->accept();
-	}
-}
-
-void CMainFrame::RotateObjects(int key)
-{
-	if (!m_editor || !m_world)
-		return;
-
-	if (key == Qt::Key_Left)
-		m_editor->RotateObjects(EDIT_Y, 35.0f);
-	if (key == Qt::Key_Right)
-		m_editor->RotateObjects(EDIT_Y, -35.0f);
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
-}
-
-void CMainFrame::SetOnLand()
-{
-	if (!m_world)
-		return;
-
-	D3DXVECTOR3 temp;
 	CObject* obj;
 	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
 	{
 		obj = CWorld::s_selection[i];
-		temp = obj->m_pos;
-		temp.y = m_world->GetHeight(temp.x, temp.z);
-		m_world->MoveObject(obj, temp);
-		obj->m_basePos = temp;
-	}
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
-}
-
-void CMainFrame::RandomScaleAndSize()
-{
-	if (!m_world)
-		return;
-
-	HideDialogs();
-	QDialog dialog(this);
-	Ui::RandomDialog ui;
-	ui.setupUi(&dialog);
-
-	if (dialog.exec() == QDialog::Accepted)
-	{
-		D3DXVECTOR3 temp;
-		CObject* obj;
-		float min, max, temp2;
-
-		if (ui.scale->isChecked())
-		{
-			min = (float)ui.minScale->value();
-			max = (float)ui.maxScale->value();
-			if (min > max)
-			{
-				const float temp2 = min;
-				min = max;
-				max = temp2;
-			}
-
-			for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-			{
-				obj = CWorld::s_selection[i];
-				if (min > max)
-					temp2 = max + (float)(rand()) / ((float)RAND_MAX / (min - max));
-				else
-					temp2 = min + (float)(rand()) / ((float)RAND_MAX / (max - min));
-				temp.x = temp2;
-				temp.y = temp2;
-				temp.z = temp2;
-				obj->SetScale(temp);
-			}
-		}
-
-		if (ui.rotation->isChecked())
-		{
-			min = (float)ui.minRot->value();
-			max = (float)ui.maxRot->value();
-
-			for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-			{
-				obj = CWorld::s_selection[i];
-				if (min > max)
-					temp2 = max + (float)(rand()) / ((float)RAND_MAX / (min - max));
-				else
-					temp2 = min + (float)(rand()) / ((float)RAND_MAX / (max - min));
-				temp.x = obj->m_rot.x;
-				temp.y = temp2;
-				temp.z = obj->m_rot.z;
-				obj->SetRot(temp);
-			}
-		}
-	}
-
-	ShowDialogs();
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
-}
-
-void CMainFrame::DeleteObjects()
-{
-	if (!m_world)
-		return;
-
-	static CObject* test[1024];
-
-
-	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-	{
-		test[i] = CWorld::s_selection[i];
-		m_world->DeleteObject(CWorld::s_selection[i]);
+		if (obj)
+			m_objects.Append(CObject::CreateObject(obj->GetType(), obj));
 	}
 	CWorld::s_selection.RemoveAll();
 
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
+	Apply();
 }
 
-void CMainFrame::CopyObjects()
+void CObjectDeleteCommand::DeleteAll()
 {
-	if (!m_world || CWorld::s_selection.GetSize() < 1)
+	m_deleteAll = true;
+
+	CWorld::s_selection.RemoveAll();
+
+	CObject* obj;
+	int j;
+	for (uint i = 0; i < MAX_OBJTYPE; i++)
+	{
+		const CPtrArray<CObject>& objects = m_world->GetObjects(i);
+		for (j = 0; j < objects.GetSize(); j++)
+		{
+			obj = objects[j];
+			if (obj && obj->IsReal())
+				m_objects.Append(CObject::CreateObject(obj->GetType(), obj));
+		}
+	}
+
+	Apply();
+}
+
+void CObjectDeleteCommand::AddCreateObject(CObject* obj)
+{
+	m_create = true;
+	m_objects.Append(obj);
+
+	if (obj->GetType() == OT_PATH)
+		m_pathID = MainFrame->GetCurrentPatrol();
+}
+
+void CObjectDeleteCommand::Apply(bool undo)
+{
+	if (IsEmpty())
 		return;
 
-	for (int i = 0; i < m_clipboardObjects.GetSize(); i++)
-		Delete(m_clipboardObjects[i]);
-	m_clipboardObjects.RemoveAll();
+	CObject* obj;
+	if ((!m_create && undo) || (m_create && !undo))
+	{
+		CWorld::s_selection.RemoveAll();
 
-	D3DXVECTOR3 center(0, 0, 0);
-	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-		center += CWorld::s_selection[i]->m_pos;
-	center /= (float)CWorld::s_selection.GetSize();
+		for (int i = 0; i < m_objects.GetSize(); i++)
+		{
+			obj = CObject::CreateObject(m_objects[i]->GetType(), m_objects[i]);
+			m_world->AddObject(obj);
 
-	CObject* obj, *newObj;
-	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+			if (m_create)
+				m_objects[i]->SetID(obj->GetID());
+
+			if (!m_deleteAll)
+			{
+				if (CWorld::s_selection.Find(obj) == -1)
+					CWorld::s_selection.Append(obj);
+			}
+
+			obj->Cull();
+
+			if (obj->GetType() == OT_PATH)
+			{
+				CPtrArray<CPath>* path = m_world->GetPath(m_pathID);
+				if (path)
+				{
+					CPath* objPath = (CPath*)obj;
+					objPath->SetIndex(path->GetSize());
+					path->Append(objPath);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < m_objects.GetSize(); i++)
+		{
+			obj = m_world->GetObject(m_objects[i]->GetID());
+			if (obj)
+			{
+				m_world->DeleteObject(obj);
+
+				const int find = CWorld::s_selection.Find(obj);
+				if (find != -1)
+					CWorld::s_selection.RemoveAt(find);
+			}
+		}
+	}
+}
+
+void CObjectTransformCommand::SetRotate(CObject* obj, const D3DXVECTOR3& rot)
+{
+	ObjectEntry* entry = _getEntry(obj);
+	if (!entry)
+		return;
+
+	entry->rot = rot;
+}
+
+void CObjectTransformCommand::EditRotate(int axis, float factor)
+{
+	const int objCount = CWorld::s_selection.GetSize();
+	if (!objCount)
+		return;
+
+	D3DXVECTOR3 temp, temp2;
+	const bool gravity = MainFrame->UseGravity();
+	CObject* obj;
+	const float s = sin(D3DXToRadian(factor));
+	const float c = cos(D3DXToRadian(factor));
+	float x, z;
+	ObjectEntry* entry;
+
+	D3DXVECTOR3 centroid(0, 0, 0);
+	if (objCount > 1)
+	{
+		for (int i = 0; i < objCount; i++)
+			centroid += CWorld::s_selection[i]->GetPos();
+		centroid /= (float)objCount;
+	}
+
+	for (int i = 0; i < objCount; i++)
 	{
 		obj = CWorld::s_selection[i];
-		newObj = CObject::CreateObject(obj->m_type);
-
-		switch (obj->m_type)
-		{
-		case OT_MOVER:
-			*((CMover*)newObj) = *((CMover*)obj);
-			break;
-		case OT_CTRL:
-			*((CCtrl*)newObj) = *((CCtrl*)obj);
-			break;
-		case OT_ITEM:
-			*((CSpawnObject*)newObj) = *((CSpawnObject*)obj);
-			break;
-		case OT_REGION:
-			*((CRegion*)newObj) = *((CRegion*)obj);
-			break;
-		case OT_PATH:
-			*((CPath*)newObj) = *((CPath*)obj);
-			break;
-		default:
-			*newObj = *obj;
-			break;
-		}
-
-		newObj->m_model = null;
-		newObj->m_world = null;
-		newObj->m_pos = obj->m_pos - center;
-
-		if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-		{
-			((CSpawnObject*)newObj)->m_rect = QRect(
-				((CSpawnObject*)obj)->m_rect.topLeft() - QPoint((int)(obj->m_pos.z + 0.5f), (int)(obj->m_pos.x + 0.5f)),
-				((CSpawnObject*)obj)->m_rect.size()
-				);
-		}
-		else if (obj->m_type == OT_REGION)
-		{
-			((CRegion*)newObj)->m_rect = QRect(
-				((CRegion*)obj)->m_rect.topLeft() - QPoint((int)(obj->m_pos.z + 0.5f), (int)(obj->m_pos.x + 0.5f)),
-				((CRegion*)obj)->m_rect.size()
-				);
-		}
-
-		m_clipboardObjects.Append(newObj);
-	}
-}
-
-void CMainFrame::PasteObjects()
-{
-	if (!m_world || m_clipboardObjects.GetSize() < 1 || !m_editor->IsPickingTerrain())
-		return;
-
-	const D3DXVECTOR3 terrainPos = m_editor->GetTerrainPos();
-	CWorld::s_selection.RemoveAll();
-
-	CObject* obj, *newObj;
-	for (int i = 0; i < m_clipboardObjects.GetSize(); i++)
-	{
-		obj = m_clipboardObjects[i];
-		if (obj->m_type == OT_PATH && MainFrame->GetCurrentPatrol() == -1)
+		entry = _getEntry(obj);
+		if (!entry)
 			continue;
 
-		newObj = CObject::CreateObject(obj->m_type);
+		temp = obj->GetPos();
+		temp2 = obj->GetRot();
 
-		switch (obj->m_type)
+		if (objCount > 1)
 		{
-		case OT_MOVER:
-			*((CMover*)newObj) = *((CMover*)obj);
-			break;
-		case OT_CTRL:
-			*((CCtrl*)newObj) = *((CCtrl*)obj);
-			break;
-		case OT_ITEM:
-			*((CSpawnObject*)newObj) = *((CSpawnObject*)obj);
-			break;
-		case OT_REGION:
-			*((CRegion*)newObj) = *((CRegion*)obj);
-			break;
-		case OT_PATH:
-			*((CPath*)newObj) = *((CPath*)obj);
-			break;
-		default:
-			*newObj = *obj;
-			break;
+			temp2.y += factor;
+			temp.x -= centroid.x;
+			temp.z -= centroid.z;
+			x = temp.x * c - temp.z * s;
+			z = temp.x * s + temp.z * c;
+			temp.x = x + centroid.x;
+			temp.z = z + centroid.z;
+
+			if (gravity)
+				temp.y = m_world->GetHeight(temp.x, temp.z);
+
+			entry->pos = temp;
 		}
-
-		newObj->SetPos(obj->m_pos + terrainPos);
-
-		if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
+		else
 		{
-			CSpawnObject* dyna = ((CSpawnObject*)newObj);
-			dyna->m_rect = QRect(
-				QPoint((int)(newObj->m_pos.z + 0.5f), (int)(newObj->m_pos.x + 0.5f)) + dyna->m_rect.topLeft(),
-				dyna->m_rect.size()
-				);
-
-			if (dyna->m_rect.left() < 0)
-				dyna->m_rect.setLeft(0);
-			else if (dyna->m_rect.left() >= m_world->m_height * MAP_SIZE * MPU)
-				dyna->m_rect.setLeft(m_world->m_height * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.right() < 0)
-				dyna->m_rect.setRight(0);
-			else if (dyna->m_rect.right() >= m_world->m_height * MAP_SIZE * MPU)
-				dyna->m_rect.setRight(m_world->m_height * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.bottom() < 0)
-				dyna->m_rect.setBottom(0);
-			else if (dyna->m_rect.bottom() >= m_world->m_width * MAP_SIZE * MPU)
-				dyna->m_rect.setBottom(m_world->m_width * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.top() < 0)
-				dyna->m_rect.setTop(0);
-			else if (dyna->m_rect.top() >= m_world->m_width * MAP_SIZE * MPU)
-				dyna->m_rect.setTop(m_world->m_height * MAP_SIZE * MPU - 1);
-			dyna->m_rect = dyna->m_rect.normalized();
-		}
-		else if (obj->m_type == OT_REGION)
-		{
-			CRegion* dyna = ((CRegion*)newObj);
-			dyna->m_rect = QRect(
-				QPoint((int)(newObj->m_pos.z + 0.5f), (int)(newObj->m_pos.x + 0.5f)) + dyna->m_rect.topLeft(),
-				dyna->m_rect.size()
-				);
-
-			if (dyna->m_rect.left() < 0)
-				dyna->m_rect.setLeft(0);
-			else if (dyna->m_rect.left() >= m_world->m_height * MAP_SIZE * MPU)
-				dyna->m_rect.setLeft(m_world->m_height * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.right() < 0)
-				dyna->m_rect.setRight(0);
-			else if (dyna->m_rect.right() >= m_world->m_height * MAP_SIZE * MPU)
-				dyna->m_rect.setRight(m_world->m_height * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.bottom() < 0)
-				dyna->m_rect.setBottom(0);
-			else if (dyna->m_rect.bottom() >= m_world->m_width * MAP_SIZE * MPU)
-				dyna->m_rect.setBottom(m_world->m_width * MAP_SIZE * MPU - 1);
-			if (dyna->m_rect.top() < 0)
-				dyna->m_rect.setTop(0);
-			else if (dyna->m_rect.top() >= m_world->m_width * MAP_SIZE * MPU)
-				dyna->m_rect.setTop(m_world->m_height * MAP_SIZE * MPU - 1);
-			dyna->m_rect = dyna->m_rect.normalized();
-		}
-		else if (obj->m_type == OT_PATH)
-		{
-			auto it = m_world->m_paths.find(MainFrame->GetCurrentPatrol());
-			if (it != m_world->m_paths.end())
+			switch (axis)
 			{
-				CPath* path = (CPath*)newObj;
-				path->m_index = it.value()->GetSize();
-				it.value()->Append(path);
+			case EDIT_X:
+				temp2.x += factor;
+				break;
+			case EDIT_XZ:
+			case EDIT_Y:
+				temp2.y += factor;
+				break;
+			case EDIT_Z:
+				temp2.z += factor;
+				break;
 			}
 		}
 
-		m_world->AddObject(newObj);
-
-		if (CWorld::s_selection.Find(newObj) == -1)
-			CWorld::s_selection.Append(newObj);
+		temp2.x = fmod(temp2.x, 360.0f);
+		temp2.y = fmod(temp2.y, 360.0f);
+		temp2.z = fmod(temp2.z, 360.0f);
+		entry->rot = temp2;
 	}
 
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
+	Apply();
 }
 
-void CMainFrame::CutObjects()
+void CObjectTransformCommand::SetTranslate(CObject* obj, const D3DXVECTOR3& pos)
 {
-	if (!m_world)
+	ObjectEntry* entry = _getEntry(obj);
+	if (!entry)
 		return;
 
-	CopyObjects();
-	DeleteObjects();
+	entry->pos = pos;
 }
 
-void CMainFrame::HideObjects()
+void CObjectTransformCommand::EditTranslate(int axis, const D3DXVECTOR3& globalMove, float factor)
 {
-	if (!m_world)
-		return;
+	const bool gravity = MainFrame->UseGravity();
+	const bool useGrid = MainFrame->UseGrid();
+	const float gridSize = MainFrame->GetGridSize();
+	const float worldWidth = m_world->GetWidth() * MAP_SIZE * MPU;
+	const float worldHeight = m_world->GetHeight() * MAP_SIZE * MPU;
+
+	ObjectEntry* entry;
+	D3DXVECTOR3 temp;
+	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+	{
+		entry = _getEntry(CWorld::s_selection[i]);
+		if (!entry)
+			continue;
+
+		temp = entry->tempPos;
+
+		switch (axis)
+		{
+		case EDIT_XZ:
+			temp.x -= globalMove.x;
+			temp.z -= globalMove.z;
+			break;
+		case  EDIT_X:
+			temp.x -= globalMove.x;
+			break;
+		case EDIT_Z:
+			temp.z -= globalMove.z;
+			break;
+		case EDIT_Y:
+			temp.y += factor;
+			break;
+		}
+
+		if (temp.x < 0.0f)
+			temp.x = 0.0f;
+		else if (temp.x >= worldWidth)
+			temp.x = worldWidth - 0.0001f;
+		if (temp.z < 0.0f)
+			temp.z = 0.0f;
+		else if (temp.z >= worldHeight)
+			temp.z = worldHeight - 0.0001f;
+
+		entry->tempPos = temp;
+
+		if (useGrid)
+		{
+			switch (axis)
+			{
+			case EDIT_XZ:
+				temp.x = RoundFloat(entry->tempPos.x, gridSize);
+				temp.z = RoundFloat(entry->tempPos.z, gridSize);
+				break;
+			case  EDIT_X:
+				temp.x = RoundFloat(entry->tempPos.x, gridSize);
+				break;
+			case EDIT_Z:
+				temp.z = RoundFloat(entry->tempPos.z, gridSize);
+				break;
+			case EDIT_Y:
+				temp.y = RoundFloat(entry->tempPos.y, gridSize);
+				break;
+			}
+		}
+
+		if (gravity)
+		{
+			temp.y = m_world->GetHeight(temp.x, temp.z);
+			if (useGrid)
+				entry->tempPos.y = temp.y;
+		}
+
+		entry->pos = temp;
+	}
+
+	Apply();
+}
+
+void CObjectTransformCommand::SetOnGrid()
+{
+	const bool useGrid = MainFrame->UseGrid();
+	const float gridSize = MainFrame->GetGridSize();
 
 	CObject* obj;
+	ObjectEntry* entry;
+	D3DXVECTOR3 temp;
 	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
 	{
 		obj = CWorld::s_selection[i];
-		if (!obj->m_isUnvisible)
+
+		temp = obj->GetPos();
+
+		temp.x = RoundFloat(temp.x, gridSize);
+		temp.y = RoundFloat(temp.y, gridSize);
+		temp.z = RoundFloat(temp.z, gridSize);
+
+		if (temp != obj->GetPos())
 		{
-			obj->m_isUnvisible = true;
-
-			if (g_global3D.spawnAllMovers
-				&& (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-				&& ((CSpawnObject*)obj)->m_isRespawn)
-				m_world->SpawnObject(obj, false);
-		}
-	}
-	CWorld::s_selection.RemoveAll();
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
-}
-
-void CMainFrame::ShowAllObjects()
-{
-	if (!m_world)
-		return;
-
-	CObject* obj;
-	int i, j;
-	for (i = 0; i < MAX_OBJTYPE; i++)
-	{
-		for (j = 0; j < m_world->m_objects[i].GetSize(); j++)
-		{
-			obj = m_world->m_objects[i].GetAt(j);
-			if (obj->m_isUnvisible)
-			{
-				obj->m_isUnvisible = false;
-
-				if (g_global3D.spawnAllMovers
-					&& (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-					&& ((CSpawnObject*)obj)->m_isRespawn)
-					m_world->SpawnObject(obj, true);
-			}
+			entry = _getEntry(obj);
+			if (entry)
+				entry->pos = temp;
 		}
 	}
 
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
+	Apply();
 }
 
-void CMainFrame::HideUpstairObjects()
+void CObjectTransformCommand::SetScale(CObject* obj, const D3DXVECTOR3& scale)
 {
-	if (!m_world || CWorld::s_selection.GetSize() < 1)
+	ObjectEntry* entry = _getEntry(obj);
+	if (!entry)
 		return;
 
-	D3DXVECTOR3 center(0, 0, 0);
+	entry->scale = scale;
+}
+
+void CObjectTransformCommand::EditScale(int axis, float factor)
+{
+	ObjectEntry* entry;
+	D3DXVECTOR3 temp;
+
 	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
-		center += CWorld::s_selection[i]->m_pos;
-	center /= (float)CWorld::s_selection.GetSize();
+	{
+		entry = _getEntry(CWorld::s_selection[i]);
+		if (!entry)
+			continue;
 
-	CWorld::s_selection.RemoveAll();
+		temp = entry->scale;
+
+		switch (axis)
+		{
+		case EDIT_XZ:
+			temp = entry->originalScale * factor;
+			break;
+		case  EDIT_X:
+			temp.x = entry->originalScale.x * factor;
+			break;
+		case EDIT_Z:
+			temp.z = entry->originalScale.z * factor;
+			break;
+		case EDIT_Y:
+			temp.y = entry->originalScale.y * factor;
+			break;
+		}
+
+		entry->scale = temp;
+	}
+
+	Apply();
+}
+
+void CObjectTransformCommand::Apply(CObjectDeleteCommand* command)
+{
+	if (!command)
+		return;
 
 	CObject* obj;
-	int i, j;
-	for (i = 0; i < MAX_OBJTYPE; i++)
+	ObjectEntry* entry;
+	for (int i = 0; i < command->m_objects.GetSize(); i++)
 	{
-		for (j = 0; j < m_world->m_objects[i].GetSize(); j++)
+		obj = command->m_objects[i];
+		if (!obj)
+			continue;
+
+		entry = _getEntry(obj);
+		if (!entry)
+			continue;
+
+		obj->SetPos(entry->pos);
+		obj->SetRot(entry->rot);
+		obj->SetScale(entry->scale);
+	}
+}
+
+CObjectTransformCommand::ObjectEntry* CObjectTransformCommand::_getEntry(CObject* obj)
+{
+	if (!obj)
+		return null;
+
+	const objid objID = obj->GetID();
+	for (size_t i = 0; i < m_objects.size(); i++)
+	{
+		if (m_objects[i].objID == objID)
+			return &m_objects[i];
+	}
+
+	ObjectEntry entry;
+	entry.objID = objID;
+	entry.tempPos = entry.pos = entry.originalPos = obj->GetPos();
+	entry.rot = entry.originalRot = obj->GetRot();
+	entry.scale = entry.originalScale = obj->GetScale();
+	m_objects.push_back(entry);
+	return &m_objects[m_objects.size() - 1];
+}
+
+void CObjectTransformCommand::Apply(bool undo)
+{
+	CObject* obj;
+	for (size_t i = 0; i < m_objects.size(); i++)
+	{
+		const ObjectEntry& entry = m_objects[i];
+
+		obj = m_world->GetObject(entry.objID);
+		if (!obj)
+			continue;
+
+		m_world->MoveObject(obj, undo ? entry.originalPos : entry.pos);
+		obj->SetRot(undo ? entry.originalRot : entry.rot);
+		obj->SetScale(undo ? entry.originalScale : entry.scale);
+	}
+}
+
+void CObjectCreateCommand::Apply(bool undo)
+{
+	CObject* obj;
+
+	if (undo)
+	{
+		for (size_t i = 0; i < m_objects.size(); i++)
 		{
-			obj = m_world->m_objects[i].GetAt(j);
-			if (!obj->m_isUnvisible)
+			obj = m_world->GetObject(m_objects[i].objID);
+
+			if (obj)
 			{
-				if (obj->m_pos.y < center.y)
-					continue;
+				const int find = CWorld::s_selection.Find(obj);
+				if (find != -1)
+					CWorld::s_selection.RemoveAt(find);
 
-				if (D3DXVec2Length(&(D3DXVECTOR2(obj->m_pos.x, obj->m_pos.z) - D3DXVECTOR2(center.x, center.z))) > 100.0f)
-					continue;
+				m_world->DeleteObject(obj);
+			}
+		}
+	}
+	else
+	{
+		CWorld::s_selection.RemoveAll();
+		for (size_t i = 0; i < m_objects.size(); i++)
+		{
+			const ObjectEntry& entry = m_objects[i];
 
-				obj->m_isUnvisible = true;
+			obj = CObject::CreateObject(entry.type);
+			obj->SetModelID(entry.modelID);
+			obj->SetPos(entry.pos);
+			obj->SetRot(D3DXVECTOR3(0.0f, entry.rot, 0.0f));
+			if (obj->Init())
+			{
+				if (entry.scale != 1.0f)
+					obj->SetScale(D3DXVECTOR3(entry.scale, entry.scale, entry.scale));
+				else
+					obj->ResetScale();
 
-				if (g_global3D.spawnAllMovers
-					&& (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
-					&& ((CSpawnObject*)obj)->m_isRespawn)
-					m_world->SpawnObject(obj, false);
+				if (entry.objID)
+					obj->SetID(entry.objID);
+
+				m_world->AddObject(obj);
+
+				m_objects[i].objID = obj->GetID();
+
+				if (CWorld::s_selection.Find(obj) == -1)
+					CWorld::s_selection.Append(obj);
+
+				if (entry.type == OT_MOVER || entry.type == OT_ITEM || entry.type == OT_CTRL)
+					((CSpawnObject*)obj)->SetRect(entry.rect);
+				else if (entry.type == OT_REGION)
+					((CRegion*)obj)->SetRect(entry.rect);
+
+				if (entry.type == OT_MOVER)
+					((CMover*)obj)->InitProperties();
+
+				obj->Cull();
+
+				if (entry.type == OT_PATH)
+				{
+					CPtrArray<CPath>* path = m_world->GetPath(entry.pathID);
+					if (path)
+					{
+						CPath* objPath = (CPath*)obj;
+						objPath->SetIndex(path->GetSize());
+						path->Append(objPath);
+					}
+				}
+			}
+			else
+				Delete(obj);
+		}
+	}
+}
+
+void CObjectCreateCommand::AddCreateObject(CObject* obj, int pathID)
+{
+	if (!obj)
+		return;
+
+	ObjectEntry entry;
+	entry.objID = 0;
+	entry.type = obj->GetType();
+	entry.pos = obj->GetPos();
+	entry.rot = obj->GetRot().y;
+	entry.scale = 1.0f;
+	entry.modelID = obj->GetModelID();
+	entry.pathID = pathID;
+
+	if (entry.type == OT_MOVER || entry.type == OT_ITEM || entry.type == OT_CTRL)
+		entry.rect = ((CSpawnObject*)obj)->GetRect();
+	else if (entry.type == OT_REGION)
+		entry.rect = ((CRegion*)obj)->GetRect();
+
+	if (entry.type != OT_REGION && entry.type != OT_PATH)
+	{
+		bool rot, scale;
+		float minScale, maxScale, minRot, maxRot;
+		MainFrame->GetAddObjSettings(rot, minRot, maxRot, scale, minScale, maxScale);
+
+		if (rot)
+			entry.rot = minRot + (float)(rand()) / ((float)RAND_MAX / (maxRot - minRot));
+
+		if (scale)
+		{
+			entry.scale = minScale + (float)(rand()) / ((float)RAND_MAX / (maxScale - minScale));
+
+			const ModelProp* prop = Project->GetModelProp(entry.type, entry.modelID);
+			if (prop)
+				entry.scale *= prop->scale;
+		}
+	}
+
+	m_objects.push_back(entry);
+}
+
+CObjectEditRectCommand::CObjectEditRectCommand(CWorld* world, CObject* obj, byte editVertex)
+	: CEditCommand(world),
+	m_editVertex(editVertex)
+{
+	m_objID = obj->GetID();
+
+	if (obj->GetType() == OT_REGION)
+		m_origin = m_rect = ((CRegion*)obj)->GetRect();
+	else if (obj->GetType() == OT_MOVER || obj->GetType() == OT_ITEM || obj->GetType() == OT_CTRL)
+		m_origin = m_rect = ((CSpawnObject*)obj)->GetRect();
+}
+
+void CObjectEditRectCommand::Edit(const D3DXVECTOR3& pos)
+{
+	const QPoint realPos((int)(pos.z + ((float)MPU / 2.0f)) / MPU * MPU,
+		(int)(pos.x + ((float)MPU / 2.0f)) / MPU * MPU);
+
+	m_rect = m_rect.normalized();
+
+	switch (m_editVertex)
+	{
+	case 0:
+		m_rect.setBottomRight(realPos);
+		break;
+	case 1:
+		m_rect.setBottomLeft(realPos);
+		break;
+	case 2:
+		m_rect.setTopRight(realPos);
+		break;
+	case 3:
+		m_rect.setTopLeft(realPos);
+		break;
+	}
+
+	m_rect = m_rect.normalized();
+	Apply();
+}
+
+void CObjectEditRectCommand::Apply(bool undo)
+{
+	CObject* obj = m_world->GetObject(m_objID);
+	if (!obj)
+		return;
+
+	if (obj->GetType() == OT_REGION)
+		((CRegion*)obj)->SetRect(undo ? m_origin : m_rect);
+	else if (obj->GetType() == OT_MOVER || obj->GetType() == OT_ITEM || obj->GetType() == OT_CTRL)
+		((CSpawnObject*)obj)->SetRect(undo ? m_origin : m_rect);
+}
+
+CPathDeleteCommand::~CPathDeleteCommand()
+{
+	for (int i = 0; i < m_objects.GetSize(); i++)
+		Delete(m_objects[i]);
+}
+
+void CPathDeleteCommand::Apply(bool undo)
+{
+	if ((undo && !m_create) || (!undo && m_create))
+	{
+		m_world->m_paths[m_ID] = new CPtrArray<CPath>();
+
+		if (m_objects.GetSize() > 0)
+		{
+			CWorld::s_selection.RemoveAll();
+
+			CObject* obj;
+			for (int i = 0; i < m_objects.GetSize(); i++)
+			{
+				obj = CObject::CreateObject(m_objects[i]->GetType(), m_objects[i]);
+				m_world->AddObject(obj);
+
+				if (CWorld::s_selection.Find(obj) == -1)
+					CWorld::s_selection.Append(obj);
+
+				obj->Cull();
+
+				m_world->m_paths[m_ID]->Append((CPath*)obj);
+			}
+		}
+	}
+	else
+	{
+		auto it = m_world->m_paths.find(m_ID);
+		if (it != m_world->m_paths.end())
+		{
+			CObject* obj;
+			while (it.value()->GetSize() > 0)
+			{
+				obj = (CObject*)it.value()->GetAt(0);
+				const int find = CWorld::s_selection.Find(obj);
+				if (find != -1)
+					CWorld::s_selection.RemoveAt(find);
+				m_world->DeleteObject(obj);
+			}
+			Delete(m_world->m_paths[m_ID]);
+			m_world->m_paths.remove(m_ID);
+
+			CMover* mover;
+			for (int i = 0; i < m_world->m_objects[OT_MOVER].GetSize(); i++)
+			{
+				mover = (CMover*)m_world->m_objects[OT_MOVER].GetAt(i);
+				if (mover->m_patrolIndex == m_ID)
+					mover->m_patrolIndex = -1;
 			}
 		}
 	}
 
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
+	MainFrame->UpdatePatrolList();
+}
+
+void CPathDeleteCommand::CreatePath()
+{
+	m_create = true;
+
+	for (m_ID = 0; m_ID < INT_MAX; m_ID++)
+		if (m_world->m_paths.find(m_ID) == m_world->m_paths.end())
+			break;
+
+	Apply();
+}
+
+void CPathDeleteCommand::RemovePath(int ID)
+{
+	m_ID = ID;
+
+	auto it = m_world->m_paths.find(ID);
+	if (it != m_world->m_paths.end())
+	{
+		CObject* obj;
+		for (int i = 0; i < it.value()->GetSize(); i++)
+		{
+			obj = it.value()->GetAt(i);
+			if (obj)
+				m_objects.Append(CObject::CreateObject(obj->GetType(), obj));
+		}
+	}
+
+	Apply();
 }

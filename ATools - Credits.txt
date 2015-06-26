@@ -1,6 +1,6 @@
 //////////////////////
 // ATools project
-// Version 1.0
+// Version 1.2
 // Open Source
 // Made In FRANCE
 //////////////////////
@@ -23,8 +23,10 @@
 - Microsoft's Direct3D9 (D3D9)
 - Qt Project
 - Open Asset Import Library (Assimp)
+- Icons8.com : Icons
 - Aeonsoft : Parts of code and resource files
-- Neyiox : Splashscreen and logo
+- Terrat : GUIEditor german translation
+- Adler : Splashscreen and logo
 - Aishiro
 
 //////////////////////
@@ -40,4 +42,7 @@ For Qt and Assimp, all the license files are in the "Licenses" folder.
 - Neyiox
 - divinepunition
 - plop
+- Adler
+- Terrat
+- Worgan
 - Britania Flyff's community

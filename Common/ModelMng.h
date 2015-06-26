@@ -20,9 +20,10 @@ struct CGlobal3D
 	bool obj3Deffects = true;
 	DWORD backgroundColor = D3DCOLOR_ARGB(255, 50, 50, 50);
 	D3DXVECTOR3 cameraPos;
+	float farPlane = 1024.0f;
 
 	bool renderTerrain = true;
-	bool terrainLOD = true;
+	bool terrainLOD = false;
 	bool renderWater = true;
 	bool renderTerrainAttributes = true;
 	bool gridUnity = false;
@@ -44,6 +45,10 @@ struct CGlobal3D
 	bool spawnAllMovers = false;
 	bool renderMinimap = false;
 	bool renderCollisions = false;
+	bool showBones = false;
+	bool editionLight = false;
+	bool continentVertices = false;
+	D3DFILLMODE fillMode = D3DFILL_SOLID;
 };
 
 extern CGlobal3D g_global3D;

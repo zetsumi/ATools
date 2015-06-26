@@ -34,6 +34,8 @@ public:
 	}
 	bool IsPeaceful() const;
 
+	void InitProperties();
+
 protected:
 	uint m_motion;
 	uint m_AIInterface;

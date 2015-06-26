@@ -13,6 +13,8 @@
 #include <ModelMng.h>
 #include <MainFrame.h>
 #include <Timeline.h>
+#include <Motion.h>
+#include <SoundMng.h>
 
 struct GridVertex
 {
@@ -33,6 +35,9 @@ CModelViewer::CModelViewer(QWidget* parent, Qt::WindowFlags flags)
 	m_movingCamera = false;
 	m_LOD = 0;
 	m_cameraPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_quakeSec = 0;
+	m_changeMotion = true;
+	m_referenceMesh = null;
 }
 
 CModelViewer::~CModelViewer()
@@ -121,6 +126,15 @@ bool CModelViewer::InitDeviceObjects()
 
 void CModelViewer::DeleteDeviceObjects()
 {
+	if (m_referenceMesh)
+	{
+		for (int i = 0; i < MAX_ANIMATED_ELEMENTS; i++)
+			Delete(m_referenceMesh->m_elements[i].obj);
+		Delete(m_referenceMesh->m_motion);
+		Delete(m_referenceMesh->m_skeleton);
+		Delete(m_referenceMesh);
+	}
+
 	CObject3D::DeleteStaticDeviceObjects();
 	Release(m_gridVB);
 	Delete(m_modelMng);
@@ -142,9 +156,51 @@ void CModelViewer::SetMesh(CAnimatedMesh* mesh)
 		m_cameraDist = 8.0f;
 
 	m_cameraRot = D3DXVECTOR2(180.0f, 30.0f);
+	m_changeMotion = true;
 
 	if (!IsAutoRefresh())
 		RenderEnvironment();
+}
+
+void CModelViewer::SetReferenceModelID(int id)
+{
+	if (m_referenceMesh)
+	{
+		for (int i = 0; i < MAX_ANIMATED_ELEMENTS; i++)
+			Delete(m_referenceMesh->m_elements[i].obj);
+		Delete(m_referenceMesh->m_motion);
+		Delete(m_referenceMesh->m_skeleton);
+		Delete(m_referenceMesh);
+	}
+
+	if (id == SEX_SEXLESS)
+		return;
+
+	ModelMng->SetModelPath("Model/");
+	TextureMng->SetModelTexturePath("Model/");
+
+	m_referenceMesh = new CAnimatedMesh(m_device);
+
+	if (id == SEX_FEMALE)
+	{
+		m_referenceMesh->Load("Part_femaleHair06.o3d", PARTS_HAIR);
+		m_referenceMesh->Load("Part_femaleHead01.o3d", PARTS_HEAD);
+		m_referenceMesh->Load("Part_femaleHand.o3d", PARTS_HAND);
+		m_referenceMesh->Load("Part_femaleLower.o3d", PARTS_LOWER_BODY);
+		m_referenceMesh->Load("Part_femaleUpper.o3d", PARTS_UPPER_BODY);
+		m_referenceMesh->Load("Part_femaleFoot.o3d", PARTS_FOOT);
+		m_referenceMesh->SetMotion("mvr_female_GenStand.ani");
+	}
+	else if (id == SEX_MALE)
+	{
+		m_referenceMesh->Load("Part_maleHair06.o3d", PARTS_HAIR);
+		m_referenceMesh->Load("Part_maleHead01.o3d", PARTS_HEAD);
+		m_referenceMesh->Load("Part_maleHand.o3d", PARTS_HAND);
+		m_referenceMesh->Load("Part_maleLower.o3d", PARTS_LOWER_BODY);
+		m_referenceMesh->Load("Part_maleUpper.o3d", PARTS_UPPER_BODY);
+		m_referenceMesh->Load("Part_maleFoot.o3d", PARTS_FOOT);
+		m_referenceMesh->SetMotion("mvr_male_GenStand.ani");
+	}
 }
 
 bool CModelViewer::Render()
@@ -167,6 +223,15 @@ bool CModelViewer::Render()
 	eye.z = cos(phiRadian) * cos(thetaRadian);
 	eye *= m_cameraDist;
 	eye += m_cameraPos;
+
+	if (m_quakeSec > 0 && IsAutoRefresh())
+	{
+		const float quakeSize = 0.06f;
+		eye.x += (quakeSize / 2.0f) - (float)rand() / ((float)RAND_MAX / quakeSize);
+		eye.y += (quakeSize / 2.0f) - (float)rand() / ((float)RAND_MAX / quakeSize);
+		eye.z += (quakeSize / 2.0f) - (float)rand() / ((float)RAND_MAX / quakeSize);
+	}
+
 	D3DXMatrixLookAtLH(&view, &eye, &m_cameraPos, &D3DXVECTOR3(0, 1, 0));
 
 	m_device->SetTransform(D3DTS_VIEW, &view);
@@ -181,7 +246,7 @@ bool CModelViewer::Render()
 	g_global3D.invView = invView;
 
 	g_global3D.light = false;
-	g_global3D.night = false;
+	g_global3D.night = true;
 	g_global3D.lightVec = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 	const D3DXVECTOR4 nullVec(1.0f, 1.0f, 1.0f, 0.0f);
 	m_device->SetVertexShaderConstantF(93, (float*)&nullVec, 1);
@@ -193,6 +258,7 @@ bool CModelViewer::Render()
 	m_device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	m_device->SetRenderState(D3DRS_ZENABLE, TRUE);
 	m_device->SetRenderState(D3DRS_LIGHTING, FALSE);
+	m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	m_device->SetStreamSource(0, m_gridVB, 0, sizeof(GridVertex));
 	m_device->SetFVF(GridVertex::FVF);
@@ -222,35 +288,251 @@ bool CModelViewer::Render()
 	m_device->SetRenderState(D3DRS_ALPHAREF, 0xb0);
 	m_device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 
+	if (m_referenceMesh)
+	{
+		D3DXMatrixTranslation(&world, 2.0f, 0.0f, 0.0f);
+		m_referenceMesh->Render(&world, 0, 180);
+		D3DXMatrixIdentity(&world);
+	}
+
 	if (m_mesh)
 	{
 		if (IsAutoRefresh())
 		{
+			const int oldFrame = (int)m_mesh->GetCurrentFrame();
 			m_mesh->MoveFrame();
-			((CMainFrame*)parent())->GetTimeline()->SetCurrentFrame((int)m_mesh->GetCurrentFrame());
+			const int currentFrame = (int)m_mesh->GetCurrentFrame();
+
+			if (currentFrame != oldFrame || m_changeMotion)
+			{
+				((CMainFrame*)parent())->GetTimeline()->SetCurrentFrame(currentFrame);
+
+				const MotionAttribute* attributes = m_mesh->GetAttributes();
+				if (attributes)
+				{
+					const MotionAttribute* attribute = &attributes[currentFrame];
+					if ((int)attribute->frame == currentFrame)
+					{
+						if (attribute->type & MA_SOUND && attribute->soundID != 0)
+							SoundMng->Play(attribute->soundID);
+						if (attribute->type & MA_QUAKE)
+							m_quakeSec = 16;
+					}
+				}
+
+				m_changeMotion = false;
+			}
+
+			if (m_quakeSec > 0)
+				m_quakeSec--;
+		}
+
+		m_device->SetRenderState(D3DRS_FILLMODE, g_global3D.fillMode);
+
+		if (g_global3D.fillMode == D3DFILL_POINT)
+		{
+			m_device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+			const float pointSize = 2.0f;
+			m_device->SetRenderState(D3DRS_POINTSIZE, *((DWORD*)&pointSize));
 		}
 
 		m_mesh->Render(&world, m_LOD);
 
+		if (g_global3D.fillMode == D3DFILL_POINT)
+			m_device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+
 		if (g_global3D.renderCollisions)
-		{
-			m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
-			m_device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-			m_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-			m_device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-			m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-			m_device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-			m_device->SetRenderState(D3DRS_LIGHTING, FALSE);
-			m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+			_renderCollision();
 
-			m_mesh->RenderCollision(&world);
+		m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-			m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-		}
+		if (g_global3D.showBones)
+			_renderBones();
 	}
 
 	m_device->EndScene();
 	return true;
+}
+
+void CModelViewer::_renderCollision()
+{
+	m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	m_device->SetRenderState(D3DRS_LIGHTING, FALSE);
+	m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	m_device->SetTexture(0, null);
+
+	D3DXMATRIX world;
+	D3DXMatrixIdentity(&world);
+	m_mesh->RenderCollision(&world);
+
+	m_device->SetFVF(GridVertex::FVF);
+
+	CObject3D* obj;
+	LODGroup* group;
+	GMObject* gmObj;
+	int i, j;
+	for (i = 0; i < MAX_ANIMATED_ELEMENTS; i++)
+	{
+		obj = m_mesh->m_elements[i].obj;
+		if (obj)
+		{
+			group = obj->m_group;
+			if (group && group->objectCount > 1)
+			{
+				for (j = 0; j < group->objectCount; j++)
+				{
+					gmObj = &group->objects[j];
+
+					if (gmObj->type == GMT_SKIN)
+						D3DXMatrixIdentity(&world);
+					else
+						world = group->updates[j];
+
+					m_device->SetTransform(D3DTS_WORLD, &world);
+					_renderBoundBox(gmObj->bounds, 0xff0000ff);
+				}
+			}
+
+			D3DXMatrixIdentity(&world);
+			m_device->SetTransform(D3DTS_WORLD, &world);
+			_renderBoundBox(obj->m_bounds, 0xff00e1e4);
+		}
+	}
+}
+
+void CModelViewer::_renderBoundBox(const Bounds& bounds, uint color)
+{
+	static GridVertex vertices[24];
+
+	for (int i = 0; i < 24; i++)
+		vertices[i].c = color;
+
+	D3DXVECTOR3 vertexBounds[8];
+	vertexBounds[0].x = bounds.Min.x;
+	vertexBounds[0].y = bounds.Max.y;
+	vertexBounds[0].z = bounds.Min.z;
+	vertexBounds[1].x = bounds.Max.x;
+	vertexBounds[1].y = bounds.Max.y;
+	vertexBounds[1].z = bounds.Min.z;
+	vertexBounds[2].x = bounds.Max.x;
+	vertexBounds[2].y = bounds.Max.y;
+	vertexBounds[2].z = bounds.Max.z;
+	vertexBounds[3].x = bounds.Min.x;
+	vertexBounds[3].y = bounds.Max.y;
+	vertexBounds[3].z = bounds.Max.z;
+	vertexBounds[4].x = bounds.Min.x;
+	vertexBounds[4].y = bounds.Min.y;
+	vertexBounds[4].z = bounds.Min.z;
+	vertexBounds[5].x = bounds.Max.x;
+	vertexBounds[5].y = bounds.Min.y;
+	vertexBounds[5].z = bounds.Min.z;
+	vertexBounds[6].x = bounds.Max.x;
+	vertexBounds[6].y = bounds.Min.y;
+	vertexBounds[6].z = bounds.Max.z;
+	vertexBounds[7].x = bounds.Min.x;
+	vertexBounds[7].y = bounds.Min.y;
+	vertexBounds[7].z = bounds.Max.z;
+
+	vertices[0].p = vertexBounds[0];
+	vertices[1].p = vertexBounds[4];
+	vertices[2].p = vertexBounds[1];
+	vertices[3].p = vertexBounds[5];
+	vertices[4].p = vertexBounds[2];
+	vertices[5].p = vertexBounds[6];
+	vertices[6].p = vertexBounds[3];
+	vertices[7].p = vertexBounds[7];
+	vertices[8].p = vertexBounds[4];
+	vertices[9].p = vertexBounds[5];
+	vertices[10].p = vertexBounds[5];
+	vertices[11].p = vertexBounds[6];
+	vertices[12].p = vertexBounds[6];
+	vertices[13].p = vertexBounds[7];
+	vertices[14].p = vertexBounds[7];
+	vertices[15].p = vertexBounds[4];
+	vertices[16].p = vertexBounds[0];
+	vertices[17].p = vertexBounds[1];
+	vertices[18].p = vertexBounds[1];
+	vertices[19].p = vertexBounds[2];
+	vertices[20].p = vertexBounds[2];
+	vertices[21].p = vertexBounds[3];
+	vertices[22].p = vertexBounds[3];
+	vertices[23].p = vertexBounds[0];
+
+	m_device->DrawPrimitiveUP(D3DPT_LINELIST, 12, vertices, sizeof(GridVertex));
+}
+
+void CModelViewer::_renderBones()
+{
+	D3DXMATRIX* bones = null;
+	int boneCount = 0;
+
+	if (m_mesh->m_skeleton)
+	{
+		bones = m_mesh->m_bones;
+		boneCount = m_mesh->m_skeleton->m_boneCount;
+	}
+	else if (m_mesh->m_elements[0].obj)
+	{
+		bones = m_mesh->m_elements[0].obj->m_baseBones;
+		boneCount = m_mesh->m_elements[0].obj->m_boneCount;
+	}
+
+	if (!bones || boneCount == 0)
+		return;
+
+	DWORD colors[] = {
+		0xff3fff35,
+		0xff35fff3,
+		0xff3569ff,
+		0xff8b35ff,
+		0xffea35ff,
+		0xffff3599,
+		0xffff3535,
+		0xfffff835,
+		0xffff8635
+	};
+
+	static GridVertex vertices[1024];
+
+	for (int i = 0; i < boneCount && i < 1024; i++)
+	{
+		vertices[i].c = colors[i % (sizeof(colors) / sizeof(DWORD))];
+		D3DXVec3TransformCoord(&vertices[i].p, &D3DXVECTOR3(0.0f, 0.0f, 0.0f), &bones[i]);
+	}
+
+	D3DXMATRIX world;
+	D3DXMatrixIdentity(&world);
+	m_device->SetTransform(D3DTS_WORLD, &world);
+
+	m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_LIGHTING, FALSE);
+	m_device->SetTexture(0, null);
+	m_device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+
+	m_device->SetFVF(GridVertex::FVF);
+
+	const float pointSize = 4.0f;
+	m_device->SetRenderState(D3DRS_POINTSIZE, *((DWORD*)&pointSize));
+
+	m_device->DrawPrimitiveUP(D3DPT_POINTLIST, boneCount, vertices, sizeof(GridVertex));
+
+	m_device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+}
+
+void CModelViewer::ChangeMotion()
+{
+	m_changeMotion = true;
 }
 
 void CModelViewer::mouseMoveEvent(QMouseEvent* event)

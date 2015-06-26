@@ -21,6 +21,8 @@ CDialogEditEffects::CDialogEditEffects(CModelViewer* modelViewer, CObject3D* obj
 {
 	ui.setupUi(this);
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	ui.spinOpacity->setEnabled(false);
 	connect(ui.check2Sides, SIGNAL(toggled(bool)), this, SLOT(Set2Sides(bool)));
 	connect(ui.checkHighlight, SIGNAL(toggled(bool)), this, SLOT(SetHighlight(bool)));
@@ -29,6 +31,7 @@ CDialogEditEffects::CDialogEditEffects(CModelViewer* modelViewer, CObject3D* obj
 	connect(ui.checkSelfIlluminate, SIGNAL(toggled(bool)), this, SLOT(SetSelfIlluminate(bool)));
 	connect(ui.spinOpacity, SIGNAL(valueChanged(int)), this, SLOT(SetAmount(int)));
 	connect(ui.changeTexture, SIGNAL(clicked()), this, SLOT(ChangeTexture()));
+	connect(ui.CWOrCCW, SIGNAL(clicked()), this, SLOT(ChangeCW()));
 
 	int materialBlockCount = 0;
 
@@ -86,6 +89,7 @@ void CDialogEditEffects::CurrentItemChanged(QTreeWidgetItem* current, QTreeWidge
 	ui.checkSelfIlluminate->setChecked(false);
 	ui.spinOpacity->setValue(255);
 	ui.checkHighlight->setChecked(false);
+	ui.CWOrCCW->setEnabled(false);
 
 	if (current && current->type() > 0)
 	{
@@ -105,6 +109,7 @@ void CDialogEditEffects::CurrentItemChanged(QTreeWidgetItem* current, QTreeWidge
 						ui.check2Sides->setEnabled(true);
 						ui.checkSelfIlluminate->setEnabled(true);
 						ui.checkHighlight->setEnabled(true);
+						ui.CWOrCCW->setEnabled(true);
 
 						ui.checkReflect->setChecked(editing->effect & XE_REFLECT);
 						ui.checkHighlight->setChecked(editing->effect & XE_HIGHLIGHT_OBJ);
@@ -291,7 +296,7 @@ void CDialogEditEffects::ChangeTexture()
 		Material* mat = &m_editingObj->materials[m_editing->materialID];
 
 		const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"),
-			"Model/Texture/" % string(mat->textureName), tr("Fichier texture (*.dds *.tga *.bmp *.png)"));
+			"Model/Texture/" % string(mat->textureName), tr("Fichier texture") % " (*.dds *.tga *.bmp *.png)");
 
 		if (!texture.isEmpty())
 		{
@@ -313,6 +318,32 @@ void CDialogEditEffects::ChangeTexture()
 			auto it = m_items.find(oldEditing);
 			if (it != m_items.end())
 				ui.tree->setCurrentItem(it.value());
+		}
+	}
+
+	if (!m_modelViewer->IsAutoRefresh())
+		m_modelViewer->RenderEnvironment();
+}
+
+void CDialogEditEffects::ChangeCW()
+{
+	if (m_editing && m_editingObj && m_editingGroup)
+	{
+		const int startIndex = m_editing->startVertex;
+		const int primitiveCount = m_editing->primitiveCount;
+
+		for (int j = 0; j < primitiveCount; j++)
+			std::swap(m_editingObj->indices[startIndex + j * 3], m_editingObj->indices[startIndex + j * 3 + 2]);
+
+		if (m_editingObj->IB)
+		{
+			const int bufferSize = sizeof(ushort) * m_editingObj->indexCount;
+			void* data;
+			if (SUCCEEDED(m_editingObj->IB->Lock(0, bufferSize, &data, 0)))
+			{
+				memcpy(data, m_editingObj->indices, bufferSize);
+				m_editingObj->IB->Unlock();
+			}
 		}
 	}
 

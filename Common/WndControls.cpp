@@ -38,9 +38,9 @@ void CWndButton::FitTextureSize()
 	{
 		QRect rect = GetWindowRect(true);
 		if (HasFlag(WBS_RADIO) | HasFlag(WBS_CHECK))
-			rect.setSize(QSize(m_texture->GetWidth() / 6 + 1, m_texture->GetHeight() + 1));
+			rect.setSize(QSize(m_texture->GetWidth() / 6, m_texture->GetHeight()));
 		else
-			rect.setSize(QSize(m_texture->GetWidth() / 4 + 1, m_texture->GetHeight() + 1));
+			rect.setSize(QSize(m_texture->GetWidth() / 4, m_texture->GetHeight()));
 		SetRect(rect, true);
 	}
 }

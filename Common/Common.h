@@ -8,7 +8,7 @@
 #define COMMON_H
 
 #define VERSION		1
-#define SUB_VERSION	1
+#define SUB_VERSION	2
 
 // pour les defines en .h
 // détermine la version du GUIEditor aussi
@@ -20,6 +20,10 @@
 #include <qmath.h>
 #include <d3dx9.h>
 
+#ifdef GetObject
+#undef GetObject
+#endif // GetObject
+
 #define null 0
 
 typedef unsigned char byte;
@@ -27,6 +31,7 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef QString string;
+typedef uint64_t objid;
 
 class CTexture;
 class CMotion;
@@ -66,9 +71,12 @@ void InstallMsgHandler();
 
 string GetExtension(const string& filename);
 
+float RoundFloat(float value, float round);
+
 #include "PtrArray.h"
 #include "File.h"
 #include <define.h>
 #include <defineNeuz.h>
+#include <lang.h>
 
 #endif // COMMON_H

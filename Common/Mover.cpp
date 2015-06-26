@@ -82,6 +82,16 @@ bool CMover::Init()
 	return true;
 }
 
+void CMover::InitProperties()
+{
+	if (!m_moverProp)
+		return;
+
+	m_belligerence = m_moverProp->belligerence;
+	m_AIInterface = m_moverProp->AI;
+	m_name = m_moverProp->name;
+}
+
 void CMover::RenderName()
 {
 	if (!m_model)

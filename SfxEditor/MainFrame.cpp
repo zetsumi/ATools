@@ -13,6 +13,8 @@
 #include <SfxModel.h>
 #include <Timeline.h>
 #include <Sfx.h>
+#include <AboutDialog.h>
+#include <ShortcutsMng.h>
 
 CMainFrame::CMainFrame(QWidget *parent)
 	: QMainWindow(parent),
@@ -22,37 +24,54 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_timeline(null),
 	m_currentEditPart(-1),
 	m_currentEditKey(null),
-	m_inEnglish(false),
+	m_language(LANG_FRE),
 	m_languageActionGroup(null),
 	m_modelRot(null),
 	m_modelRotX(null),
 	m_modelRotY(null),
-	m_modelRotZ(null)
+	m_modelRotZ(null),
+	m_modelViewer(null),
+	m_status(null)
+{
+}
+
+CMainFrame::~CMainFrame()
+{
+	Delete(m_modelRotZ);
+	Delete(m_modelRotY);
+	Delete(m_modelRotX);
+	Delete(m_modelRot);
+	Delete(m_status);
+	Delete(m_timeline);
+	Delete(m_mesh);
+	Delete(m_sfx);
+	Delete(m_modelViewer);
+	Delete(m_languageActionGroup);
+}
+
+bool CMainFrame::Initialize()
 {
 	ui.setupUi(this);
-
-	m_status = new QLabel(tr("Prêt"));
-	m_status->setStyleSheet("color: white;");
-	ui.statusBar->addWidget(m_status);
-	qApp->setStyleSheet("QStatusBar::item { border: none; }");
-
-	ui.dockParticles->hide();
-	ui.dockParticles->setFloating(true);
-	ui.dockParticles->move(QPoint(30, 30));
-
-	m_timeline = new CTimeline(this);
-	ui.dockTimeline->setWidget(m_timeline);
-	m_timeline->SetFrameCount(-1);
-	m_timeline->setMinimumHeight(160);
 
 	m_modelViewer = new CModelViewer(this);
 	setCentralWidget(m_modelViewer);
 
 	if (!m_modelViewer->CreateEnvironment())
-	{
-		Delete(m_modelViewer);
-		qFatal("Loading failed !");
-	}
+		return false;
+
+	m_status = new QLabel(tr("Prêt"));
+	m_status->setStyleSheet("color: white;");
+	ui.statusBar->addWidget(m_status);
+	qApp->setStyleSheet("QStatusBar::item { border: none; }");
+	
+	ui.dockParticles->setFloating(true);
+	ui.dockParticles->move(QPoint(30, 30));
+	ui.dockParticles->hide();
+
+	m_timeline = new CTimeline(this);
+	ui.dockTimeline->setWidget(m_timeline);
+	m_timeline->SetFrameCount(-1);
+	m_timeline->setMinimumHeight(160);
 
 	m_modelRot = new QLabel(tr("Rotation du model : "), ui.mainToolBar);
 	m_modelRotX = new QDoubleSpinBox(ui.mainToolBar);
@@ -91,33 +110,22 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_languageActionGroup = new QActionGroup(ui.menuLangage);
 	m_languageActionGroup->addAction(ui.actionFran_ais);
 	m_languageActionGroup->addAction(ui.actionEnglish);
+	m_languageActionGroup->addAction(ui.actionDeutsch);
 
 	_connectWidgets();
 
-	_openFile("Model/Part_femaleHair06.o3d");
-	_openFile("Model/Part_femaleHead01.o3d");
-	_openFile("Model/Part_femaleHand.o3d");
-	_openFile("Model/Part_femaleLower.o3d");
-	_openFile("Model/Part_femaleUpper.o3d");
-	_openFile("Model/Part_femaleFoot.o3d");
-	_openFile("Model/mvr_female_GenStand.ani");
+	OpenFile("Model/Part_femaleHair06.o3d");
+	OpenFile("Model/Part_femaleHead01.o3d");
+	OpenFile("Model/Part_femaleHand.o3d");
+	OpenFile("Model/Part_femaleLower.o3d");
+	OpenFile("Model/Part_femaleUpper.o3d");
+	OpenFile("Model/Part_femaleFoot.o3d");
+	OpenFile("Model/mvr_female_GenStand.ani");
 
+	_setShortcuts();
 	CloseFile();
 	_loadSettings();
-}
-
-CMainFrame::~CMainFrame()
-{
-	Delete(m_modelRotZ);
-	Delete(m_modelRotY);
-	Delete(m_modelRotX);
-	Delete(m_modelRot);
-	Delete(m_status);
-	Delete(m_timeline);
-	Delete(m_mesh);
-	Delete(m_sfx);
-	Delete(m_modelViewer);
-	Delete(m_languageActionGroup);
+	return true;
 }
 
 void CMainFrame::_connectWidgets()
@@ -165,7 +173,8 @@ void CMainFrame::_connectWidgets()
 	connect(ui.editPartVisible, SIGNAL(toggled(bool)), this, SLOT(EditPartVisible(bool)));
 	connect(ui.editPartBill, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(EditPartBill(const QString&)));
 	connect(ui.editPartBlend, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(EditPartAlpha(const QString&)));
-	connect(ui.btnSetPartTexture, SIGNAL(clicked()), this, SLOT(EditPartTextureName()));
+	connect(ui.editPartTexture, SIGNAL(editingFinished()), this, SLOT(EditPartTextureName()));
+	connect(ui.btnSetPartTexture, SIGNAL(clicked()), this, SLOT(EditPartTexture()));
 	connect(ui.editPartTexFrame, SIGNAL(valueChanged(int)), this, SLOT(EditPartTexFrame(int)));
 	connect(ui.editPartTexLoop, SIGNAL(valueChanged(int)), this, SLOT(EditPartTexLoop(int)));
 	connect(ui.editCustomMeshPointCount, SIGNAL(valueChanged(int)), this, SLOT(EditPartPointCount(int)));
@@ -208,6 +217,24 @@ void CMainFrame::_connectWidgets()
 	connect(ui.editParticleScaleSpeedZ, SIGNAL(valueChanged(double)), this, SLOT(EditPartParticleScaleSpeedZ(double)));
 }
 
+void CMainFrame::_setShortcuts()
+{
+	CShortcutsMng mng;
+	mng.Add(ui.actionQuitter, "ExitApp");
+	mng.Add(ui.actionEnregistrer, "SaveFile");
+	mng.Add(ui.actionEnregistrer_sous, "SaveFileAs");
+	mng.Add(ui.actionPlein_cran, "Fullscreen");
+	mng.Add(ui.action_propos, "About");
+	mng.Add(ui.actionGrille, "ShowGrid");
+	mng.Add(ui.actionFermer, "CloseFile");
+	mng.Add(ui.actionOuvrir, "OpenFile");
+	mng.Add(ui.actionJouer, "PlayPause");
+	mng.Add(ui.actionFusionner, "MergeFiles");
+	mng.Add(ui.actionAjouter_une_partie, "AddPart");
+	mng.Add(ui.actionSupprimer_la_partie, "DeletePart");
+	mng.Load();
+}
+
 void CMainFrame::SetBackgroundColor()
 {
 	const QColor color = QColorDialog::getColor(g_global3D.backgroundColor, this, tr("Couleur du fond"));
@@ -239,10 +266,19 @@ void CMainFrame::_loadSettings()
 		}
 		if (settings.contains("WindowState"))
 			restoreState(settings.value("WindowState").toByteArray());
-		if (settings.contains("Language") && settings.value("Language") == "English")
+		if (settings.contains("Language"))
 		{
-			ui.actionEnglish->setChecked(true);
-			SetLanguage(ui.actionEnglish);
+			switch (settings.value("Language").toInt())
+			{
+			case LANG_ENG:
+				ui.actionEnglish->setChecked(true);
+				SetLanguage(ui.actionEnglish);
+				break;
+			case LANG_GER:
+				ui.actionDeutsch->setChecked(true);
+				SetLanguage(ui.actionDeutsch);
+				break;
+			}
 		}
 
 		if (m_modelViewer && !m_modelViewer->IsAutoRefresh())
@@ -254,13 +290,18 @@ void CMainFrame::SetLanguage(QAction* action)
 {
 	if (action == ui.actionFran_ais)
 	{
-		m_inEnglish = false;
+		m_language = LANG_FRE;
 		m_translator.load("", "");
 	}
 	else if (action == ui.actionEnglish)
 	{
-		m_inEnglish = true;
-		m_translator.load("sfxeditor_en.qm", "platforms/English");
+		m_language = LANG_ENG;
+		m_translator.load("sfxeditor_en.qm", "Plugins/languages/English");
+	}
+	else if (action == ui.actionDeutsch)
+	{
+		m_language = LANG_GER;
+		m_translator.load("sfxeditor_de.qm", "Plugins/languages/Deutsch");
 	}
 
 	qApp->installTranslator(&m_translator);
@@ -283,7 +324,7 @@ void CMainFrame::closeEvent(QCloseEvent* event)
 		settings.setValue("ShowGrid", g_global3D.grid);
 		settings.setValue("WindowGeometry", saveGeometry());
 		settings.setValue("WindowState", saveState());
-		settings.setValue("Language", m_inEnglish ? "English" : "French");
+		settings.setValue("Language", m_language);
 	}
 
 	QMainWindow::closeEvent(event);
@@ -291,15 +332,15 @@ void CMainFrame::closeEvent(QCloseEvent* event)
 
 void CMainFrame::OpenFile()
 {
-	const string filename = QFileDialog::getOpenFileName(this, tr("Charger un sfx"), m_filename.isEmpty() ? "SFX/" : m_filename, tr("Fichier SFX (*.sfx);; Fichier 3D (*.o3d);; Fichier d'animation (*.ani)"));
+	const string filename = QFileDialog::getOpenFileName(this, tr("Charger un sfx"), m_filename.isEmpty() ? "SFX/" : m_filename, tr("Fichier SFX") % " (*.sfx);; " % tr("Fichier 3D") % " (*.o3d);; " % tr("Fichier d'animation") % " (*.ani)");
 
 	if (!filename.isEmpty())
-		_openFile(filename);
+		OpenFile(filename);
 }
 
 void CMainFrame::MergeFile()
 {
-	const string filename = QFileDialog::getOpenFileName(this, tr("Fusionner avec un sfx"), m_filename, tr("Fichier SFX (*.sfx)"));
+	const string filename = QFileDialog::getOpenFileName(this, tr("Fusionner avec un sfx"), m_filename, tr("Fichier SFX") % " (*.sfx)");
 
 	if (!filename.isEmpty())
 	{
@@ -367,7 +408,7 @@ void CMainFrame::SaveFile()
 {
 	if (m_filename.isEmpty())
 	{
-		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le SFX"), "SFX/", tr("Fichier SFX (*.sfx)"));
+		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le SFX"), "SFX/", tr("Fichier SFX") % " (*.sfx)");
 
 		if (!m_filename.isEmpty())
 			setWindowTitle("SfxEditor - " % QFileInfo(m_filename).fileName());
@@ -379,7 +420,7 @@ void CMainFrame::SaveFile()
 
 void CMainFrame::SaveFileAs()
 {
-	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le SFX"), "SFX/", tr("Fichier SFX (*.sfx)"));
+	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le SFX"), "SFX/", tr("Fichier SFX") % " (*.sfx)");
 
 	if (!filename.isEmpty())
 	{
@@ -402,7 +443,7 @@ void CMainFrame::_saveFile(const string& filename)
 	}
 }
 
-void CMainFrame::_openFile(const string& filename)
+void CMainFrame::OpenFile(const string& filename)
 {
 	const string filenameToLower = QFileInfo(filename).fileName().toLower();
 	const string dir = QFileInfo(filename).path() % '/';
@@ -557,8 +598,7 @@ void CMainFrame::Stop()
 
 void CMainFrame::About()
 {
-	QMessageBox::about(this, tr("À propos"),
-		"ATools v" % string::number(VERSION) % '.' % string::number(SUB_VERSION) % tr("\n\nPar Aishiro"));
+	CAboutDialog(this, m_modelViewer).exec();
 }
 
 void CMainFrame::AboutQt()
@@ -653,7 +693,7 @@ void CMainFrame::dragMoveEvent(QDragMoveEvent* event)
 void CMainFrame::dropEvent(QDropEvent* event)
 {
 	if (m_dragFilename.size() > 0)
-		_openFile(m_dragFilename);
+		OpenFile(m_dragFilename);
 }
 
 void CMainFrame::changeEvent(QEvent* event)

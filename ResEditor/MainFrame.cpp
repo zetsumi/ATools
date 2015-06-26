@@ -8,18 +8,34 @@
 #include "MainFrame.h"
 #include "FileModel.h"
 #include "ClientExtractor.h"
+#include <AboutDialog.h>
+#include <ShortcutsMng.h>
 
 CMainFrame::CMainFrame(QWidget *parent)
 	: QMainWindow(parent),
 	m_status(null),
 	m_files(null),
-	m_inEnglish(false),
+	m_language(LANG_FRE),
 	m_languageActionGroup(null),
 	m_listMenu(null),
 	m_sortMode(SORT_NAME),
 	m_viewMode(1),
 	m_sortActionGroup(null),
 	m_viewActionGroup(null)
+{
+}
+
+CMainFrame::~CMainFrame()
+{
+	Delete(m_listMenu);
+	Delete(m_files);
+	Delete(m_status);
+	Delete(m_languageActionGroup);
+	Delete(m_sortActionGroup);
+	Delete(m_viewActionGroup);
+}
+
+bool CMainFrame::Initialize()
 {
 	ui.setupUi(this);
 
@@ -31,6 +47,7 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_languageActionGroup = new QActionGroup(ui.menuLangage);
 	m_languageActionGroup->addAction(ui.actionFran_ais);
 	m_languageActionGroup->addAction(ui.actionEnglish);
+	m_languageActionGroup->addAction(ui.actionDeutsch);
 
 	m_sortActionGroup = new QActionGroup(ui.menuTrier_par);
 	m_sortActionGroup->addAction(ui.actionNom);
@@ -51,19 +68,10 @@ CMainFrame::CMainFrame(QWidget *parent)
 	CFileModel::InitResources();
 
 	_connectWidgets();
-
+	_setShortcuts();
 	CloseFile();
 	_loadSettings();
-}
-
-CMainFrame::~CMainFrame()
-{
-	Delete(m_listMenu);
-	Delete(m_files);
-	Delete(m_status);
-	Delete(m_languageActionGroup);
-	Delete(m_sortActionGroup);
-	Delete(m_viewActionGroup);
+	return true;
 }
 
 void CMainFrame::_connectWidgets()
@@ -88,7 +96,25 @@ void CMainFrame::_connectWidgets()
 	connect(m_viewActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(SetViewMode(QAction*)));
 }
 
-void CMainFrame::_openFile(const string& filename)
+void CMainFrame::_setShortcuts()
+{
+	CShortcutsMng mng;
+	mng.Add(ui.actionQuitter, "ExitApp");
+	mng.Add(ui.actionEnregistrer, "SaveFile");
+	mng.Add(ui.actionPlein_cran, "Fullscreen");
+	mng.Add(ui.action_propos, "About");
+	mng.Add(ui.actionFermer, "CloseFile");
+	mng.Add(ui.actionOuvrir, "OpenFile");
+	mng.Add(ui.actionNouveau, "NewFile");
+	mng.Add(ui.actionEnregistrer_sous, "SaveFileAs");
+	mng.Add(ui.actionAjouter_des_fichiers, "AddFiles");
+	mng.Add(ui.actionExtraire_les_fichiers, "ExtractFiles");
+	mng.Add(ui.actionSupprimer_les_fichiers, "DeleteFiles");
+	mng.Add(ui.actionExtracteur_de_client, "ClientExtractor");
+	mng.Load();
+}
+
+void CMainFrame::OpenFile(const string& filename)
 {
 	CloseFile();
 	if (m_files->Load(filename))
@@ -114,10 +140,10 @@ void CMainFrame::CloseFile()
 
 void CMainFrame::OpenFile()
 {
-	const string filename = QFileDialog::getOpenFileName(this, tr("Charger un fichier ressource"), m_filename, tr("Fichier ressource (*.res)"));
+	const string filename = QFileDialog::getOpenFileName(this, tr("Charger un fichier ressource"), m_filename, tr("Fichier ressource") % " (*.res)");
 
 	if (!filename.isEmpty())
-		_openFile(filename);
+		OpenFile(filename);
 }
 
 void CMainFrame::NewFile()
@@ -182,7 +208,7 @@ void CMainFrame::SaveFile()
 {
 	if (m_filename.isEmpty())
 	{
-		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le fichier ressource"), "", tr("Fichier ressource (*.res)"));
+		m_filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le fichier ressource"), "", tr("Fichier ressource") % " (*.res)");
 
 		if (!m_filename.isEmpty())
 			setWindowTitle("ResEditor - " % QFileInfo(m_filename).fileName());
@@ -194,7 +220,7 @@ void CMainFrame::SaveFile()
 
 void CMainFrame::SaveFileAs()
 {
-	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le fichier ressource"), m_filename, tr("Fichier ressource (*.res)"));
+	const string filename = QFileDialog::getSaveFileName(this, tr("Enregistrer le fichier ressource"), m_filename, tr("Fichier ressource") % " (*.res)");
 
 	if (!filename.isEmpty())
 	{
@@ -230,10 +256,19 @@ void CMainFrame::_loadSettings()
 		}
 		if (settings.contains("WindowState"))
 			restoreState(settings.value("WindowState").toByteArray());
-		if (settings.contains("Language") && settings.value("Language") == "English")
+		if (settings.contains("Language"))
 		{
-			ui.actionEnglish->setChecked(true);
-			SetLanguage(ui.actionEnglish);
+			switch (settings.value("Language").toInt())
+			{
+			case LANG_ENG:
+				ui.actionEnglish->setChecked(true);
+				SetLanguage(ui.actionEnglish);
+				break;
+			case LANG_GER:
+				ui.actionDeutsch->setChecked(true);
+				SetLanguage(ui.actionDeutsch);
+				break;
+			}
 		}
 		if (settings.contains("ViewMode"))
 		{
@@ -288,13 +323,18 @@ void CMainFrame::SetLanguage(QAction* action)
 {
 	if (action == ui.actionFran_ais)
 	{
-		m_inEnglish = false;
+		m_language = LANG_FRE;
 		m_translator.load("", "");
 	}
 	else if (action == ui.actionEnglish)
 	{
-		m_inEnglish = true;
-		m_translator.load("reseditor_en.qm", "platforms/English");
+		m_language = LANG_ENG;
+		m_translator.load("reseditor_en.qm", "Plugins/languages/English");
+	}
+	else if (action == ui.actionDeutsch)
+	{
+		m_language = LANG_GER;
+		m_translator.load("reseditor_de.qm", "Plugins/languages/Deutsch");
 	}
 
 	qApp->installTranslator(&m_translator);
@@ -314,7 +354,7 @@ void CMainFrame::closeEvent(QCloseEvent* event)
 	{
 		settings.setValue("WindowGeometry", saveGeometry());
 		settings.setValue("WindowState", saveState());
-		settings.setValue("Language", m_inEnglish ? "English" : "French");
+		settings.setValue("Language", m_language);
 		settings.setValue("ViewMode", m_viewMode);
 		settings.setValue("SortMode", m_sortMode);
 	}
@@ -371,8 +411,7 @@ void CMainFrame::SetSortMode(QAction* action)
 
 void CMainFrame::About()
 {
-	QMessageBox::about(this, tr("À propos"),
-		"ATools v" % string::number(VERSION) % '.' % string::number(SUB_VERSION) % tr("\n\nPar Aishiro"));
+	CAboutDialog(this).exec();
 }
 
 void CMainFrame::AboutQt()
@@ -417,7 +456,7 @@ void CMainFrame::dropEvent(QDropEvent* event)
 
 		if (pathList.size() == 1 && GetExtension(pathList[0]) == "res")
 		{
-			_openFile(pathList[0]);
+			OpenFile(pathList[0]);
 		}
 		else
 		{

@@ -32,6 +32,8 @@ public:
 
 	void SetMesh(CAnimatedMesh* mesh);
 	void SetLOD(int lod);
+	void ChangeMotion();
+	void SetReferenceModelID(int id);
 
 public slots:
 	void SetFrame(int frame);
@@ -44,10 +46,17 @@ private:
 	bool m_movingCamera;
 	int m_LOD;
 	D3DXVECTOR3 m_cameraPos;
+	int m_quakeSec;
+	bool m_changeMotion;
 
 	CTextureMng* m_textureMng;
 	CModelMng* m_modelMng;
 	CAnimatedMesh* m_mesh;
+	CAnimatedMesh* m_referenceMesh;
+
+	void _renderBones();
+	void _renderCollision();
+	void _renderBoundBox(const Bounds& bounds, uint color);
 };
 
 #endif // MODELVIEWER_H

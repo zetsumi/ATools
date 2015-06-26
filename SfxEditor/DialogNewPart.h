@@ -16,10 +16,12 @@ class CDialogNewPart : public QDialog
 
 public:
 	CDialogNewPart(QWidget *parent = 0);
-	~CDialogNewPart();
 
 	ESfxPartType GetSfxType() const;
 	void SetPart(CSfxPart* part);
+
+	public slots:
+	void SetTextureName();
 
 private:
 	Ui::Dialog ui;

@@ -67,16 +67,13 @@ CObject3D* CModelMng::GetObject3D(const string& filename)
 	CObject3D* obj3D = new CObject3D(m_device);
 
 	if (!obj3D->Load(m_modelPath % filename))
-	{
-		qWarning(("Can't load object3D from file '" % filename % "'").toLocal8Bit().data());
 		Delete(obj3D);
-	}
 
 	if (obj3D)
 	{
 		if (!obj3D->InitDeviceObjects())
 		{
-			qWarning(("Can't init object3D device objects '" % filename % "'").toLocal8Bit().data());
+			qCritical(("Can't init object3D device objects '" % filename % "'").toLocal8Bit().data());
 			Delete(obj3D);
 		}
 	}
@@ -98,10 +95,7 @@ CSkeleton* CModelMng::GetSkeleton(const string& filename)
 	CSkeleton* skel = new CSkeleton();
 
 	if (!skel->Load(m_modelPath % filename))
-	{
-		qWarning(("Can't load skeleton from file '" % filename % "'").toLocal8Bit().data());
 		Delete(skel);
-	}
 	
 #ifndef MODEL_EDITOR
 	m_skeletons[name] = skel;
@@ -125,10 +119,7 @@ CMotion* CModelMng::GetMotion(const string& filename)
 	CMotion* motion = new CMotion();
 
 	if (!motion->Load(m_modelPath % filename))
-	{
-		qWarning(("Can't load motion from file '" % filename % "'").toLocal8Bit().data());
 		Delete(motion);
-	}
 
 #ifndef MODEL_EDITOR
 	m_motions[name] = motion;
@@ -183,10 +174,7 @@ CSfx* CModelMng::GetSfx(const string& filename)
 	CSfx* sfx = new CSfx(m_device);
 
 	if (!sfx->Load(m_sfxPath % filename))
-	{
-		qWarning(("Can't load sfx from file '" % filename % "'").toLocal8Bit().data());
 		Delete(sfx);
-	}
 
 #ifndef SFX_EDITOR
 	m_sfxs[name] = sfx;

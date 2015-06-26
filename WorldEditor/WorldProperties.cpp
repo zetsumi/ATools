@@ -19,6 +19,8 @@ CDialogWorldProperties::CDialogWorldProperties(CWorld* world, QWidget *parent)
 	ui.setupUi(this);
 	m_world = world;
 
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	m_canFly = world->m_canFly;
 	ui.checkCanFly->setChecked(m_canFly);
 	connect(ui.checkCanFly, SIGNAL(clicked(bool)), this, SLOT(SetCanFly(bool)));

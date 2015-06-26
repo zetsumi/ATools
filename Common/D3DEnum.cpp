@@ -9,6 +9,23 @@
 
 using namespace D3D;
 
+bool DeviceCombo::SupportsMultiSampleType(D3DMULTISAMPLE_TYPE multisamples)
+{
+	if (MSTypes.Find(multisamples) == -1)
+		return false;
+
+	DSMSConflict c;
+	if (DSFormats.Find(D3DFMT_D24X8) != -1)
+		c.fmt = D3DFMT_D24X8;
+	else if (DSFormats.Find(D3DFMT_D16) != -1)
+		c.fmt = D3DFMT_D16;
+	else
+		c.fmt = (D3DFORMAT)DSFormats[DSFormats.Length() - 1];
+
+	c.mst = multisamples;
+	return DSMSConflicts.Find(c) == -1;
+}
+
 //-----------------------------------------------------------------------------
 // SortModesCallback(): sort callback comparing two D3DDISPLAYMODEs
 //-----------------------------------------------------------------------------
@@ -18,8 +35,8 @@ static int __cdecl SortModesCallback(const void* arg1, const void* arg2)
 	D3DDISPLAYMODE* pdm2 = (D3DDISPLAYMODE*)arg2;
 
 	// the wider display modes sink down, the thinner bubble up
-	if (pdm1->Width  > pdm2->Width)				return +1;
-	if (pdm1->Width  < pdm2->Width)				return -1;
+	if (pdm1->Width > pdm2->Width)				return +1;
+	if (pdm1->Width < pdm2->Width)				return -1;
 
 	// the taller display modes sink down, the shorter bubble up
 	if (pdm1->Height > pdm2->Height)			return +1;
@@ -121,7 +138,7 @@ void CEnum::EnumerateDSFormats(DeviceCombo* pdc)
 		fmt = (D3DFORMAT)AppDepthStencilFormats[i];
 
 		// check the format against app requirements
-		if (DEPTHBITS(fmt)   < AppMinDepthBits)   continue;
+		if (DEPTHBITS(fmt) < AppMinDepthBits)   continue;
 		if (STENCILBITS(fmt) < AppMinStencilBits) continue;
 
 		// is the format available for a depth/stencil surface resource on
@@ -232,7 +249,8 @@ void CEnum::EnumerateVPTypes(DeviceInfo* pdi, DeviceCombo* pdc)
 	// by default, every VP type is allowed, even the mixed one; your
 	// application may have different requirements, i.e. the need for
 	// a pure hardware device to test a graphics card...
-	if ((pdi->Caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0)
+	if ((pdi->Caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0
+		&& pdi->Caps.VertexShaderVersion >= D3DVS_VERSION(1, 1))
 	{
 		if ((pdi->Caps.DevCaps & D3DDEVCAPS_PUREDEVICE) != 0)
 			pdc->VPTypes.Append(PURE_VP);
@@ -440,9 +458,9 @@ bool CEnum::Enumerate(LPDIRECT3D9 pD3D)
 
 				// check the display mode for resolution, color and 
 				// alpha bit depth
-				if (dm.Width  < AppMinFullscreenWidth ||
+				if (dm.Width < AppMinFullscreenWidth ||
 					dm.Height < AppMinFullscreenHeight ||
-					RGBBITS(dm.Format)   < AppMinRGBBits ||
+					RGBBITS(dm.Format) < AppMinRGBBits ||
 					ALPHABITS(dm.Format) < AppMinAlphaBits)
 					continue;
 

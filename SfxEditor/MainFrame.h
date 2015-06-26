@@ -24,8 +24,11 @@ public:
 	CMainFrame(QWidget *parent = 0);
 	~CMainFrame();
 
-	CTimeline* GetTimeline() const { return m_timeline; }
+	bool Initialize();
 
+	void OpenFile(const string& filename);
+
+	CTimeline* GetTimeline() const { return m_timeline; }
 	string MakePartName(const CSfxPart* part) const;
 
 public slots:
@@ -68,6 +71,7 @@ public slots:
 	void EditPartBill(const QString& value);
 	void EditPartAlpha(const QString& value);
 	void EditPartTextureName();
+	void EditPartTexture();
 	void EditPartTexFrame(int value);
 	void EditPartTexLoop(int value);
 	void EditPartPointCount(int value);
@@ -125,12 +129,10 @@ private:
 	QDoubleSpinBox* m_modelRotX;
 	QDoubleSpinBox* m_modelRotY;
 	QDoubleSpinBox* m_modelRotZ;
-
 	QTranslator m_translator;
-	bool m_inEnglish;
+	int m_language;
 	QActionGroup* m_languageActionGroup;
 
-	void _openFile(const string& filename);
 	void _saveFile(const string& filename);
 	void _setKey();
 	void _editKey();
@@ -139,6 +141,7 @@ private:
 
 	void _connectWidgets();
 	void _loadSettings();
+	void _setShortcuts();
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent* event);

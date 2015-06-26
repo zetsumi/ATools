@@ -66,19 +66,19 @@ D3DFORMAT CSettings::GetBackBufferFormat()
 
 D3DFORMAT CSettings::GetDSFormat()
 {
-#ifdef WORLD_EDITOR
+	if (AdapterInfos[Windowed]->
+		DeviceInfos[ndi[Windowed]].
+		DeviceCombos[ndc[Windowed]].
+		DSFormats.Find(D3DFMT_D24X8) != -1)
+		return D3DFMT_D24X8;
+
 	if (AdapterInfos[Windowed]->
 		DeviceInfos[ndi[Windowed]].
 		DeviceCombos[ndc[Windowed]].
 		DSFormats.Find(D3DFMT_D16) != -1)
 		return D3DFMT_D16;
 
-	return (D3DFORMAT)AdapterInfos[Windowed]->
-		DeviceInfos[ndi[Windowed]].
-		DeviceCombos[ndc[Windowed]].
-		DSFormats[0];
-#else // WORLD_EDITOR
-	const UINT i = AdapterInfos[Windowed]->
+	const uint i = AdapterInfos[Windowed]->
 		DeviceInfos[ndi[Windowed]].
 		DeviceCombos[ndc[Windowed]].
 		DSFormats.Length();
@@ -87,7 +87,6 @@ D3DFORMAT CSettings::GetDSFormat()
 		DeviceInfos[ndi[Windowed]].
 		DeviceCombos[ndc[Windowed]].
 		DSFormats[i - 1];
-#endif // WORLD_EDITOR
 }
 
 // multisampling wrapper
@@ -97,15 +96,13 @@ D3DMULTISAMPLE_TYPE CSettings::GetMSType()
 #ifndef WORLD_EDITOR
 	if (AdapterInfos[Windowed]->
 		DeviceInfos[ndi[Windowed]].
-		DeviceCombos[ndc[Windowed]].
-		MSTypes.Find(D3DMULTISAMPLE_4_SAMPLES) != -1)
+		DeviceCombos[ndc[Windowed]].SupportsMultiSampleType(D3DMULTISAMPLE_4_SAMPLES))
 		return D3DMULTISAMPLE_4_SAMPLES;
 #endif // WORLD_EDITOR
 
 	if (AdapterInfos[Windowed]->
 		DeviceInfos[ndi[Windowed]].
-		DeviceCombos[ndc[Windowed]].
-		MSTypes.Find(D3DMULTISAMPLE_2_SAMPLES) != -1)
+		DeviceCombos[ndc[Windowed]].SupportsMultiSampleType(D3DMULTISAMPLE_2_SAMPLES))
 		return D3DMULTISAMPLE_2_SAMPLES;
 
 	return (D3DMULTISAMPLE_TYPE)AdapterInfos[Windowed]->

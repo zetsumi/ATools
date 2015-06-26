@@ -17,6 +17,10 @@ public:
 	virtual bool Init();
 	virtual void ResetScale();
 
+	void SetIndex(int index) {
+		m_index = index;
+	}
+
 private:
 	int m_index;
 	int m_motion;

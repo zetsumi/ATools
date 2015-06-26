@@ -9,14 +9,30 @@
 
 int main(int argc, char *argv[])
 {
+	const string workingDir = QFileInfo(string::fromLocal8Bit(argv[0])).absolutePath();
+	QCoreApplication::addLibraryPath(workingDir % "/Plugins/");
+	QDir::setCurrent(workingDir);
+
 	InstallMsgHandler();
 
 	QApplication app(argc, argv);
 
 	CMainFrame* mainFrame = new CMainFrame();
-	mainFrame->show();
+	int result = -1;
 
-	const int result = app.exec();
+	if (mainFrame->Initialize())
+	{
+		mainFrame->show();
+
+		if (argc >= 2)
+		{
+			mainFrame->OpenFile(string::fromLocal8Bit(argv[1]));
+			if (argc >= 3)
+				mainFrame->SetTextureEx(string(argv[2]).toInt());
+		}
+
+		result = app.exec();
+	}
 
 	Delete(mainFrame);
 	return result;

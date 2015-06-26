@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="MainFrame.qrc">
-    <normaloff>:/MainFrame/GUIEditor.png</normaloff>:/MainFrame/GUIEditor.png</iconset>
+    <normaloff>:/MainFrame/Resources/GUIEditor.png</normaloff>:/MainFrame/Resources/GUIEditor.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -49,8 +49,13 @@
      <property name="title">
       <string>Langage</string>
      </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/language.png</normaloff>:/MainFrame/Resources/language.png</iconset>
+     </property>
      <addaction name="actionFran_ais"/>
      <addaction name="actionEnglish"/>
+     <addaction name="actionDeutsch"/>
     </widget>
     <addaction name="actionGrille"/>
     <addaction name="actionCouleur_du_fond"/>
@@ -110,6 +115,7 @@
    <addaction name="separator"/>
    <addaction name="actionGrille"/>
    <addaction name="actionCling"/>
+   <addaction name="actionPr_cision_de_l_diteur"/>
    <addaction name="separator"/>
    <addaction name="actionAligner_gauche"/>
    <addaction name="actionAligner_droite"/>
@@ -161,7 +167,7 @@
          </property>
          <property name="icon">
           <iconset resource="MainFrame.qrc">
-           <normaloff>:/MainFrame/Resources/add.png</normaloff>:/MainFrame/Resources/add.png</iconset>
+           <normaloff>:/MainFrame/Resources/new.png</normaloff>:/MainFrame/Resources/new.png</iconset>
          </property>
         </widget>
        </item>
@@ -172,7 +178,7 @@
          </property>
          <property name="icon">
           <iconset resource="MainFrame.qrc">
-           <normaloff>:/MainFrame/Resources/remove.png</normaloff>:/MainFrame/Resources/remove.png</iconset>
+           <normaloff>:/MainFrame/Resources/delete.png</normaloff>:/MainFrame/Resources/delete.png</iconset>
          </property>
         </widget>
        </item>
@@ -690,31 +696,25 @@
   <action name="actionEnregistrer">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_file_as.png</normaloff>:/MainFrame/Resources/save_file_as.png</iconset>
+     <normaloff>:/MainFrame/Resources/save.png</normaloff>:/MainFrame/Resources/save.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionQuitter">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_exit.png</normaloff>:/MainFrame/Resources/app_exit.png</iconset>
+     <normaloff>:/MainFrame/Resources/quit.png</normaloff>:/MainFrame/Resources/quit.png</iconset>
    </property>
    <property name="text">
     <string>Quitter</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_propos">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>À propos</string>
@@ -723,7 +723,7 @@
   <action name="actionQt">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>Qt</string>
@@ -740,68 +740,50 @@
    <property name="text">
     <string>Plein écran</string>
    </property>
-   <property name="shortcut">
-    <string>F11</string>
-   </property>
   </action>
   <action name="actionAligner_en_haut">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_alignTop.png</normaloff>:/MainFrame/Resources/gui_alignTop.png</iconset>
+     <normaloff>:/MainFrame/Resources/align_top.png</normaloff>:/MainFrame/Resources/align_top.png</iconset>
    </property>
    <property name="text">
     <string>Aligner en haut</string>
-   </property>
-   <property name="shortcut">
-    <string>T</string>
    </property>
   </action>
   <action name="actionAligner_en_bas">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_alignBottom.png</normaloff>:/MainFrame/Resources/gui_alignBottom.png</iconset>
+     <normaloff>:/MainFrame/Resources/align_bottom.png</normaloff>:/MainFrame/Resources/align_bottom.png</iconset>
    </property>
    <property name="text">
     <string>Aligner en bas</string>
-   </property>
-   <property name="shortcut">
-    <string>B</string>
    </property>
   </action>
   <action name="actionAligner_gauche">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_alignLeft.png</normaloff>:/MainFrame/Resources/gui_alignLeft.png</iconset>
+     <normaloff>:/MainFrame/Resources/align_left.png</normaloff>:/MainFrame/Resources/align_left.png</iconset>
    </property>
    <property name="text">
     <string>Aligner à gauche</string>
-   </property>
-   <property name="shortcut">
-    <string>L</string>
    </property>
   </action>
   <action name="actionAligner_droite">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_alignRight.png</normaloff>:/MainFrame/Resources/gui_alignRight.png</iconset>
+     <normaloff>:/MainFrame/Resources/align_right.png</normaloff>:/MainFrame/Resources/align_right.png</iconset>
    </property>
    <property name="text">
     <string>Aligner à droite</string>
-   </property>
-   <property name="shortcut">
-    <string>R</string>
    </property>
   </action>
   <action name="actionSupprimer_le_control">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/remove.png</normaloff>:/MainFrame/Resources/remove.png</iconset>
+     <normaloff>:/MainFrame/Resources/delete.png</normaloff>:/MainFrame/Resources/delete.png</iconset>
    </property>
    <property name="text">
     <string>Supprimer le control</string>
-   </property>
-   <property name="shortcut">
-    <string>Del</string>
    </property>
   </action>
   <action name="actionGrille">
@@ -813,7 +795,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGrid.png</normaloff>:/MainFrame/Resources/option_showGrid.png</iconset>
+     <normaloff>:/MainFrame/Resources/grid.png</normaloff>:/MainFrame/Resources/grid.png</iconset>
    </property>
    <property name="text">
     <string>Grille</string>
@@ -828,7 +810,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_cling.png</normaloff>:/MainFrame/Resources/gui_cling.png</iconset>
+     <normaloff>:/MainFrame/Resources/cling.png</normaloff>:/MainFrame/Resources/cling.png</iconset>
    </property>
    <property name="text">
     <string>Cling</string>
@@ -837,13 +819,10 @@
   <action name="actionNouvelle_fen_tre">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/add.png</normaloff>:/MainFrame/Resources/add.png</iconset>
+     <normaloff>:/MainFrame/Resources/new.png</normaloff>:/MainFrame/Resources/new.png</iconset>
    </property>
    <property name="text">
     <string>Nouvelle fenêtre</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionText">
@@ -852,7 +831,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_text.png</normaloff>:/MainFrame/Resources/gui_text.png</iconset>
+     <normaloff>:/MainFrame/Resources/text.png</normaloff>:/MainFrame/Resources/text.png</iconset>
    </property>
    <property name="text">
     <string>Text</string>
@@ -864,7 +843,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_picture.png</normaloff>:/MainFrame/Resources/gui_picture.png</iconset>
+     <normaloff>:/MainFrame/Resources/picture.png</normaloff>:/MainFrame/Resources/picture.png</iconset>
    </property>
    <property name="text">
     <string>Picture</string>
@@ -876,7 +855,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_static.png</normaloff>:/MainFrame/Resources/gui_static.png</iconset>
+     <normaloff>:/MainFrame/Resources/static.png</normaloff>:/MainFrame/Resources/static.png</iconset>
    </property>
    <property name="text">
     <string>Static</string>
@@ -888,7 +867,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_textEdit.png</normaloff>:/MainFrame/Resources/gui_textEdit.png</iconset>
+     <normaloff>:/MainFrame/Resources/textEdit.png</normaloff>:/MainFrame/Resources/textEdit.png</iconset>
    </property>
    <property name="text">
     <string>Text Edit</string>
@@ -900,7 +879,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_groupBox.png</normaloff>:/MainFrame/Resources/gui_groupBox.png</iconset>
+     <normaloff>:/MainFrame/Resources/groupBox.png</normaloff>:/MainFrame/Resources/groupBox.png</iconset>
    </property>
    <property name="text">
     <string>GroupBox</string>
@@ -912,7 +891,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_button.png</normaloff>:/MainFrame/Resources/gui_button.png</iconset>
+     <normaloff>:/MainFrame/Resources/button.png</normaloff>:/MainFrame/Resources/button.png</iconset>
    </property>
    <property name="text">
     <string>Button</string>
@@ -924,7 +903,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_checkBox.png</normaloff>:/MainFrame/Resources/gui_checkBox.png</iconset>
+     <normaloff>:/MainFrame/Resources/checkBox.png</normaloff>:/MainFrame/Resources/checkBox.png</iconset>
    </property>
    <property name="text">
     <string>CheckBox</string>
@@ -936,7 +915,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_radioButton.png</normaloff>:/MainFrame/Resources/gui_radioButton.png</iconset>
+     <normaloff>:/MainFrame/Resources/radioButton.png</normaloff>:/MainFrame/Resources/radioButton.png</iconset>
    </property>
    <property name="text">
     <string>RadioButton</string>
@@ -948,7 +927,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_comboBox.png</normaloff>:/MainFrame/Resources/gui_comboBox.png</iconset>
+     <normaloff>:/MainFrame/Resources/comboBox.png</normaloff>:/MainFrame/Resources/comboBox.png</iconset>
    </property>
    <property name="text">
     <string>ComboBox</string>
@@ -960,7 +939,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_listBox.png</normaloff>:/MainFrame/Resources/gui_listBox.png</iconset>
+     <normaloff>:/MainFrame/Resources/listBox.png</normaloff>:/MainFrame/Resources/listBox.png</iconset>
    </property>
    <property name="text">
     <string>ListBox</string>
@@ -972,7 +951,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_listCtrl.png</normaloff>:/MainFrame/Resources/gui_listCtrl.png</iconset>
+     <normaloff>:/MainFrame/Resources/listCtrl.png</normaloff>:/MainFrame/Resources/listCtrl.png</iconset>
    </property>
    <property name="text">
     <string>ListCtrl</string>
@@ -984,7 +963,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_treeCtrl.png</normaloff>:/MainFrame/Resources/gui_treeCtrl.png</iconset>
+     <normaloff>:/MainFrame/Resources/treeCtrl.png</normaloff>:/MainFrame/Resources/treeCtrl.png</iconset>
    </property>
    <property name="text">
     <string>TreeCtrl</string>
@@ -996,7 +975,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_tabCtrl.png</normaloff>:/MainFrame/Resources/gui_tabCtrl.png</iconset>
+     <normaloff>:/MainFrame/Resources/tabCtrl.png</normaloff>:/MainFrame/Resources/tabCtrl.png</iconset>
    </property>
    <property name="text">
     <string>TabCtrl</string>
@@ -1008,7 +987,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_custom.png</normaloff>:/MainFrame/Resources/gui_custom.png</iconset>
+     <normaloff>:/MainFrame/Resources/custom.png</normaloff>:/MainFrame/Resources/custom.png</iconset>
    </property>
    <property name="text">
     <string>Custom</string>
@@ -1024,20 +1003,21 @@
    <property name="text">
     <string>X</string>
    </property>
-   <property name="shortcut">
-    <string>X</string>
-   </property>
   </action>
   <action name="actionCouleur_du_fond">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_backgroundColor.png</normaloff>:/MainFrame/Resources/option_backgroundColor.png</iconset>
+     <normaloff>:/MainFrame/Resources/background_color.png</normaloff>:/MainFrame/Resources/background_color.png</iconset>
    </property>
    <property name="text">
     <string>Couleur du fond</string>
    </property>
   </action>
   <action name="actionPr_cision_de_l_diteur">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/precision.png</normaloff>:/MainFrame/Resources/precision.png</iconset>
+   </property>
    <property name="text">
     <string>Précision de l'éditeur</string>
    </property>
@@ -1045,13 +1025,10 @@
   <action name="actionRamener_au_premier_plan">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_setOnTop.png</normaloff>:/MainFrame/Resources/gui_setOnTop.png</iconset>
+     <normaloff>:/MainFrame/Resources/bring.png</normaloff>:/MainFrame/Resources/bring.png</iconset>
    </property>
    <property name="text">
     <string>Ramener au premier plan</string>
-   </property>
-   <property name="shortcut">
-    <string>F</string>
    </property>
   </action>
   <action name="actionFran_ais">
@@ -1084,37 +1061,40 @@
   <action name="actionCopier">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_copy.png</normaloff>:/MainFrame/Resources/edit_copy.png</iconset>
+     <normaloff>:/MainFrame/Resources/copy.png</normaloff>:/MainFrame/Resources/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copier</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="actionCouper">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_cut.png</normaloff>:/MainFrame/Resources/edit_cut.png</iconset>
+     <normaloff>:/MainFrame/Resources/cut.png</normaloff>:/MainFrame/Resources/cut.png</iconset>
    </property>
    <property name="text">
     <string>Couper</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+X</string>
    </property>
   </action>
   <action name="actionColler">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_paste.png</normaloff>:/MainFrame/Resources/edit_paste.png</iconset>
+     <normaloff>:/MainFrame/Resources/paste.png</normaloff>:/MainFrame/Resources/paste.png</iconset>
    </property>
    <property name="text">
     <string>Coller</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+V</string>
+  </action>
+  <action name="actionDeutsch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/language_german.png</normaloff>:/MainFrame/Resources/language_german.png</iconset>
+   </property>
+   <property name="text">
+    <string>Deutsch</string>
    </property>
   </action>
  </widget>

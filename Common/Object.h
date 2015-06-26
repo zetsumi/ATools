@@ -24,13 +24,13 @@ class CObject
 {
 public:
 	static CObject* CreateObject(CFile& file);
-	static CObject* CreateObject(uint type);
+	static CObject* CreateObject(uint type, CObject* clone = null);
+
+	static string GetModelFilename(ModelProp* prop);
 
 public:
 	CObject();
 	virtual ~CObject();
-
-	string GetModelFilename() const;
 
 	virtual void Read(CFile& file);
 	virtual void Write(CFile& file, const D3DXVECTOR3& posOffset);
@@ -53,6 +53,19 @@ public:
 	void SetType(uint type) {
 		m_type = type;
 	}
+	void SetUnvisible(bool unvisible) {
+		m_isUnvisible = unvisible;
+	}
+	void SetID(objid id) {
+		m_ID = id;
+	}
+	void SetModelID(uint id) {
+		m_modelID = id;
+	}
+
+	objid GetID() const {
+		return m_ID;
+	}
 	uint GetType() const {
 		return m_type;
 	}
@@ -68,8 +81,18 @@ public:
 	bool IsReal() const {
 		return m_isReal;
 	}
+	string GetModelFilename() const {
+		return GetModelFilename(m_modelProp);
+	}
+	bool IsUnvisible() const {
+		return m_isUnvisible;
+	}
+	uint GetModelID() const {
+		return m_modelID;
+	}
 
 protected:
+	ulong m_ID;
 	uint m_type;
 	D3DXVECTOR3 m_rot;
 	D3DXVECTOR3 m_pos;
@@ -84,7 +107,6 @@ protected:
 	CWorld* m_world;
 	float m_distToCamera;
 	bool m_isReal;
-	D3DXVECTOR3 m_baseScale, m_basePos;
 	bool m_isUnvisible;
 
 	void _updateMatrix();

@@ -5,11 +5,11 @@
 ///////////
 
 #include "stdafx.h"
-#include <World.h>
+#include "TerrainEdition.h"
 #include "MainFrame.h"
-#include <Landscape.h>
+#include <World.h>
 
-void CWorld::EditHeight(const D3DXVECTOR3& pos, const QPoint& mousePos, float baseHeight)
+void CEditTerrainHeightCommand::Edit(const D3DXVECTOR3& pos, const QPoint& mousePos, float baseHeight)
 {
 	int mode, radius, hardness, attribute;
 	bool rounded, useFixedHeight;
@@ -36,23 +36,23 @@ void CWorld::EditHeight(const D3DXVECTOR3& pos, const QPoint& mousePos, float ba
 		}
 	}
 
-	const float cameraFactor = D3DXVec3Length(&(m_cameraPos - pos)) / 180.0f;
+	const float cameraFactor = D3DXVec3Length(&(m_world->GetCameraPos() - pos)) / 180.0f;
 	const float radius1 = (float)((radius - 1) * MPU);
 	const D3DXVECTOR3 terrainPos((int)(pos.x + ((float)MPU / 2.0f)) / MPU * MPU, 0.0f, (int)(pos.z + ((float)MPU / 2.0f)) / MPU * MPU);
 	const float baseHeight2 = useFixedHeight ? fixedHeight : baseHeight;
 	const float radius4 = (float)hardness / 100.0f + 0.1f;
-	QVector<CLandscape*> updateLands;
-	QVector<D3DXVECTOR3> updateHeights;
-	CLandscape* land;
-	float x, z, x2, z2, x3, z3, heightMove;
-	float len, radius2;
-	int i, pointCount, mX, mZ;
+	const int worldWidth = m_world->GetWidth() * MAP_SIZE;
+
+	float x, z, temp, len, radius2, a, x2, z2;
+	int pointCount;
+	size_t i;
+	bool exists;
 
 	for (x = terrainPos.x - radius1; x <= terrainPos.x + radius1; x += MPU)
 	{
 		for (z = terrainPos.z - radius1; z <= terrainPos.z + radius1; z += MPU)
 		{
-			if (VecInWorld(x, z))
+			if (m_world->VecInWorld(x, z))
 			{
 				if (rounded)
 				{
@@ -74,294 +74,194 @@ void CWorld::EditHeight(const D3DXVECTOR3& pos, const QPoint& mousePos, float ba
 					radius2 = radius1 + (float)MPU / 2.0f;
 				}
 
-				x2 = x / MPU;
-				z2 = z / MPU;
+				temp = 0.0f;
 
-				mX = int(x2 / MAP_SIZE);
-				mZ = int(z2 / MAP_SIZE);
-				if (x2 == m_width * MAP_SIZE)
-					mX--;
-				if (z2 == m_height * MAP_SIZE)
-					mZ--;
+				const float height = m_world->GetHeight_fast(x, z);
+				const float attribute = m_world->GetHeightAttribute(x, z);
 
-				const int offset = mX + mZ * m_width;
-				if (offset < 0 || offset >= m_width * m_height)
-					continue;
-				land = m_lands[offset];
-				if (!land)
-					continue;
-
-				const int heightOffset = ((int)x2 - (mX * MAP_SIZE)) + (((int)z2 - (mZ * MAP_SIZE)) * (MAP_SIZE + 1));
-				if (heightOffset < 0 || heightOffset >= (MAP_SIZE + 1) * (MAP_SIZE + 1))
-					continue;
-
-				if (mode == 4)
+				switch (mode)
 				{
-					land->m_heightMap[heightOffset] = land->GetHeight(heightOffset) + heightAttribute;
-					if (!updateLands.contains(land))
-						updateLands.push_back(land);
-				}
-				else
-				{
-					heightMove = 0.0f;
-
-					if (mode == 0)
+				case 0:
+					temp = (float)mousePos.y() * 0.2f * cameraFactor;
+					if (radius > 1)
+						temp *= (1.0f - ((len - 1.0f) / radius1) * ((len - 1.0f) / radius2));
+					temp += height;
+					if (temp < 0.0f)
+						temp = 0.0f;
+					else if (temp > 999.0f)
+						temp = 999.0f;
+					temp += attribute;
+					break;
+				case 1:
+					if (len <= radius4 * radius2 || radius <= 1 || (radius4 * radius2 - radius2) == 0.0f)
+						temp = baseHeight2;
+					else
 					{
-						heightMove = (float)mousePos.y() * 0.2f * cameraFactor;
-						if (radius > 1)
-							heightMove *= (1.0f - ((len - 1.0f) / radius1) * ((len - 1.0f) / radius2));
+						a = (len - radius2) / (radius4 * radius2 - radius2) * 0.4f;
+						if (a < 0.0f)
+							a = 0.0f;
+						else if (a > 0.5f)
+							a = 0.5f;
+						temp = height * (1.0f - a) + baseHeight2 * a;
+						if (temp < 0.0f)
+							temp = 0.0f;
+						else if (temp > 999.0f)
+							temp = 999.0f;
 					}
-					else if (mode == 1)
+					temp += attribute;
+					break;
+				case 2:
+					pointCount = 0;
+					for (x2 = x - MPU; x2 <= x + MPU; x2 += MPU)
 					{
-						if (len <= radius4 * radius2 || radius <= 1 || (radius4 * radius2 - radius2) == 0.0f)
-							heightMove = baseHeight2;
-						else
+						for (z2 = z - MPU; z2 <= z + MPU; z2 += MPU)
 						{
-							float a = (len - radius2) / (radius4 * radius2 - radius2) * 0.4f;
-							if (a < 0.0f)
-								a = 0.0f;
-							else if (a > 0.5f)
-								a = 0.5f;
-							heightMove = land->GetHeight(heightOffset) * (1.0f - a) + baseHeight2 * a;
-						}
-						heightMove -= land->GetHeight(heightOffset);
-					}
-					else if (mode == 2)
-					{
-						pointCount = 0;
-						for (x3 = x - MPU; x3 <= x + MPU; x3 += MPU)
-						{
-							for (z3 = z - MPU; z3 <= z + MPU; z3 += MPU)
+							if (m_world->VecInWorld(x2, z2))
 							{
-								if (VecInWorld(x3, z3))
-								{
-									heightMove += GetHeight(x3, z3);
-									pointCount++;
-								}
+								temp += m_world->GetHeight_fast(x2, z2);
+								pointCount++;
 							}
 						}
-
-						if (pointCount > 0)
-						{
-							heightMove /= (float)pointCount;
-							heightMove -= land->GetHeight(heightOffset);
-						}
 					}
-					else if (mode == 3)
+					temp /= (float)pointCount;
+					temp += attribute;
+					break;
+				case 3:
+					temp = (float)(rand()) / ((float)RAND_MAX / 0.3f);
+					if (temp >= 0.15f)
+						temp = -(temp - 0.15f);
+					temp += height;
+					if (temp < 0.0f)
+						temp = 0.0f;
+					else if (temp > 999.0f)
+						temp = 999.0f;
+					temp += attribute;
+					break;
+				case 4:
+					temp = height + heightAttribute;
+					break;
+				}
+
+				if (temp == height && mode != 4)
+					continue;
+
+				exists = false;
+				const int offset = ((int)x / MPU) + ((int)z / MPU) * worldWidth;
+
+				for (i = 0; i < m_heights.size(); i++)
+				{
+					if (m_heights[i].offset == offset)
 					{
-						heightMove = (float)(rand()) / (float)(RAND_MAX / 0.3f);
-						if (heightMove >= 0.15f)
-							heightMove = -(heightMove - 0.15f);
+						m_heights[i].height = temp;
+						exists = true;
+						break;
 					}
+				}
 
-					heightMove += land->GetHeight(heightOffset);
-					if (heightMove < 0.0f)
-						heightMove = 0.0f;
-					else if (heightMove > 999.0f)
-						heightMove = 999.0f;
-					heightMove += land->GetHeightAttribute(heightOffset);
-
-					if (mode == 2)
-						updateHeights.push_back(D3DXVECTOR3(x, heightMove, z));
-					else
-						SetHeight(x, z, heightMove);
-
-					if (land->GetHeightAttribute(heightOffset) >= HGT_NOWALK)
-					{
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
+				if (!exists)
+				{
+					HeightEntry entry;
+					entry.offset = offset;
+					entry.height = temp;
+					entry.original = height + attribute;
+					m_heights.push_back(entry);
 				}
 			}
 		}
 	}
 
-	if (mode == 2)
+	Apply();
+}
+
+void CEditTerrainHeightCommand::Apply(bool undo)
+{
+	int x, z, mX, mZ;
+	const int worldWidth = m_world->GetWidth() * MAP_SIZE;
+	const int worldHeight = m_world->GetHeight() * MAP_SIZE;
+	CLandscape* land;
+	CPtrArray<CLandscape> updateLands(4);
+	for (size_t i = 0; i < m_heights.size(); i++)
 	{
-		for (i = 0; i < updateHeights.size(); i++)
-			SetHeight(updateHeights[i].x, updateHeights[i].z, updateHeights[i].y);
+		const HeightEntry& entry = m_heights[i];
+
+		z = entry.offset / worldWidth;
+		x = entry.offset - z * worldWidth;
+
+		mX = x / MAP_SIZE;
+		mZ = z / MAP_SIZE;
+		if (x == worldWidth)
+			mX--;
+		if (z == worldHeight)
+			mZ--;
+
+		land = m_world->GetLand(mX, mZ);
+		if (!land)
+			continue;
+
+		const float height = undo ? entry.original : m_heights[i].height;
+		const bool updateAttributes = entry.original >= HGT_NOWALK || entry.height >= HGT_NOWALK;
+
+		x -= mX * MAP_SIZE;
+		z -= mZ * MAP_SIZE;
+
+		land->SetHeight(x, z, height);
+		if (updateAttributes && !updateLands.Contains(land))
+			updateLands.Append(land);
+
+		if (x == 0 && mX > 0 && z == 0 && mZ > 0)
+		{
+			land = m_world->GetLand(mX - 1, mZ - 1);
+			if (land)
+			{
+				land->SetHeight(MAP_SIZE, MAP_SIZE, height);
+				if (updateAttributes && !updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
+		if (x == 0 && mX > 0)
+		{
+			land = m_world->GetLand(mX - 1, mZ);
+			if (land)
+			{
+				land->SetHeight(MAP_SIZE, z, height);
+				if (updateAttributes && !updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
+		if (z == 0 && mZ > 0)
+		{
+			land = m_world->GetLand(mX, mZ - 1);
+			if (land)
+			{
+				land->SetHeight(x, MAP_SIZE, height);
+				if (updateAttributes && !updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
 	}
 
-	for (i = 0; i < updateLands.size(); i++)
+	for (int i = 0; i < updateLands.GetSize(); i++)
 		updateLands[i]->MakeAttributesVertexBuffer();
 }
 
-void CWorld::SetHeight(float x, float z, float height)
-{
-	if (!VecInWorld(x, z))
-		return;
-
-	x /= (float)m_MPU;
-	z /= (float)m_MPU;
-
-	int mX = int(x / MAP_SIZE);
-	int mZ = int(z / MAP_SIZE);
-	if (x == m_width * MAP_SIZE)
-		mX--;
-	if (z == m_height * MAP_SIZE)
-		mZ--;
-
-	const int offset = mX + mZ * m_width;
-	if (offset < 0 || offset >= m_width * m_height)
-		return;
-
-	CLandscape* land = m_lands[offset];
-	if (!land)
-		return;
-
-	x -= mX * MAP_SIZE;
-	z -= mZ * MAP_SIZE;
-
-	const int rX = (int)x;
-	const int rZ = (int)z;
-
-	land->SetHeight(rX, rZ, height);
-
-	if (rX == 0 && mX > 0 && rZ == 0 && mZ > 0)
-	{
-		land = m_lands[(mX - 1) + (mZ - 1) * m_width];
-		if (land)
-			land->SetHeight(MAP_SIZE, MAP_SIZE, height);
-	}
-	if (rX == 0 && mX > 0)
-	{
-		land = m_lands[(mX - 1) + mZ * m_width];
-		if (land)
-			land->SetHeight(MAP_SIZE, rZ, height);
-	}
-	if (rZ == 0 && mZ > 0)
-	{
-		land = m_lands[mX + (mZ - 1) * m_width];
-		if (land)
-			land->SetHeight(rX, MAP_SIZE, height);
-	}
-}
-
-void CLandscape::SetHeight(int x, int z, float height)
-{
-	m_heightMap[x + z * (MAP_SIZE + 1)] = height;
-
-	const int tx = x / PATCH_SIZE;
-	const int tz = z / PATCH_SIZE;
-
-	m_patches[tz][tx].m_dirty = true;
-	if (tx > 0)
-		m_patches[tz][tx - 1].m_dirty = true;
-	if (tz > 0)
-		m_patches[tz - 1][tx].m_dirty = true;
-	if (tz > 0 && tx > 0)
-		m_patches[tz - 1][tx - 1].m_dirty = true;
-	m_dirty = true;
-}
-
-void CWorld::EditWater(const D3DXVECTOR3& pos)
+void CEditWaterCommand::Edit(const D3DXVECTOR3& pos)
 {
 	const int mX = int((pos.x / (float)MPU) / PATCH_SIZE);
 	const int mZ = int((pos.z / (float)MPU) / PATCH_SIZE);
-	if (mX < 0 || mZ < 0 || mX >= m_width * NUM_PATCHES_PER_SIDE || mZ >= m_height * NUM_PATCHES_PER_SIDE)
+	const int worldWidth = m_world->GetWidth() * NUM_PATCHES_PER_SIDE;
+
+	if (mX < 0 || mZ < 0 || mX >= worldWidth || mZ >= m_world->GetHeight() * NUM_PATCHES_PER_SIDE)
 		return;
 
-	int mode, size, tx, tz, landX, landZ, offset;
+	int mode, size, x, z;
 	byte height, texture;
-
-	MainFrame->GetWaterEditInfos(mode, height, texture, size);
-	WaterHeight newWaterHeight;
-	CLandscape* land;
-	QVector<CLandscape*> updateLands;
-
-	for (tx = mX - size + 1; tx < mX + size; tx++)
-	{
-		for (tz = mZ - size + 1; tz < mZ + size; tz++)
-		{
-			landX = tx / NUM_PATCHES_PER_SIDE;
-			landZ = tz / NUM_PATCHES_PER_SIDE;
-
-			if (landX < 0 || landX >= m_width || landZ < 0 || landZ >= m_height)
-				continue;
-
-			land = m_lands[landX + landZ * m_width];
-			if (!land)
-				return;
-
-			offset = (tx - landX * NUM_PATCHES_PER_SIDE) + (tz - landZ * NUM_PATCHES_PER_SIDE) * NUM_PATCHES_PER_SIDE;
-			if (offset < 0 || offset >= NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE)
-				continue;
-
-			WaterHeight newWaterHeight = land->m_waterHeight[offset];
-
-			if (mode == WTYPE_NONE)
-				newWaterHeight.texture = WTYPE_NONE;
-			else if (mode == WTYPE_CLOUD)
-				newWaterHeight.texture = WTYPE_CLOUD;
-			else if (mode == WTYPE_WATER)
-			{
-				newWaterHeight.height = height;
-				newWaterHeight.texture = WTYPE_WATER;
-				newWaterHeight.texture |= (texture << 2);
-			}
-
-			if (newWaterHeight.height != land->m_waterHeight[offset].height
-				|| newWaterHeight.texture != land->m_waterHeight[offset].texture)
-			{
-				land->m_waterHeight[offset] = newWaterHeight;
-				if (!updateLands.contains(land))
-					updateLands.push_back(land);
-			}
-		}
-	}
-
-	for (int i = 0; i < updateLands.size(); i++)
-		updateLands[i]->MakeWaterVertexBuffer();
-}
-
-void CMainFrame::OptimizeWater()
-{
-	if (!m_world)
-		return;
-
-	int x, z, X, Z;
-	CLandscape* land;
-	for (x = 0; x < m_world->m_width; x++)
-	{
-		for (z = 0; z < m_world->m_height; z++)
-		{
-			land = m_world->m_lands[x + z * m_world->m_width];
-			if (land)
-			{
-				for (X = 0; X < NUM_PATCHES_PER_SIDE; X++)
-				{
-					for (Z = 0; Z < NUM_PATCHES_PER_SIDE; Z++)
-					{
-						const int minHeight = (int)(land->m_patches[Z][X].GetMinHeight() + 0.5f);
-						if ((land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE].texture == WTYPE_CLOUD
-							&& minHeight > 80) ||
-							((land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE].texture & (byte)(~MASK_WATERFRAME)) == WTYPE_WATER
-							&& minHeight >(int)land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE].height))
-							land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE].texture = WTYPE_NONE;
-					}
-				}
-
-				land->MakeWaterVertexBuffer();
-			}
-		}
-	}
-
-	UpdateWorldEditor();
-}
-
-void CMainFrame::FillAllMapWithWater()
-{
-	if (!m_world)
-		return;
-
-	int mode, size;
-	byte height, texture;
+	WaterHeight* waterHeight;
+	size_t i;
+	bool exists;
 
 	MainFrame->GetWaterEditInfos(mode, height, texture, size);
 
 	WaterHeight newWaterHeight;
-	memset(&newWaterHeight, 0, sizeof(WaterHeight));
-
 	if (mode == WTYPE_NONE)
 		newWaterHeight.texture = WTYPE_NONE;
 	else if (mode == WTYPE_CLOUD)
@@ -373,684 +273,821 @@ void CMainFrame::FillAllMapWithWater()
 		newWaterHeight.texture |= (texture << 2);
 	}
 
-	int x, z, X, Z;
-	CLandscape* land;
-	for (x = 0; x < m_world->m_width; x++)
+	for (x = mX - size + 1; x < mX + size; x++)
 	{
-		for (z = 0; z < m_world->m_height; z++)
+		for (z = mZ - size + 1; z < mZ + size; z++)
 		{
-			land = m_world->m_lands[x + z * m_world->m_width];
-			if (land)
-			{
-				for (X = 0; X < NUM_PATCHES_PER_SIDE; X++)
-				{
-					for (Z = 0; Z < NUM_PATCHES_PER_SIDE; Z++)
-					{
-						const int minHeight = (int)(land->m_patches[Z][X].GetMinHeight() + 0.5f);
-						if ((mode == WTYPE_CLOUD && minHeight <= 80) || (mode == WTYPE_WATER && minHeight <= (int)height))
-							land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE] = newWaterHeight;
-						else
-							land->m_waterHeight[X + Z * NUM_PATCHES_PER_SIDE].texture = WTYPE_NONE;
-					}
-				}
+			waterHeight = m_world->GetWaterHeight(x * MPU * PATCH_SIZE, z * MPU * PATCH_SIZE);
 
-				land->MakeWaterVertexBuffer();
+			if (!waterHeight || (waterHeight->height == newWaterHeight.height && waterHeight->texture == newWaterHeight.texture))
+				continue;
+
+			exists = false;
+			const int offset = (int)x + (int)z * worldWidth;
+
+			for (i = 0; i < m_heights.size(); i++)
+			{
+				if (m_heights[i].offset == offset)
+				{
+					m_heights[i].height = newWaterHeight;
+					exists = true;
+					break;
+				}
+			}
+
+			if (!exists)
+			{
+				HeightEntry entry;
+				entry.offset = offset;
+				entry.height = newWaterHeight;
+				entry.original = *waterHeight;
+				m_heights.push_back(entry);
 			}
 		}
 	}
 
-	UpdateWorldEditor();
+	Apply();
 }
 
-void CWorld::EditColor(const D3DXVECTOR3& pos)
+void CEditWaterCommand::Optimize()
+{
+	const int worldWidth = m_world->GetWidth() * NUM_PATCHES_PER_SIDE;
+	const int worldHeight = m_world->GetHeight() * NUM_PATCHES_PER_SIDE;
+	int x, z;
+	WaterHeight* waterHeight;
+	CLandscape* land;
+
+	WaterHeight empty;
+	memset(&empty, 0, sizeof(empty));
+
+	for (x = 0; x < worldWidth; x++)
+	{
+		for (z = 0; z < worldHeight; z++)
+		{
+			const D3DXVECTOR3 v(x * MPU * PATCH_SIZE, 1.0f, z * MPU * PATCH_SIZE);
+
+			waterHeight = m_world->GetWaterHeight(v.x, v.z);
+			if (!waterHeight)
+				continue;
+
+			land = m_world->GetLand(v);
+			if (!land)
+				continue;
+
+			const int minHeight = (int)(land->GetMinHeight(x % NUM_PATCHES_PER_SIDE, z % NUM_PATCHES_PER_SIDE) + 0.5f);
+			if ((waterHeight->texture == WTYPE_CLOUD && minHeight > 80) ||
+				((waterHeight->texture & (byte)(~MASK_WATERFRAME)) == WTYPE_WATER && minHeight > waterHeight->height))
+			{
+				HeightEntry entry;
+				entry.offset = x + z * worldWidth;
+				entry.height = empty;
+				entry.original = *waterHeight;
+				m_heights.push_back(entry);
+			}
+		}
+	}
+
+	Apply();
+}
+
+void CEditWaterCommand::FillAllMap()
+{
+	int mode, size;
+	byte mapHeight, texture;
+
+	MainFrame->GetWaterEditInfos(mode, mapHeight, texture, size);
+
+	WaterHeight newWaterHeight;
+	memset(&newWaterHeight, 0, sizeof(WaterHeight));
+
+	if (mode == WTYPE_NONE)
+		newWaterHeight.texture = WTYPE_NONE;
+	else if (mode == WTYPE_CLOUD)
+		newWaterHeight.texture = WTYPE_CLOUD;
+	else if (mode == WTYPE_WATER)
+	{
+		newWaterHeight.height = mapHeight;
+		newWaterHeight.texture = WTYPE_WATER;
+		newWaterHeight.texture |= (texture << 2);
+	}
+
+	const int worldWidth = m_world->GetWidth() * NUM_PATCHES_PER_SIDE;
+	const int worldHeight = m_world->GetHeight() * NUM_PATCHES_PER_SIDE;
+	int x, z;
+	WaterHeight* waterHeight;
+	CLandscape* land;
+
+	WaterHeight empty, newHeight;
+	memset(&empty, 0, sizeof(empty));
+
+	for (x = 0; x < worldWidth; x++)
+	{
+		for (z = 0; z < worldHeight; z++)
+		{
+			const D3DXVECTOR3 v(x * MPU * PATCH_SIZE, 1.0f, z * MPU * PATCH_SIZE);
+
+			waterHeight = m_world->GetWaterHeight(v.x, v.z);
+			if (!waterHeight)
+				continue;
+
+			land = m_world->GetLand(v);
+			if (!land)
+				continue;
+
+			const int minHeight = (int)(land->GetMinHeight(x % NUM_PATCHES_PER_SIDE, z % NUM_PATCHES_PER_SIDE) + 0.5f);
+			if ((mode == WTYPE_CLOUD && minHeight <= 80) || (mode == WTYPE_WATER && minHeight <= (int)mapHeight))
+				newHeight = newWaterHeight;
+			else
+				newHeight = empty;
+
+			if (waterHeight->height == newHeight.height && waterHeight->texture == newHeight.texture)
+				continue;
+
+			HeightEntry entry;
+			entry.offset = x + z * worldWidth;
+			entry.height = newHeight;
+			entry.original = *waterHeight;
+			m_heights.push_back(entry);
+		}
+	}
+
+	Apply();
+}
+
+void CEditWaterCommand::Apply(bool undo)
+{
+	const int worldWidth = m_world->GetWidth() * NUM_PATCHES_PER_SIDE;
+	int x, z, mX, mZ;
+	CLandscape* land;
+	CPtrArray<CLandscape> updateLands(4);
+	for (size_t i = 0; i < m_heights.size(); i++)
+	{
+		const HeightEntry& entry = m_heights[i];
+
+		z = entry.offset / worldWidth;
+		x = entry.offset - z * worldWidth;
+
+		mX = x / NUM_PATCHES_PER_SIDE;
+		mZ = z / NUM_PATCHES_PER_SIDE;
+
+		land = m_world->GetLand(mX, mZ);
+		if (!land)
+			continue;
+
+		const WaterHeight height = undo ? m_heights[i].original : m_heights[i].height;
+
+		x -= mX * NUM_PATCHES_PER_SIDE;
+		z -= mZ * NUM_PATCHES_PER_SIDE;
+
+		land->SetWaterHeight(x, z, height);
+		if (!updateLands.Contains(land))
+			updateLands.Append(land);
+	}
+
+	for (int i = 0; i < updateLands.GetSize(); i++)
+		updateLands[i]->MakeWaterVertexBuffer();
+}
+
+CDeleteTerrainLayerCommand::CDeleteTerrainLayerCommand(CWorld* world, CLandscape* land, int layerID)
+	: CEditCommand(world),
+	m_land(land),
+	m_layerID(layerID),
+	m_position(-1)
+{
+	if (!m_land)
+		return;
+
+	LandLayer* layer = m_land->GetLayer(m_layerID);
+	if (layer)
+	{
+		memcpy(m_layerAlpha, layer->alphaMap, MAP_SIZE * MAP_SIZE);
+		memcpy(m_layerPatchEnable, layer->patchEnable, NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE);
+	}
+}
+
+void CDeleteTerrainLayerCommand::Apply(bool undo)
+{
+	if (!m_land)
+		return;
+
+	LandLayer* layer = m_land->GetLayer(m_layerID, m_position);
+	if (!layer)
+		return;
+
+	if (undo)
+	{
+		memcpy(layer->alphaMap, m_layerAlpha, MAP_SIZE * MAP_SIZE);
+		memcpy(layer->patchEnable, m_layerPatchEnable, NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE);
+		m_land->UpdateTextureLayers();
+	}
+	else
+		m_position = m_land->DeleteLayer(m_layerID);
+
+	if (MainFrame->GetCurrentInfoLand() == m_land)
+	{
+		MainFrame->SetLayerInfos(null);
+		MainFrame->SetLayerInfos(m_land);
+	}
+}
+
+void CEditTerrainColorCommand::Edit(const D3DXVECTOR3& pos)
 {
 	int radius, hardness;
 	QColor color;
 	MainFrame->GetTextureColorEditInfos(radius, hardness, color);
+	radius--;
 
-	const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-	const float posX = (int)((pos.x + (unity / 2.0f)) / unity) * unity;
-	const float posZ = (int)((pos.z + (unity / 2.0f)) / unity) * unity;
-	const float radius1 = (float)((radius - 1) * unity);
-	const float hardRadius = 1.0f - ((float)hardness / 100.0f);
+	const int worldWidth = m_world->GetWidth() * LIGHTMAP_SIZE;
+	const int worldHeight = m_world->GetHeight() * LIGHTMAP_SIZE;
+	const float lenRadius = (float)radius;
+	const float hardnessRadius = lenRadius * ((float)hardness / 100.0f);
 
-	QVector<CLandscape*> updateLands;
+	const int posX = (int)((pos.x + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY);
+	const int posZ = (int)((pos.z + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY);
+
+	int offX, offZ;
 	CLandscape* land;
-	float x, z, x2, z2, colorFactor;
-	int textureOffset, i, mX, mZ;
-	QColor finalColor, oldColor;
-	for (x = posX - radius1; x - 0.1f < posX + radius1; x += unity)
+	bool exists;
+	float colorFactor;
+	size_t i;
+	byte oldColor[3];
+	byte newColor[3];
+
+	for (offX = posX - radius; offX <= posX + radius; offX++)
 	{
-		for (z = posZ - radius1; z - 0.1f < posZ + radius1; z += unity)
+		for (offZ = posZ - radius; offZ <= posZ + radius; offZ++)
 		{
-			if (VecInWorld(x + 0.1f, z + 0.1f))
+			const int offset = offX + offZ * worldWidth;
+			if (offset < 0 || offset >= worldWidth * worldHeight)
+				continue;
+
+			const float len = sqrt((float)((offX - posX) * (offX - posX) + (offZ - posZ) * (offZ - posZ)));
+			if (radius && len > lenRadius)
+				continue;
+
+			const int mX = offX / LIGHTMAP_SIZE;
+			const int mZ = offZ / LIGHTMAP_SIZE;
+			const int x = offX - mX * LIGHTMAP_SIZE;
+			const int z = offZ - mZ * LIGHTMAP_SIZE;
+
+			land = m_world->GetLand(mX, mZ);
+			if (!land)
+				continue;
+
+			if (!radius || hardness == 100)
+				colorFactor = color.alphaF();
+			else
 			{
-				const float len = sqrt((float)((x - posX) * (x - posX) + (z - posZ) * (z - posZ)));
-				if (len - 0.1f > radius1)
-					continue;
-
-				x2 = x / MPU;
-				z2 = z / MPU;
-
-				mX = (int)(x2 / MAP_SIZE);
-				mZ = (int)(z2 / MAP_SIZE);
-				if (x2 == m_width * MAP_SIZE)
-					mX--;
-				if (z2 == m_height * MAP_SIZE)
-					mZ--;
-
-				const int offset = mX + mZ * m_width;
-				if (offset < 0 || offset >= m_width * m_height)
-					continue;
-				land = m_lands[offset];
-				if (!land)
-					continue;
-
-				x2 -= land->m_posX;
-				z2 -= land->m_posY;
-				x2 *= MPU;
-				z2 *= MPU;
-
-				const int textureOffsetX = (int)(x2 / unity + 0.5f);
-				const int textureOffsetZ = (int)(z2 / unity + 0.5f);
-
-				textureOffset = textureOffsetX + textureOffsetZ * MAP_SIZE;
-				if (textureOffset < 0 || textureOffset >= MAP_SIZE * MAP_SIZE)
-					continue;
-
-				if (radius <= 1)
-					colorFactor = color.alphaF();
+				if (len > hardnessRadius)
+					colorFactor = (1.0f - ((len - hardnessRadius) / (lenRadius - hardnessRadius))) * color.alphaF();
 				else
-					colorFactor = (1.0f - (len / radius1) * 2.0f * hardRadius) * color.alphaF();
+					colorFactor = color.alphaF();
+			}
 
-				if (colorFactor < 0.0f)
-					colorFactor = 0.0f;
-				else if (colorFactor > 1.0f)
-					colorFactor = 1.0f;
-				oldColor = QColor(land->m_colorMap[textureOffset * 3],
-					land->m_colorMap[textureOffset * 3 + 1],
-					land->m_colorMap[textureOffset * 3 + 2]);
-				finalColor.setRgbF(oldColor.redF() * (1.0f - colorFactor) + color.redF() * colorFactor,
-					oldColor.greenF() * (1.0f - colorFactor) + color.greenF() * colorFactor,
-					oldColor.blueF() * (1.0f - colorFactor) + color.blueF() * colorFactor);
+			if (colorFactor < 0.0f)
+				colorFactor = 0.0f;
+			else if (colorFactor > 1.0f)
+				colorFactor = 1.0f;
 
-				land->m_colorMap[textureOffset * 3] = finalColor.red();
-				land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-				land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-				if (!updateLands.contains(land))
-					updateLands.push_back(land);
+			land->GetColor(x, z, oldColor);
 
-				if (textureOffsetX <= 0 && mX > 0 && textureOffsetZ <= 0 && mZ > 0)
+			newColor[0] = (byte)((((float)oldColor[0] / 255.0f) * (1.0f - colorFactor) + color.redF() * colorFactor) * 255.0f + 0.5f);
+			newColor[1] = (byte)((((float)oldColor[1] / 255.0f) * (1.0f - colorFactor) + color.greenF() * colorFactor) * 255.0f + 0.5f);
+			newColor[2] = (byte)((((float)oldColor[2] / 255.0f) * (1.0f - colorFactor) + color.blueF() * colorFactor) * 255.0f + 0.5f);
+
+			if (newColor[0] == oldColor[0]
+				&& newColor[1] == oldColor[1]
+				&& newColor[2] == oldColor[2])
+				continue;
+
+			exists = false;
+
+			for (i = 0; i < m_colors.size(); i++)
+			{
+				if (m_colors[i].offset == offset)
 				{
-					land = m_lands[(mX - 1) + (mZ - 1) * m_width];
-					if (land)
-					{
-						textureOffset = ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE) + ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE) * MAP_SIZE;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
+					m_colors[i].color[0] = newColor[0];
+					m_colors[i].color[1] = newColor[1];
+					m_colors[i].color[2] = newColor[2];
+					exists = true;
+					break;
 				}
-				if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1 && textureOffsetZ <= 0 && mZ > 0)
-				{
-					land = m_lands[(mX + 1) + (mZ - 1) * m_width];
-					if (land)
-					{
-						textureOffset = ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE) * MAP_SIZE;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetX <= 0 && mX > 0 && textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-				{
-					land = m_lands[(mX - 1) + (mZ + 1) * m_width];
-					if (land)
-					{
-						textureOffset = ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1 && textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-				{
-					land = m_lands[(mX + 1) + (mZ + 1) * m_width];
-					if (land)
-					{
-						textureOffset = 0;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetX <= 0 && mX > 0)
-				{
-					land = m_lands[(mX - 1) + mZ * m_width];
-					if (land)
-					{
-						textureOffset = ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE) + textureOffsetZ * MAP_SIZE;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1)
-				{
-					land = m_lands[(mX + 1) + mZ * m_width];
-					if (land)
-					{
-						textureOffset = textureOffsetZ * MAP_SIZE;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetZ <= 0 && mZ > 0)
-				{
-					land = m_lands[mX + (mZ - 1) * m_width];
-					if (land)
-					{
-						textureOffset = textureOffsetX + ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE) * MAP_SIZE;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
-				if (textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-				{
-					land = m_lands[mX + (mZ + 1) * m_width];
-					if (land)
-					{
-						textureOffset = textureOffsetX;
-						land->m_colorMap[textureOffset * 3] = finalColor.red();
-						land->m_colorMap[textureOffset * 3 + 1] = finalColor.green();
-						land->m_colorMap[textureOffset * 3 + 2] = finalColor.blue();
-						if (!updateLands.contains(land))
-							updateLands.push_back(land);
-					}
-				}
+			}
+
+			if (!exists)
+			{
+				ColorEntry entry;
+				entry.offset = offset;
+				entry.color[0] = newColor[0];
+				entry.color[1] = newColor[1];
+				entry.color[2] = newColor[2];
+				entry.original[0] = oldColor[0];
+				entry.original[1] = oldColor[1];
+				entry.original[2] = oldColor[2];
+				m_colors.push_back(entry);
 			}
 		}
 	}
 
-	for (i = 0; i < updateLands.size(); i++)
+	Apply();
+}
+
+void CEditTerrainColorCommand::Apply(bool undo)
+{
+	const int worldWidth = m_world->GetWidth() * LIGHTMAP_SIZE;
+
+	int x, z, mX, mZ;
+	CLandscape* land;
+	byte color[3];
+	CPtrArray<CLandscape> updateLands(4);
+
+	for (size_t i = 0; i < m_colors.size(); i++)
+	{
+		const ColorEntry& entry = m_colors[i];
+
+		z = entry.offset / worldWidth;
+		x = entry.offset - z * worldWidth;
+
+		mX = x / LIGHTMAP_SIZE;
+		mZ = z / LIGHTMAP_SIZE;
+
+		x -= mX * LIGHTMAP_SIZE;
+		z -= mZ * LIGHTMAP_SIZE;
+
+		if (x < 0 || x >= LIGHTMAP_SIZE || z < 0 || z >= LIGHTMAP_SIZE)
+			continue;
+
+		land = m_world->GetLand(mX, mZ);
+		if (!land)
+			continue;
+
+		if (undo)
+		{
+			color[0] = entry.original[0];
+			color[1] = entry.original[1];
+			color[2] = entry.original[2];
+		}
+		else
+		{
+			color[0] = entry.color[0];
+			color[1] = entry.color[1];
+			color[2] = entry.color[2];
+		}
+
+		land->SetColor(x, z, color);
+		if (!updateLands.Contains(land))
+			updateLands.Append(land);
+
+		if (x == 0 && mX > 0 && z == 0 && mZ > 0)
+		{
+			land = m_world->GetLand(mX - 1, mZ - 1);
+			if (land)
+			{
+				land->SetColor(LIGHTMAP_SIZE, LIGHTMAP_SIZE, color);
+				if (!updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
+		if (x == 0 && mX > 0)
+		{
+			land = m_world->GetLand(mX - 1, mZ);
+			if (land)
+			{
+				land->SetColor(LIGHTMAP_SIZE, z, color);
+				if (!updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
+		if (z == 0 && mZ > 0)
+		{
+			land = m_world->GetLand(mX, mZ - 1);
+			if (land)
+			{
+				land->SetColor(x, LIGHTMAP_SIZE, color);
+				if (!updateLands.Contains(land))
+					updateLands.Append(land);
+			}
+		}
+	}
+
+	for (int i = 0; i < updateLands.GetSize(); i++)
 		updateLands[i]->UpdateTextureLayers();
 }
 
-void CWorld::EditTexture(const D3DXVECTOR3& pos)
+void CEditTerrainTextureCommand::Edit(const D3DXVECTOR3& pos)
 {
 	int textureID, radius, hardness, alpha;
 	bool emptyMode;
 	MainFrame->GetTextureEditInfos(textureID, radius, hardness, alpha, emptyMode);
+	radius--;
 
 	if (!emptyMode && textureID == -1)
 		return;
 
-	const float unity = (float)(MAP_SIZE * MPU) / (float)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-	const float posX = (int)((pos.x + (unity / 2.0f)) / unity) * unity;
-	const float posZ = (int)((pos.z + (unity / 2.0f)) / unity) * unity;
-	const float radius1 = (float)((radius - 1) * unity);
-	const float hardRadius = emptyMode ? 0.0f : 1.0f - ((float)hardness / 100.0f);
+	const int worldWidth = m_world->GetWidth() * LIGHTMAP_SIZE;
+	const int worldHeight = m_world->GetHeight() * LIGHTMAP_SIZE;
+	const float lenRadius = (float)radius;
+	const float hardnessRadius = lenRadius * ((float)hardness / 100.0f);
+	const float alphaStaticFactor = (float)alpha / 255.0f;
 
-	bool updateLandInfos = false;
-	CLandscape* currentLandInfos = MainFrame->GetCurrentInfoLand();
-	QVector<CLandscape*> updateLands;
+	const int posX = (int)((pos.x + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY);
+	const int posZ = (int)((pos.z + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY);
+
+	int offX, offZ, i, currentLayer, totalAlpha;
 	CLandscape* land;
+	float alphaFactor;
 	LandLayer* layer;
-	float x, z, x2, z2;
-	float alphaFactor, finalAlpha;
-	int i, mX, mZ, j, k, offX1, offX2, offZ1, offZ2;
-	for (x = posX - radius1; x - 0.1f < posX + radius1; x += unity)
+
+	if (emptyMode)
 	{
-		for (z = posZ - radius1; z - 0.1f < posZ + radius1; z += unity)
+		QVector<int> patches;
+
+		const int width = m_world->GetWidth() * NUM_PATCHES_PER_SIDE;
+		const int height = m_world->GetHeight() * NUM_PATCHES_PER_SIDE;
+
+		for (offX = posX - radius; offX <= posX + radius; offX++)
 		{
-			if (VecInWorld(x + 0.1f, z + 0.1f))
+			for (offZ = posZ - radius; offZ <= posZ + radius; offZ++)
 			{
-				const float len = sqrt((float)((x - posX) * (x - posX) + (z - posZ) * (z - posZ)));
-				if (len - 0.1f > radius1)
+				const int offset = offX + offZ * worldWidth;
+				if (offset < 0 || offset >= worldWidth * worldHeight)
 					continue;
 
-				x2 = x / MPU;
-				z2 = z / MPU;
-
-				mX = (int)(x2 / MAP_SIZE);
-				mZ = (int)(z2 / MAP_SIZE);
-				if (x2 == m_width * MAP_SIZE)
-					mX--;
-				if (z2 == m_height * MAP_SIZE)
-					mZ--;
-
-				const int offset = mX + mZ * m_width;
-				if (offset < 0 || offset >= m_width * m_height)
+				const float len = sqrt((float)((offX - posX) * (offX - posX) + (offZ - posZ) * (offZ - posZ)));
+				if (radius && len > lenRadius)
 					continue;
-				land = m_lands[offset];
+
+				const int patchOff = (offX / (PATCH_SIZE - 1)) + (offZ / (PATCH_SIZE - 1)) * width;
+
+				if (patchOff < 0 || patchOff >= width * height)
+					continue;
+
+				if (!patches.contains(patchOff))
+					patches.push_back(patchOff);
+			}
+		}
+
+		int j, x, z;
+		for (i = 0; i < patches.size(); i++)
+		{
+			const int offset = patches[i];
+
+			offZ = offset / width;
+			offX = offset - offZ * width;
+
+			const int mX = offX / NUM_PATCHES_PER_SIDE;
+			const int mZ = offZ / NUM_PATCHES_PER_SIDE;
+
+			land = m_world->GetLand(mX, mZ);
+			if (!land)
+				continue;
+
+			offX *= (PATCH_SIZE - 1);
+			offZ *= (PATCH_SIZE - 1);
+
+			const int maxX = offX + (PATCH_SIZE - 1);
+			const int maxZ = offZ + (PATCH_SIZE - 1);
+
+			for (j = 0; j < land->m_layers.GetSize(); j++)
+			{
+				layer = land->m_layers[j];
+
+				for (x = offX; x <= maxX; x++)
+					for (z = offZ; z <= maxZ; z++)
+						_setAlpha(layer->textureID, x + z * worldWidth, 0);
+			}
+		}
+	}
+	else
+	{
+		for (offX = posX - radius; offX <= posX + radius; offX++)
+		{
+			for (offZ = posZ - radius; offZ <= posZ + radius; offZ++)
+			{
+				const int offset = offX + offZ * worldWidth;
+				if (offset < 0 || offset >= worldWidth * worldHeight)
+					continue;
+
+				const float len = sqrt((float)((offX - posX) * (offX - posX) + (offZ - posZ) * (offZ - posZ)));
+				if (radius && len > lenRadius)
+					continue;
+
+				const int mX = offX / LIGHTMAP_SIZE;
+				const int mZ = offZ / LIGHTMAP_SIZE;
+				const int x = offX - mX * LIGHTMAP_SIZE;
+				const int z = offZ - mZ * LIGHTMAP_SIZE;
+
+				land = m_world->GetLand(mX, mZ);
 				if (!land)
 					continue;
 
-				x2 -= land->m_posX;
-				z2 -= land->m_posY;
-				x2 *= MPU;
-				z2 *= MPU;
-
-				const int textureOffsetX = (int)(x2 / unity + 0.5f);
-				const int textureOffsetZ = (int)(z2 / unity + 0.5f);
-
-				if (!updateLands.contains(land))
-					updateLands.push_back(land);
-
-				if (emptyMode)
-				{
-					const int patchOffsetX = (textureOffsetX == ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE)) ? (NUM_PATCHES_PER_SIDE - 1) : textureOffsetX / (PATCH_SIZE - 1);
-					const int patchOffsetZ = (textureOffsetZ == ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE)) ? (NUM_PATCHES_PER_SIDE - 1) : textureOffsetZ / (PATCH_SIZE - 1);
-					const int patchOffset = patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE;
-					if (patchOffset < 0 || patchOffset >= NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE)
-						continue;
-
-					for (i = 0; i < land->m_layers.GetSize(); i++)
-					{
-						if (i > 0)
-						{
-							offX1 = patchOffsetX * (PATCH_SIZE - 1) + 1;
-							if (patchOffsetX > 0 && !land->m_layers[i]->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE])
-								offX1--;
-							offX2 = (patchOffsetX + 1) * (PATCH_SIZE - 1);
-							if (patchOffsetX < (NUM_PATCHES_PER_SIDE - 1) && !land->m_layers[i]->patchEnable[(patchOffsetX + 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE])
-								offX2++;
-							offZ1 = patchOffsetZ * (PATCH_SIZE - 1) + 1;
-							if (patchOffsetZ > 0 && !land->m_layers[i]->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE])
-								offZ1--;
-							offZ2 = (patchOffsetZ + 1) * (PATCH_SIZE - 1);
-							if (patchOffsetZ < (NUM_PATCHES_PER_SIDE - 1) && !land->m_layers[i]->patchEnable[patchOffsetX + (patchOffsetZ + 1) * NUM_PATCHES_PER_SIDE])
-								offZ2++;
-
-							for (j = offX1; j < offX2; j++)
-								for (k = offZ1; k < offZ2; k++)
-									land->m_layers[i]->alphaMap[j + k * MAP_SIZE] = 0;
-						}
-
-						land->m_layers[i]->patchEnable[patchOffset] = false;
-					}
-				}
+				if (!radius || hardness == 100)
+					alphaFactor = alphaStaticFactor;
 				else
 				{
-					if (radius <= 1)
-						alphaFactor = 1.0f;
+					if (len > hardnessRadius)
+						alphaFactor = (1.0f - ((len - hardnessRadius) / (lenRadius - hardnessRadius))) * alphaStaticFactor;
 					else
-						alphaFactor = (1.0f - (len / radius1) * hardRadius) + 0.2f;
-
-					if (alphaFactor < 0.0f)
-						alphaFactor = 0.0f;
-					else if (alphaFactor > 1.0f)
-						alphaFactor = 1.0f;
-					finalAlpha = ((float)alpha / 255.0f) * alphaFactor;
-					if (finalAlpha < 0.0f)
-						finalAlpha = 0.0f;
-					else if (finalAlpha > 1.0f)
-						finalAlpha = 1.0f;
-
-					const byte realAlpha = (byte)(finalAlpha * 255.0f);
-
-					if (land->SetLayerAlpha(textureOffsetX,
-						textureOffsetZ,
-						textureID, realAlpha) && land == currentLandInfos)
-						updateLandInfos = true;
-
-					if (textureOffsetX <= 0 && mX > 0 && textureOffsetZ <= 0 && mZ > 0)
-					{
-						land = m_lands[(mX - 1) + (mZ - 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1 && textureOffsetZ <= 0 && mZ > 0)
-					{
-						land = m_lands[(mX + 1) + (mZ - 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(0,
-								((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetX <= 0 && mX > 0 && textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-					{
-						land = m_lands[(mX - 1) + (mZ + 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								0,
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1 && textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-					{
-						land = m_lands[(mX + 1) + (mZ + 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(0,
-								0,
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetX <= 0 && mX > 0)
-					{
-						land = m_lands[(mX - 1) + mZ * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								textureOffsetZ,
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetX >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mX < m_width - 1)
-					{
-						land = m_lands[(mX + 1) + mZ * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(0,
-								textureOffsetZ,
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetZ <= 0 && mZ > 0)
-					{
-						land = m_lands[mX + (mZ - 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(textureOffsetX,
-								((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE),
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
-					if (textureOffsetZ >= (PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE && mZ < m_height - 1)
-					{
-						land = m_lands[mX + (mZ + 1) * m_width];
-						if (land)
-						{
-							if (land->SetLayerAlpha(textureOffsetX,
-								0,
-								textureID, realAlpha) && land == currentLandInfos)
-								updateLandInfos = true;
-							if (!updateLands.contains(land))
-								updateLands.push_back(land);
-						}
-					}
+						alphaFactor = alphaStaticFactor;
 				}
-			}
-		}
-	}
 
-	bool deleteLayer;
-	for (i = 0; i < updateLands.size(); i++)
-	{
-		for (j = 0; j < updateLands[i]->m_layers.GetSize(); j++)
-		{
-			layer = updateLands[i]->m_layers[j];
-			deleteLayer = true;
-			for (k = 0; k < NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE; k++)
-			{
-				if (layer->patchEnable[k])
+				if (alphaFactor < 0.0f)
+					alphaFactor = 0.0f;
+				else if (alphaFactor > 1.0f)
+					alphaFactor = 1.0f;
+
+				const byte finalAlpha = (byte)(alphaFactor * 255.0f);
+				const int layerCount = land->m_layers.GetSize();
+				const int texOff = x + z * MAP_SIZE;
+
+				currentLayer = -1;
+				for (i = 0; i < layerCount; i++)
 				{
-					deleteLayer = false;
-					break;
+					if (land->m_layers[i]->textureID == textureID)
+					{
+						currentLayer = i;
+						break;
+					}
+				}
+
+				const byte oldAlpha = currentLayer != -1 ? land->m_layers[currentLayer]->alphaMap[texOff] : 0;
+
+				if (currentLayer == -1 || finalAlpha > oldAlpha)
+				{
+					_setAlpha(textureID, offset, finalAlpha);
+					totalAlpha = (int)finalAlpha;
+				}
+				else
+					totalAlpha = (int)oldAlpha;
+
+				if (currentLayer != -1 && currentLayer < layerCount - 1)
+				{
+					for (i = currentLayer + 1; i < layerCount; i++)
+					{
+						layer = land->m_layers[i];
+
+						const int curAlpha = (int)layer->alphaMap[texOff];
+						if (curAlpha > 0)
+						{
+							if (curAlpha + totalAlpha >= 255)
+							{
+								if (totalAlpha < 255)
+								{
+									if (255 - totalAlpha < curAlpha)
+										_setAlpha(layer->textureID, offset, (byte)(255 - totalAlpha));
+									totalAlpha += curAlpha;
+								}
+								else
+									_setAlpha(layer->textureID, offset, 0);
+							}
+						}
+					}
+				}
+
+				if (currentLayer != 0 && totalAlpha >= 255)
+				{
+					const int maxLayer = currentLayer != -1 ? currentLayer : layerCount;
+					for (i = 0; i < maxLayer; i++)
+					{
+						layer = land->m_layers[i];
+
+						if (layer->alphaMap[texOff] >= 0)
+							_setAlpha(layer->textureID, offset, 0);
+					}
 				}
 			}
-			if (deleteLayer)
-			{
-				Release(layer->lightMap);
-				Delete(layer);
-				updateLands[i]->m_layers.RemoveAt(j);
-				j--;
-				if (updateLands[i] == currentLandInfos)
-					updateLandInfos = true;
-			}
 		}
-		updateLands[i]->UpdateTextureLayers();
 	}
 
-	if (updateLandInfos)
+	Apply();
+}
+
+void CEditTerrainTextureCommand::Apply(bool undo)
+{
+	const int worldWidth = m_world->GetWidth() * LIGHTMAP_SIZE;
+	CLandscape* currentInfoLand = MainFrame->GetCurrentInfoLand();
+	const int oldLayerCount = currentInfoLand ? currentInfoLand->m_layers.GetSize() : 0;
+
+	int x, z, mX, mZ;
+	size_t i, k;
+	CLandscape* land;
+	LandLayer* layer;
+	CPtrArray<CLandscape> updateLands(4);
+	bool updateLayerList = false;
+
+	for (i = 0; i < m_layers.size(); i++)
+	{
+		const LayerEntry& layerEntry = m_layers[i];
+		for (k = 0; k < layerEntry.alphas.size(); k++)
+		{
+			const AlphaEntry& entry = layerEntry.alphas[k];
+
+			z = entry.offset / worldWidth;
+			x = entry.offset - z * worldWidth;
+
+			mX = x / LIGHTMAP_SIZE;
+			mZ = z / LIGHTMAP_SIZE;
+
+			x -= mX * LIGHTMAP_SIZE;
+			z -= mZ * LIGHTMAP_SIZE;
+
+			if (x < 0 || x >= LIGHTMAP_SIZE || z < 0 || z >= LIGHTMAP_SIZE)
+				continue;
+
+			land = m_world->GetLand(mX, mZ);
+			if (!land)
+				continue;
+
+			layer = land->GetLayer(layerEntry.texID);
+			if (!layer)
+				continue;
+
+			const byte alpha = undo ? entry.original : entry.alpha;
+
+			layer->alphaMap[x + z * MAP_SIZE] = alpha;
+			if (!updateLands.Contains(land))
+				updateLands.Append(land);
+
+			if (x == 0 && mX > 0 && z == 0 && mZ > 0)
+			{
+				land = m_world->GetLand(mX - 1, mZ - 1);
+				if (land)
+				{
+					layer = land->GetLayer(layerEntry.texID);
+					if (layer)
+					{
+						layer->alphaMap[LIGHTMAP_SIZE + LIGHTMAP_SIZE * MAP_SIZE] = alpha;
+						if (!updateLands.Contains(land))
+							updateLands.Append(land);
+					}
+				}
+			}
+			if (x == 0 && mX > 0)
+			{
+				land = m_world->GetLand(mX - 1, mZ);
+				if (land)
+				{
+					layer = land->GetLayer(layerEntry.texID);
+					if (layer)
+					{
+						layer->alphaMap[LIGHTMAP_SIZE + z * MAP_SIZE] = alpha;
+						if (!updateLands.Contains(land))
+							updateLands.Append(land);
+					}
+				}
+			}
+			if (z == 0 && mZ > 0)
+			{
+				land = m_world->GetLand(mX, mZ - 1);
+				if (land)
+				{
+					layer = land->GetLayer(layerEntry.texID);
+					if (layer)
+					{
+						layer->alphaMap[x + LIGHTMAP_SIZE * MAP_SIZE] = alpha;
+						if (!updateLands.Contains(land))
+							updateLands.Append(land);
+					}
+				}
+			}
+		}
+	}
+
+	if (currentInfoLand && currentInfoLand->m_layers.GetSize() != oldLayerCount)
+		updateLayerList = true;
+
+	int j, x2, z2;
+	bool visible;
+	for (int i = 0; i < updateLands.GetSize(); i++)
+	{
+		land = updateLands[i];
+
+		for (j = 0; j < land->m_layers.GetSize(); j++)
+		{
+			layer = land->m_layers[j];
+			visible = false;
+
+			for (x = 0; x < NUM_PATCHES_PER_SIDE; x++)
+			{
+				for (z = 0; z < NUM_PATCHES_PER_SIDE; z++)
+				{
+					layer->patchEnable[x + z * NUM_PATCHES_PER_SIDE] = false;
+					for (x2 = x * (PATCH_SIZE - 1); x2 <= (x + 1) * (PATCH_SIZE - 1); x2++)
+					{
+						for (z2 = z * (PATCH_SIZE - 1); z2 <= (z + 1) * (PATCH_SIZE - 1); z2++)
+						{
+							if (layer->alphaMap[x2 + z2 * MAP_SIZE] > 0)
+							{
+								layer->patchEnable[x + z * NUM_PATCHES_PER_SIDE] = true;
+								visible = true;
+								break;
+							}
+						}
+						if (layer->patchEnable[x + z * NUM_PATCHES_PER_SIDE])
+							break;
+					}
+				}
+			}
+
+			if (!visible)
+			{
+				land->DeleteLayer(layer->textureID);
+				j--;
+
+				if (land == currentInfoLand)
+					updateLayerList = true;
+			}
+		}
+
+		land->UpdateTextureLayers();
+	}
+
+	if (updateLayerList)
 	{
 		MainFrame->SetLayerInfos(null);
-		MainFrame->SetLayerInfos(currentLandInfos);
+		MainFrame->SetLayerInfos(currentInfoLand);
 	}
 }
 
-bool CLandscape::SetLayerAlpha(int x, int z, int textureID, byte alpha)
+void CEditTerrainTextureCommand::_setAlpha(int texID, int offset, byte alpha)
 {
-	const byte MinAlpha = 30;
+	int x, z;
 
-	bool updateLandInfos = false;
-	const int oldLayerCount = m_layers.GetSize();
-	LandLayer* layer = GetLayer(textureID);
-	if (oldLayerCount != m_layers.GetSize())
-		updateLandInfos = true;
-
-	const int textureOffset = x + z * MAP_SIZE;
-	if (textureOffset < 0 || textureOffset >= MAP_SIZE * MAP_SIZE)
-		return updateLandInfos;
-
-	const int patchOffsetX = (x == ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE)) ? (NUM_PATCHES_PER_SIDE - 1) : x / (PATCH_SIZE - 1);
-	const int patchOffsetZ = (z == ((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE)) ? (NUM_PATCHES_PER_SIDE - 1) : z / (PATCH_SIZE - 1);
-	const int patchOffset = patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE;
-	if (patchOffset < 0 || patchOffset >= NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE)
-		return updateLandInfos;
-
-	layer->patchEnable[patchOffset] = true;
-
-	if (x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-		layer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE] = true;
-	if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0)
-		layer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-	if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0 && x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-		layer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-
-	if (layer->alphaMap[textureOffset] < alpha)
-		layer->alphaMap[textureOffset] = alpha;
-
-	int i, j, k, totalAlpha = alpha;
-	LandLayer* tempLayer;
-	for (i = m_layers.GetSize() - 1; i >= 0; i--)
+	for (size_t i = 0; i < m_layers.size(); i++)
 	{
-		if (m_layers[i] == layer)
-			break;
-		tempLayer = m_layers[i];
-
-		if (tempLayer->alphaMap[textureOffset] >= MinAlpha)
+		if (m_layers[i].texID == texID)
 		{
-			if (((int)tempLayer->alphaMap[textureOffset] + totalAlpha) >= 255)
+			const std::vector<AlphaEntry>& alphas = m_layers[i].alphas;
+			const size_t alphaCount = alphas.size();
+
+			for (size_t j = 0; j < alphaCount; j++)
 			{
-				if (totalAlpha < 255)
+				if (alphas[j].offset == offset)
 				{
-					if ((byte)(255 - totalAlpha) < tempLayer->alphaMap[textureOffset])
-						tempLayer->alphaMap[textureOffset] = (byte)(255 - totalAlpha);
-					totalAlpha += tempLayer->alphaMap[textureOffset];
+					m_layers[i].alphas[j].alpha = alpha;
+					return;
 				}
-				else
-					tempLayer->alphaMap[textureOffset] = 0;
 			}
+
+			AlphaEntry entry;
+			entry.offset = offset;
+			entry.alpha = alpha;
+			entry.original = 0;
+
+			const int worldWidth2 = m_world->GetWidth() * LIGHTMAP_SIZE;
+			z = entry.offset / worldWidth2;
+			x = entry.offset - z * worldWidth2;
+			const int mX = x / LIGHTMAP_SIZE;
+			const int mZ = z / LIGHTMAP_SIZE;
+
+			const CLandscape* land = m_world->GetLand(mX, mZ);
+			if (land)
+			{
+				for (int j = 0; j < land->m_layers.GetSize(); j++)
+				{
+					if (land->m_layers[j]->textureID == texID)
+					{
+						x -= mX * LIGHTMAP_SIZE;
+						z -= mZ * LIGHTMAP_SIZE;
+						entry.original = land->m_layers[j]->alphaMap[x + z * MAP_SIZE];
+						break;
+					}
+				}
+			}
+
+			m_layers[i].alphas.push_back(entry);
+			return;
 		}
+	}
 
-		tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE] = false;
-		for (j = patchOffsetX * (PATCH_SIZE - 1); j <= (patchOffsetX + 1) * (PATCH_SIZE - 1); j++)
+	AlphaEntry entry;
+	entry.offset = offset;
+	entry.alpha = alpha;
+	entry.original = 0;
+
+	const int worldWidth = m_world->GetWidth() * LIGHTMAP_SIZE;
+	z = entry.offset / worldWidth;
+	x = entry.offset - z * worldWidth;
+	const int mX = x / LIGHTMAP_SIZE;
+	const int mZ = z / LIGHTMAP_SIZE;
+
+	const CLandscape* land = m_world->GetLand(mX, mZ);
+	if (land)
+	{
+		for (int j = 0; j < land->m_layers.GetSize(); j++)
 		{
-			for (k = patchOffsetZ * (PATCH_SIZE - 1); k <= (patchOffsetZ + 1) * (PATCH_SIZE - 1); k++)
+			if (land->m_layers[j]->textureID == texID)
 			{
-				if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-				{
-					tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE] = true;
-					break;
-				}
-			}
-			if (tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE])
+				x -= mX * LIGHTMAP_SIZE;
+				z -= mZ * LIGHTMAP_SIZE;
+				entry.original = land->m_layers[j]->alphaMap[x + z * MAP_SIZE];
 				break;
-		}
-		if (x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-		{
-			tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE] = false;
-			for (j = (patchOffsetX - 1) * (PATCH_SIZE - 1); j <= patchOffsetX * (PATCH_SIZE - 1); j++)
-			{
-				for (k = patchOffsetZ * (PATCH_SIZE - 1); k <= (patchOffsetZ + 1) * (PATCH_SIZE - 1); k++)
-				{
-					if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-					{
-						tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE] = true;
-						break;
-					}
-				}
-				if (tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE])
-					break;
-			}
-		}
-		if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0)
-		{
-			tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = false;
-			for (j = patchOffsetX * (PATCH_SIZE - 1); j <= (patchOffsetX + 1) * (PATCH_SIZE - 1); j++)
-			{
-				for (k = (patchOffsetZ - 1) * (PATCH_SIZE - 1); k <= patchOffsetZ * (PATCH_SIZE - 1); k++)
-				{
-					if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-					{
-						tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-						break;
-					}
-				}
-				if (tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE])
-					break;
-			}
-		}
-		if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0 && x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-		{
-			tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = false;
-			for (j = (patchOffsetX - 1) * (PATCH_SIZE - 1); j <= patchOffsetX * (PATCH_SIZE - 1); j++)
-			{
-				for (k = (patchOffsetZ - 1) * (PATCH_SIZE - 1); k <= patchOffsetZ * (PATCH_SIZE - 1); k++)
-				{
-					if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-					{
-						tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-						break;
-					}
-				}
-				if (tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE])
-					break;
 			}
 		}
 	}
 
-	if (totalAlpha >= (255 - MinAlpha) && layer != m_layers[0])
-	{
-		for (i = 1; i < m_layers.GetSize(); i++)
-		{
-			if (m_layers[i] == layer)
-				break;
-			tempLayer = m_layers[i];
-			tempLayer->alphaMap[textureOffset] = 0;
-			tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE] = false;
-			for (j = patchOffsetX * (PATCH_SIZE - 1); j <= (patchOffsetX + 1) * (PATCH_SIZE - 1); j++)
-			{
-				for (k = patchOffsetZ * (PATCH_SIZE - 1); k <= (patchOffsetZ + 1) * (PATCH_SIZE - 1); k++)
-				{
-					if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-					{
-						tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE] = true;
-						break;
-					}
-				}
-				if (tempLayer->patchEnable[patchOffsetX + patchOffsetZ * NUM_PATCHES_PER_SIDE])
-					break;
-			}
-			if (x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-			{
-				tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE] = false;
-				for (j = (patchOffsetX - 1) * (PATCH_SIZE - 1); j <= patchOffsetX * (PATCH_SIZE - 1); j++)
-				{
-					for (k = patchOffsetZ * (PATCH_SIZE - 1); k <= (patchOffsetZ + 1) * (PATCH_SIZE - 1); k++)
-					{
-						if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-						{
-							tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE] = true;
-							break;
-						}
-					}
-					if (tempLayer->patchEnable[(patchOffsetX - 1) + patchOffsetZ * NUM_PATCHES_PER_SIDE])
-						break;
-				}
-			}
-			if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0)
-			{
-				tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = false;
-				for (j = patchOffsetX * (PATCH_SIZE - 1); j <= (patchOffsetX + 1) * (PATCH_SIZE - 1); j++)
-				{
-					for (k = (patchOffsetZ - 1) * (PATCH_SIZE - 1); k <= patchOffsetZ * (PATCH_SIZE - 1); k++)
-					{
-						if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-						{
-							tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-							break;
-						}
-					}
-					if (tempLayer->patchEnable[patchOffsetX + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE])
-						break;
-				}
-			}
-			if (z % (PATCH_SIZE - 1) == 0 && patchOffsetZ > 0 && x % (PATCH_SIZE - 1) == 0 && patchOffsetX > 0)
-			{
-				tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = false;
-				for (j = (patchOffsetX - 1) * (PATCH_SIZE - 1); j <= patchOffsetX * (PATCH_SIZE - 1); j++)
-				{
-					for (k = (patchOffsetZ - 1) * (PATCH_SIZE - 1); k <= patchOffsetZ * (PATCH_SIZE - 1); k++)
-					{
-						if (tempLayer->alphaMap[j + k * MAP_SIZE] >= MinAlpha)
-						{
-							tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE] = true;
-							break;
-						}
-					}
-					if (tempLayer->patchEnable[(patchOffsetX - 1) + (patchOffsetZ - 1) * NUM_PATCHES_PER_SIDE])
-						break;
-				}
-			}
-		}
-	}
-
-	return updateLandInfos;
+	LayerEntry layer;
+	layer.texID = texID;
+	layer.alphas.push_back(entry);
+	m_layers.push_back(layer);
 }

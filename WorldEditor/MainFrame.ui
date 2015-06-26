@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="MainFrame.qrc">
-    <normaloff>:/MainFrame/WorldEditor.png</normaloff>:/MainFrame/WorldEditor.png</iconset>
+    <normaloff>:/MainFrame/Resources/WorldEditor.png</normaloff>:/MainFrame/Resources/WorldEditor.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QStatusBar" name="statusbar">
@@ -49,6 +49,13 @@
    <addaction name="actionOuvrir"/>
    <addaction name="actionEnregistrer"/>
    <addaction name="separator"/>
+   <addaction name="actionAnnuler"/>
+   <addaction name="actionR_tablir"/>
+   <addaction name="separator"/>
+   <addaction name="actionD_placer_cam_ra"/>
+   <addaction name="actionTourner_cam_ra"/>
+   <addaction name="actionZoomer_cam_ra"/>
+   <addaction name="separator"/>
    <addaction name="actionHauteur_du_terrain"/>
    <addaction name="actionTexture_du_terrain"/>
    <addaction name="actionCouleur_du_terrain"/>
@@ -66,8 +73,8 @@
    <addaction name="actionEditZ"/>
    <addaction name="actionEditXZ"/>
    <addaction name="separator"/>
-   <addaction name="actionVerrouiller_la_s_lection"/>
    <addaction name="actionRamener_sur_le_sol"/>
+   <addaction name="actionVerrouiller_la_s_lection"/>
    <addaction name="actionGravit"/>
    <addaction name="actionPlacer_sur_la_grille"/>
    <addaction name="separator"/>
@@ -664,28 +671,41 @@
          <string>Couleur</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="2" column="0">
+         <item row="1" column="1">
+          <widget class="QWidget" name="editTerrainTextureColor" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color:#7f7f7f;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
             <string>Dureté :</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Rayon : </string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Couleur : </string>
            </property>
           </widget>
          </item>
-         <item row="2" column="2">
+         <item row="3" column="2">
           <widget class="QSlider" name="editTextureColorHardness">
            <property name="minimum">
             <number>1</number>
@@ -701,7 +721,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="2" column="2">
           <widget class="QSlider" name="editTextureColorRadius">
            <property name="minimum">
             <number>1</number>
@@ -717,39 +737,37 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="3" column="1">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>50</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QLabel" name="label_7">
            <property name="text">
             <string>4</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QWidget" name="editTerrainTextureColor" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color:#7f7f7f;</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="editTerrainChangeTextureColo">
-           <property name="text">
-            <string>Changer</string>
-           </property>
-          </widget>
+         <item row="1" column="2">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QPushButton" name="editTerrainChangeTextureColo">
+             <property name="text">
+              <string>Changer</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="editTerrainChangeTextureColorDefault">
+             <property name="text">
+              <string>Défaut</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -971,21 +989,56 @@
      <property name="title">
       <string>Langage</string>
      </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/language.png</normaloff>:/MainFrame/Resources/language.png</iconset>
+     </property>
      <addaction name="actionFran_ais"/>
      <addaction name="actionEnglish"/>
+     <addaction name="actionDeutsch"/>
     </widget>
     <widget class="QMenu" name="menuAvanc">
      <property name="title">
       <string>Avancé</string>
      </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/settings.png</normaloff>:/MainFrame/Resources/settings.png</iconset>
+     </property>
+     <addaction name="actionChamp_de_vision"/>
+     <addaction name="actionHeure_en_jeu"/>
+     <addaction name="actionLumi_re_d_dition"/>
      <addaction name="actionBo_te_de_dialogue_pour_les_erreurs"/>
+    </widget>
+    <widget class="QMenu" name="menuTypes_d_objets">
+     <property name="title">
+      <string>Types d'objets</string>
+     </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/showObjects.png</normaloff>:/MainFrame/Resources/showObjects.png</iconset>
+     </property>
+     <addaction name="actionType_Objet"/>
+     <addaction name="actionType_SFX"/>
+     <addaction name="actionType_item"/>
+     <addaction name="actionType_control"/>
+     <addaction name="actionType_mover_monstres"/>
+     <addaction name="actionType_PNJ"/>
+     <addaction name="actionType_Region"/>
     </widget>
     <addaction name="actionVue_de_face"/>
     <addaction name="actionVue_de_c_t"/>
     <addaction name="separator"/>
+    <addaction name="actionD_placer_cam_ra"/>
+    <addaction name="actionTourner_cam_ra"/>
+    <addaction name="actionZoomer_cam_ra"/>
+    <addaction name="separator"/>
     <addaction name="actionGrille_des_unit_s"/>
     <addaction name="actionGrille_des_patchs"/>
     <addaction name="actionGrille_des_landscapes"/>
+    <addaction name="separator"/>
+    <addaction name="actionSolide"/>
+    <addaction name="actionWireframe"/>
     <addaction name="separator"/>
     <addaction name="actionTerrain"/>
     <addaction name="actionTerrain_LOD"/>
@@ -994,19 +1047,12 @@
     <addaction name="separator"/>
     <addaction name="actionObjets"/>
     <addaction name="actionObjets_LOD"/>
-    <addaction name="actionType_Objet"/>
-    <addaction name="actionType_SFX"/>
-    <addaction name="actionType_item"/>
-    <addaction name="actionType_control"/>
-    <addaction name="actionType_mover_monstres"/>
-    <addaction name="actionType_PNJ"/>
-    <addaction name="actionType_Region"/>
+    <addaction name="menuTypes_d_objets"/>
     <addaction name="actionZones_de_spawn"/>
     <addaction name="actionNoms_des_movers"/>
     <addaction name="actionSpawn_complet"/>
     <addaction name="actionCollisions"/>
     <addaction name="separator"/>
-    <addaction name="actionHeure_en_jeu"/>
     <addaction name="actionLumi_re"/>
     <addaction name="actionCiel"/>
     <addaction name="actionBrouillard"/>
@@ -1026,26 +1072,31 @@
      <string>Objets</string>
     </property>
     <addaction name="actionAjouter_des_objets"/>
+    <addaction name="actionSupprimer_les_objets"/>
+    <addaction name="actionSupprimer_tous_les_objets"/>
+    <addaction name="actionParam_tres_d_ajout_d_objets"/>
+    <addaction name="separator"/>
     <addaction name="actionS_lectionner_des_objets"/>
     <addaction name="actionD_placer_les_objets"/>
     <addaction name="actionTourner_les_objets"/>
     <addaction name="actionRedimensionner_les_objets"/>
-    <addaction name="actionSupprimer_les_objets"/>
-    <addaction name="actionCacher_les_objets"/>
-    <addaction name="actionCacher_les_objets_au_dessus"/>
     <addaction name="separator"/>
     <addaction name="actionEditX"/>
     <addaction name="actionEditY"/>
     <addaction name="actionEditZ"/>
     <addaction name="actionEditXZ"/>
     <addaction name="separator"/>
+    <addaction name="actionCacher_les_objets"/>
+    <addaction name="actionCacher_les_objets_au_dessus"/>
+    <addaction name="actionAfficher_tous_les_objets_cach_s"/>
+    <addaction name="separator"/>
     <addaction name="actionVerrouiller_la_s_lection"/>
     <addaction name="actionTranslation"/>
     <addaction name="actionRotation"/>
+    <addaction name="actionRedimension"/>
     <addaction name="actionTaille_et_rotation_al_atoires"/>
     <addaction name="actionGravit"/>
     <addaction name="actionRamener_sur_le_sol"/>
-    <addaction name="actionAfficher_tous_les_objets_cach_s"/>
     <addaction name="actionPlacer_sur_la_grille"/>
     <addaction name="actionTaille_de_la_grille"/>
     <addaction name="separator"/>
@@ -1098,6 +1149,9 @@
    <addaction name="actionGrille_des_patchs"/>
    <addaction name="actionGrille_des_landscapes"/>
    <addaction name="separator"/>
+   <addaction name="actionSolide"/>
+   <addaction name="actionWireframe"/>
+   <addaction name="separator"/>
    <addaction name="actionTerrain"/>
    <addaction name="actionTerrain_LOD"/>
    <addaction name="actionAttributs_du_terrain"/>
@@ -1122,6 +1176,7 @@
    <addaction name="actionLumi_re"/>
    <addaction name="actionCiel"/>
    <addaction name="actionBrouillard"/>
+   <addaction name="actionLumi_re_d_dition"/>
    <addaction name="separator"/>
    <addaction name="actionAnimer"/>
    <addaction name="actionPlein_cran"/>
@@ -1194,43 +1249,34 @@
   <action name="actionNouveau">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/new_file.png</normaloff>:/MainFrame/Resources/new_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/new.png</normaloff>:/MainFrame/Resources/new.png</iconset>
    </property>
    <property name="text">
     <string>Nouveau</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionOuvrir">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/open_file.png</normaloff>:/MainFrame/Resources/open_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/open.png</normaloff>:/MainFrame/Resources/open.png</iconset>
    </property>
    <property name="text">
     <string>Ouvrir</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionFermer">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/close_file.png</normaloff>:/MainFrame/Resources/close_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/close.png</normaloff>:/MainFrame/Resources/close.png</iconset>
    </property>
    <property name="text">
     <string>Fermer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionEnregistrer">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_file.png</normaloff>:/MainFrame/Resources/save_file.png</iconset>
+     <normaloff>:/MainFrame/Resources/save.png</normaloff>:/MainFrame/Resources/save.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer</string>
@@ -1238,14 +1284,11 @@
    <property name="toolTip">
     <string>Enregistrer</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
   </action>
   <action name="actionEnregistrer_sous">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_file_as.png</normaloff>:/MainFrame/Resources/save_file_as.png</iconset>
+     <normaloff>:/MainFrame/Resources/save_as.png</normaloff>:/MainFrame/Resources/save_as.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer sous...</string>
@@ -1253,26 +1296,20 @@
    <property name="toolTip">
     <string>Enregistrer sous</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+S</string>
-   </property>
   </action>
   <action name="actionQuitter">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_exit.png</normaloff>:/MainFrame/Resources/app_exit.png</iconset>
+     <normaloff>:/MainFrame/Resources/quit.png</normaloff>:/MainFrame/Resources/quit.png</iconset>
    </property>
    <property name="text">
     <string>Quitter</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_propos">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>À propos</string>
@@ -1281,7 +1318,7 @@
   <action name="actionQt">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/about.png</normaloff>:/MainFrame/Resources/about.png</iconset>
    </property>
    <property name="text">
     <string>Qt</string>
@@ -1298,9 +1335,6 @@
    <property name="text">
     <string>Plein écran</string>
    </property>
-   <property name="shortcut">
-    <string>F11</string>
-   </property>
   </action>
   <action name="actionTerrain">
    <property name="checkable">
@@ -1311,7 +1345,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showTerrain.png</normaloff>:/MainFrame/Resources/option_showTerrain.png</iconset>
+     <normaloff>:/MainFrame/Resources/showTerrain.png</normaloff>:/MainFrame/Resources/showTerrain.png</iconset>
    </property>
    <property name="text">
     <string>Terrain</string>
@@ -1322,11 +1356,11 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_terrainLOD.png</normaloff>:/MainFrame/Resources/option_terrainLOD.png</iconset>
+     <normaloff>:/MainFrame/Resources/terrainLOD.png</normaloff>:/MainFrame/Resources/terrainLOD.png</iconset>
    </property>
    <property name="text">
     <string>Terrain LOD</string>
@@ -1341,7 +1375,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showWater.png</normaloff>:/MainFrame/Resources/option_showWater.png</iconset>
+     <normaloff>:/MainFrame/Resources/showWater.png</normaloff>:/MainFrame/Resources/showWater.png</iconset>
    </property>
    <property name="text">
     <string>Eau et nuages</string>
@@ -1356,13 +1390,10 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_animate.png</normaloff>:/MainFrame/Resources/option_animate.png</iconset>
+     <normaloff>:/MainFrame/Resources/animate.png</normaloff>:/MainFrame/Resources/animate.png</iconset>
    </property>
    <property name="text">
     <string>Animer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionAttributs_du_terrain">
@@ -1374,7 +1405,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showAttributes.png</normaloff>:/MainFrame/Resources/option_showAttributes.png</iconset>
+     <normaloff>:/MainFrame/Resources/showAttributes.png</normaloff>:/MainFrame/Resources/showAttributes.png</iconset>
    </property>
    <property name="text">
     <string>Attributs du terrain</string>
@@ -1386,7 +1417,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGridLand.png</normaloff>:/MainFrame/Resources/option_showGridLand.png</iconset>
+     <normaloff>:/MainFrame/Resources/gridLand.png</normaloff>:/MainFrame/Resources/gridLand.png</iconset>
    </property>
    <property name="text">
     <string>Grille des landscapes</string>
@@ -1398,7 +1429,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGridPatch.png</normaloff>:/MainFrame/Resources/option_showGridPatch.png</iconset>
+     <normaloff>:/MainFrame/Resources/gridPatch.png</normaloff>:/MainFrame/Resources/gridPatch.png</iconset>
    </property>
    <property name="text">
     <string>Grille des patchs</string>
@@ -1410,7 +1441,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGridUnity.png</normaloff>:/MainFrame/Resources/option_showGridUnity.png</iconset>
+     <normaloff>:/MainFrame/Resources/gridUnity.png</normaloff>:/MainFrame/Resources/gridUnity.png</iconset>
    </property>
    <property name="text">
     <string>Grille des unités</string>
@@ -1425,7 +1456,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_light.png</normaloff>:/MainFrame/Resources/option_light.png</iconset>
+     <normaloff>:/MainFrame/Resources/light.png</normaloff>:/MainFrame/Resources/light.png</iconset>
    </property>
    <property name="text">
     <string>Lumière</string>
@@ -1440,7 +1471,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_fog.png</normaloff>:/MainFrame/Resources/option_fog.png</iconset>
+     <normaloff>:/MainFrame/Resources/fog.png</normaloff>:/MainFrame/Resources/fog.png</iconset>
    </property>
    <property name="text">
     <string>Brouillard</string>
@@ -1449,7 +1480,7 @@
   <action name="actionHeure_en_jeu">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/setTime.png</normaloff>:/MainFrame/Resources/setTime.png</iconset>
+     <normaloff>:/MainFrame/Resources/gametime.png</normaloff>:/MainFrame/Resources/gametime.png</iconset>
    </property>
    <property name="text">
     <string>Heure en jeu</string>
@@ -1464,7 +1495,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_skybox.png</normaloff>:/MainFrame/Resources/option_skybox.png</iconset>
+     <normaloff>:/MainFrame/Resources/sky.png</normaloff>:/MainFrame/Resources/sky.png</iconset>
    </property>
    <property name="text">
     <string>Ciel</string>
@@ -1479,7 +1510,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showObjects.png</normaloff>:/MainFrame/Resources/option_showObjects.png</iconset>
+     <normaloff>:/MainFrame/Resources/showObjects.png</normaloff>:/MainFrame/Resources/showObjects.png</iconset>
    </property>
    <property name="text">
     <string>Objets</string>
@@ -1494,7 +1525,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showDynamicObjects.png</normaloff>:/MainFrame/Resources/option_showDynamicObjects.png</iconset>
+     <normaloff>:/MainFrame/Resources/showDynamicObjects.png</normaloff>:/MainFrame/Resources/showDynamicObjects.png</iconset>
    </property>
    <property name="text">
     <string>Type mover (monstres)</string>
@@ -1509,7 +1540,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showStaticObjects.png</normaloff>:/MainFrame/Resources/option_showStaticObjects.png</iconset>
+     <normaloff>:/MainFrame/Resources/showStaticObjects.png</normaloff>:/MainFrame/Resources/showStaticObjects.png</iconset>
    </property>
    <property name="text">
     <string>Type objet</string>
@@ -1524,7 +1555,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showRegions.png</normaloff>:/MainFrame/Resources/option_showRegions.png</iconset>
+     <normaloff>:/MainFrame/Resources/showRegions.png</normaloff>:/MainFrame/Resources/showRegions.png</iconset>
    </property>
    <property name="text">
     <string>Type région</string>
@@ -1539,7 +1570,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showSpawnZones.png</normaloff>:/MainFrame/Resources/option_showSpawnZones.png</iconset>
+     <normaloff>:/MainFrame/Resources/showSpawnZones.png</normaloff>:/MainFrame/Resources/showSpawnZones.png</iconset>
    </property>
    <property name="text">
     <string>Zones de spawn</string>
@@ -1554,7 +1585,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_moverNames.png</normaloff>:/MainFrame/Resources/option_moverNames.png</iconset>
+     <normaloff>:/MainFrame/Resources/moverNames.png</normaloff>:/MainFrame/Resources/moverNames.png</iconset>
    </property>
    <property name="text">
     <string>Noms des movers</string>
@@ -1569,7 +1600,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_objectsLOD.png</normaloff>:/MainFrame/Resources/option_objectsLOD.png</iconset>
+     <normaloff>:/MainFrame/Resources/objectsLOD.png</normaloff>:/MainFrame/Resources/objectsLOD.png</iconset>
    </property>
    <property name="text">
     <string>Objets LOD</string>
@@ -1581,7 +1612,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_spawnMonsters.png</normaloff>:/MainFrame/Resources/option_spawnMonsters.png</iconset>
+     <normaloff>:/MainFrame/Resources/spawnMonsters.png</normaloff>:/MainFrame/Resources/spawnMonsters.png</iconset>
    </property>
    <property name="text">
     <string>Simulation des spawns</string>
@@ -1590,31 +1621,25 @@
   <action name="actionVue_de_face">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/camera_topView.png</normaloff>:/MainFrame/Resources/camera_topView.png</iconset>
+     <normaloff>:/MainFrame/Resources/top_view.png</normaloff>:/MainFrame/Resources/top_view.png</iconset>
    </property>
    <property name="text">
     <string>Vue d'en haut</string>
-   </property>
-   <property name="shortcut">
-    <string>B</string>
    </property>
   </action>
   <action name="actionVue_de_c_t">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/camera_sideView.png</normaloff>:/MainFrame/Resources/camera_sideView.png</iconset>
+     <normaloff>:/MainFrame/Resources/side_view.png</normaloff>:/MainFrame/Resources/side_view.png</iconset>
    </property>
    <property name="text">
     <string>Vue de face</string>
-   </property>
-   <property name="shortcut">
-    <string>N</string>
    </property>
   </action>
   <action name="actionG_n_rer_une_image">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_picture.png</normaloff>:/MainFrame/Resources/save_picture.png</iconset>
+     <normaloff>:/MainFrame/Resources/picture.png</normaloff>:/MainFrame/Resources/picture.png</iconset>
    </property>
    <property name="text">
     <string>Bigmap</string>
@@ -1629,7 +1654,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showNPC.png</normaloff>:/MainFrame/Resources/option_showNPC.png</iconset>
+     <normaloff>:/MainFrame/Resources/showNPC.png</normaloff>:/MainFrame/Resources/showNPC.png</iconset>
    </property>
    <property name="text">
     <string>Type mover (PNJ)</string>
@@ -1644,7 +1669,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showItem.png</normaloff>:/MainFrame/Resources/option_showItem.png</iconset>
+     <normaloff>:/MainFrame/Resources/showItem.png</normaloff>:/MainFrame/Resources/showItem.png</iconset>
    </property>
    <property name="text">
     <string>Type item</string>
@@ -1659,7 +1684,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showCtrl.png</normaloff>:/MainFrame/Resources/option_showCtrl.png</iconset>
+     <normaloff>:/MainFrame/Resources/showCtrl.png</normaloff>:/MainFrame/Resources/showCtrl.png</iconset>
    </property>
    <property name="text">
     <string>Type control</string>
@@ -1674,7 +1699,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showSFX.png</normaloff>:/MainFrame/Resources/option_showSFX.png</iconset>
+     <normaloff>:/MainFrame/Resources/showSFX.png</normaloff>:/MainFrame/Resources/showSFX.png</iconset>
    </property>
    <property name="text">
     <string>Type SFX</string>
@@ -1686,7 +1711,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showCollision.png</normaloff>:/MainFrame/Resources/option_showCollision.png</iconset>
+     <normaloff>:/MainFrame/Resources/showCollision.png</normaloff>:/MainFrame/Resources/showCollision.png</iconset>
    </property>
    <property name="text">
     <string>Collisions</string>
@@ -1706,9 +1731,6 @@
    <property name="text">
     <string>Hauteur du terrain</string>
    </property>
-   <property name="shortcut">
-    <string>H</string>
-   </property>
   </action>
   <action name="actionTexture_du_terrain">
    <property name="checkable">
@@ -1720,9 +1742,6 @@
    </property>
    <property name="text">
     <string>Texture du terrain</string>
-   </property>
-   <property name="shortcut">
-    <string>T</string>
    </property>
   </action>
   <action name="actionCouleur_du_terrain">
@@ -1736,9 +1755,6 @@
    <property name="text">
     <string>Couleur du terrain</string>
    </property>
-   <property name="shortcut">
-    <string>C</string>
-   </property>
   </action>
   <action name="actionEau_et_nuages_edit">
    <property name="checkable">
@@ -1750,9 +1766,6 @@
    </property>
    <property name="text">
     <string>Eau et nuages</string>
-   </property>
-   <property name="shortcut">
-    <string>A</string>
    </property>
   </action>
   <action name="actionPropri_t_s_du_monde">
@@ -1766,9 +1779,6 @@
    <property name="text">
     <string>Propriétés du monde</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+P</string>
-   </property>
   </action>
   <action name="action_dition_des_continents">
    <property name="checkable">
@@ -1780,9 +1790,6 @@
    </property>
    <property name="text">
     <string>Édition des continents</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionVertices_du_continent">
@@ -1796,9 +1803,6 @@
    <property name="text">
     <string>Vertices du continent</string>
    </property>
-   <property name="shortcut">
-    <string>V</string>
-   </property>
   </action>
   <action name="actionAjouter_des_objets">
    <property name="checkable">
@@ -1806,13 +1810,10 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjPlace.png</normaloff>:/MainFrame/Resources/edit_ObjPlace.png</iconset>
+     <normaloff>:/MainFrame/Resources/addObj.png</normaloff>:/MainFrame/Resources/addObj.png</iconset>
    </property>
    <property name="text">
     <string>Ajouter des objets</string>
-   </property>
-   <property name="shortcut">
-    <string>P</string>
    </property>
   </action>
   <action name="actionS_lectionner_des_objets">
@@ -1821,7 +1822,7 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjSelect.png</normaloff>:/MainFrame/Resources/edit_ObjSelect.png</iconset>
+     <normaloff>:/MainFrame/Resources/objSelect.png</normaloff>:/MainFrame/Resources/objSelect.png</iconset>
    </property>
    <property name="text">
     <string>Sélectionner des objets</string>
@@ -1833,13 +1834,10 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjMove.png</normaloff>:/MainFrame/Resources/edit_ObjMove.png</iconset>
+     <normaloff>:/MainFrame/Resources/move.png</normaloff>:/MainFrame/Resources/move.png</iconset>
    </property>
    <property name="text">
     <string>Déplacer les objets</string>
-   </property>
-   <property name="shortcut">
-    <string>M</string>
    </property>
   </action>
   <action name="actionTourner_les_objets">
@@ -1848,13 +1846,10 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjRot.png</normaloff>:/MainFrame/Resources/edit_ObjRot.png</iconset>
+     <normaloff>:/MainFrame/Resources/rotate.png</normaloff>:/MainFrame/Resources/rotate.png</iconset>
    </property>
    <property name="text">
     <string>Tourner les objets</string>
-   </property>
-   <property name="shortcut">
-    <string>R</string>
    </property>
   </action>
   <action name="actionRedimensionner_les_objets">
@@ -1863,18 +1858,19 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjSize.png</normaloff>:/MainFrame/Resources/edit_ObjSize.png</iconset>
+     <normaloff>:/MainFrame/Resources/resize.png</normaloff>:/MainFrame/Resources/resize.png</iconset>
    </property>
    <property name="text">
     <string>Redimensionner les objets</string>
-   </property>
-   <property name="shortcut">
-    <string>S</string>
    </property>
   </action>
   <action name="actionEditX">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/X.png</normaloff>:/MainFrame/Resources/X.png</iconset>
    </property>
    <property name="text">
     <string>X</string>
@@ -1882,13 +1878,14 @@
    <property name="toolTip">
     <string>Éditer sur l'axe X</string>
    </property>
-   <property name="shortcut">
-    <string>X</string>
-   </property>
   </action>
   <action name="actionEditY">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/Y.png</normaloff>:/MainFrame/Resources/Y.png</iconset>
    </property>
    <property name="text">
     <string>Y</string>
@@ -1896,22 +1893,20 @@
    <property name="toolTip">
     <string>Éditer sur l'axe Y</string>
    </property>
-   <property name="shortcut">
-    <string>Y</string>
-   </property>
   </action>
   <action name="actionEditZ">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/Z.png</normaloff>:/MainFrame/Resources/Z.png</iconset>
    </property>
    <property name="text">
     <string>Z</string>
    </property>
    <property name="toolTip">
     <string>Éditer sur l'axe Z</string>
-   </property>
-   <property name="shortcut">
-    <string>Z</string>
    </property>
   </action>
   <action name="actionEditXZ">
@@ -1921,14 +1916,15 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/XZ.png</normaloff>:/MainFrame/Resources/XZ.png</iconset>
+   </property>
    <property name="text">
     <string>XZ</string>
    </property>
    <property name="toolTip">
     <string>Éditer sur les axes X et Z</string>
-   </property>
-   <property name="shortcut">
-    <string>W</string>
    </property>
   </action>
   <action name="actionVerrouiller_la_s_lection">
@@ -1942,23 +1938,17 @@
    <property name="text">
     <string>Verrouiller la sélection</string>
    </property>
-   <property name="shortcut">
-    <string>Space</string>
-   </property>
   </action>
   <action name="actionRamener_sur_le_sol">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/gui_alignBottom.png</normaloff>:/MainFrame/Resources/gui_alignBottom.png</iconset>
+     <normaloff>:/MainFrame/Resources/set_on_land.png</normaloff>:/MainFrame/Resources/set_on_land.png</iconset>
    </property>
    <property name="text">
     <string>Ramener sur le sol</string>
    </property>
    <property name="toolTip">
     <string>Ramener sur le sol</string>
-   </property>
-   <property name="shortcut">
-    <string>O</string>
    </property>
   </action>
   <action name="actionPlacer_sur_la_grille">
@@ -1967,62 +1957,55 @@
    </property>
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/option_showGrid.png</normaloff>:/MainFrame/Resources/option_showGrid.png</iconset>
+     <normaloff>:/MainFrame/Resources/grid.png</normaloff>:/MainFrame/Resources/grid.png</iconset>
    </property>
    <property name="text">
     <string>Placer sur la grille</string>
    </property>
-   <property name="shortcut">
-    <string>G</string>
-   </property>
   </action>
   <action name="actionTaille_de_la_grille">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/precision.png</normaloff>:/MainFrame/Resources/precision.png</iconset>
+   </property>
    <property name="text">
     <string>Taille de la grille</string>
    </property>
   </action>
   <action name="actionTaille_et_rotation_al_atoires">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/random.png</normaloff>:/MainFrame/Resources/random.png</iconset>
+   </property>
    <property name="text">
     <string>Taille et rotation aléatoires</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+R</string>
    </property>
   </action>
   <action name="actionCopier">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_copy.png</normaloff>:/MainFrame/Resources/edit_copy.png</iconset>
+     <normaloff>:/MainFrame/Resources/copy.png</normaloff>:/MainFrame/Resources/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copier</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="actionCouper">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_cut.png</normaloff>:/MainFrame/Resources/edit_cut.png</iconset>
+     <normaloff>:/MainFrame/Resources/cut.png</normaloff>:/MainFrame/Resources/cut.png</iconset>
    </property>
    <property name="text">
     <string>Couper</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+X</string>
    </property>
   </action>
   <action name="actionColler">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_paste.png</normaloff>:/MainFrame/Resources/edit_paste.png</iconset>
+     <normaloff>:/MainFrame/Resources/paste.png</normaloff>:/MainFrame/Resources/paste.png</iconset>
    </property>
    <property name="text">
     <string>Coller</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionSupprimer_les_objets">
@@ -2033,29 +2016,32 @@
    <property name="text">
     <string>Supprimer les objets</string>
    </property>
-   <property name="shortcut">
-    <string>Del</string>
-   </property>
   </action>
   <action name="actionCacher_les_objets">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/hide.png</normaloff>:/MainFrame/Resources/hide.png</iconset>
+   </property>
    <property name="text">
     <string>Cacher les objets</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+H</string>
-   </property>
   </action>
   <action name="actionAfficher_tous_les_objets_cach_s">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/show.png</normaloff>:/MainFrame/Resources/show.png</iconset>
+   </property>
    <property name="text">
     <string>Afficher tous les objets cachés</string>
    </property>
   </action>
   <action name="actionCacher_les_objets_au_dessus">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/hide.png</normaloff>:/MainFrame/Resources/hide.png</iconset>
+   </property>
    <property name="text">
     <string>Cacher les objets au dessus</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+U</string>
    </property>
   </action>
   <action name="actionFran_ais">
@@ -2096,9 +2082,6 @@
    <property name="text">
     <string>Gravité</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
-   </property>
   </action>
   <action name="actionBo_te_de_dialogue_pour_les_erreurs">
    <property name="checkable">
@@ -2107,6 +2090,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/msgbox.png</normaloff>:/MainFrame/Resources/msgbox.png</iconset>
+   </property>
    <property name="text">
     <string>Boîte de dialogue pour les erreurs</string>
    </property>
@@ -2114,19 +2101,16 @@
   <action name="actionG_n_rer_les_minimaps">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/save_picture.png</normaloff>:/MainFrame/Resources/save_picture.png</iconset>
+     <normaloff>:/MainFrame/Resources/picture.png</normaloff>:/MainFrame/Resources/picture.png</iconset>
    </property>
    <property name="text">
     <string>Minimaps</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionListe">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/app_about.png</normaloff>:/MainFrame/Resources/app_about.png</iconset>
+     <normaloff>:/MainFrame/Resources/list.png</normaloff>:/MainFrame/Resources/list.png</iconset>
    </property>
    <property name="text">
     <string>Liste</string>
@@ -2135,25 +2119,166 @@
   <action name="actionTranslation">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjMove.png</normaloff>:/MainFrame/Resources/edit_ObjMove.png</iconset>
+     <normaloff>:/MainFrame/Resources/move.png</normaloff>:/MainFrame/Resources/move.png</iconset>
    </property>
    <property name="text">
     <string>Translation</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionRotation">
    <property name="icon">
     <iconset resource="MainFrame.qrc">
-     <normaloff>:/MainFrame/Resources/edit_ObjRot.png</normaloff>:/MainFrame/Resources/edit_ObjRot.png</iconset>
+     <normaloff>:/MainFrame/Resources/rotate.png</normaloff>:/MainFrame/Resources/rotate.png</iconset>
    </property>
    <property name="text">
     <string>Rotation</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
+  </action>
+  <action name="actionDeutsch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/language_german.png</normaloff>:/MainFrame/Resources/language_german.png</iconset>
+   </property>
+   <property name="text">
+    <string>Deutsch</string>
+   </property>
+  </action>
+  <action name="actionAnnuler">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/undo.png</normaloff>:/MainFrame/Resources/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Annuler</string>
+   </property>
+  </action>
+  <action name="actionR_tablir">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/redo.png</normaloff>:/MainFrame/Resources/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rétablir</string>
+   </property>
+  </action>
+  <action name="actionLumi_re_d_dition">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/edition_light.png</normaloff>:/MainFrame/Resources/edition_light.png</iconset>
+   </property>
+   <property name="text">
+    <string>Lumière d'édition</string>
+   </property>
+  </action>
+  <action name="actionRedimension">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/resize.png</normaloff>:/MainFrame/Resources/resize.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redimension</string>
+   </property>
+  </action>
+  <action name="actionParam_tres_d_ajout_d_objets">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/settings.png</normaloff>:/MainFrame/Resources/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paramètres d'ajout d'objets</string>
+   </property>
+  </action>
+  <action name="actionSupprimer_tous_les_objets">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/remove.png</normaloff>:/MainFrame/Resources/remove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Supprimer tous les objets</string>
+   </property>
+  </action>
+  <action name="actionSolide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/fill_solid.png</normaloff>:/MainFrame/Resources/fill_solid.png</iconset>
+   </property>
+   <property name="text">
+    <string>Solide</string>
+   </property>
+  </action>
+  <action name="actionWireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/fill_line.png</normaloff>:/MainFrame/Resources/fill_line.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wireframe</string>
+   </property>
+  </action>
+  <action name="actionChamp_de_vision">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/farPlane.png</normaloff>:/MainFrame/Resources/farPlane.png</iconset>
+   </property>
+   <property name="text">
+    <string>Champ de vision</string>
+   </property>
+  </action>
+  <action name="actionD_placer_cam_ra">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/moveCamera.png</normaloff>:/MainFrame/Resources/moveCamera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Déplacer caméra</string>
+   </property>
+  </action>
+  <action name="actionTourner_cam_ra">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/rotateCamera.png</normaloff>:/MainFrame/Resources/rotateCamera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tourner caméra</string>
+   </property>
+  </action>
+  <action name="actionZoomer_cam_ra">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/zoomCamera.png</normaloff>:/MainFrame/Resources/zoomCamera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoomer caméra</string>
    </property>
   </action>
  </widget>

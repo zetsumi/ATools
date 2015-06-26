@@ -80,6 +80,8 @@ public:
 	static bool LoadText(const string& filename);
 	static void FillComboBox(QComboBox* comboBox, const string& defBegin, int currentValue);
 	static string GetDefineText(int value, const string& defBegin);
+	static QStringList GetDefineList(const string& defBegin);
+	static int GetDefine(const string& define);
 
 private:
 	static QMap<string, int> s_defines;

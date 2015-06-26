@@ -7,6 +7,7 @@
 #include <stdafx.h>
 #include "World.h"
 #include "ModelMng.h"
+#include "Skybox.h"
 
 LightColor CWorld::s_light[24] =
 {
@@ -50,94 +51,110 @@ void CWorld::_setLight(bool sendToDevice)
 	light.Position.y = 150.0f;
 	light.Position.z = 0.0f;
 
-	if (m_continent && m_continent->useEnvir)
+	if (g_global3D.editionLight)
 	{
-		m_fogColor = D3DCOLOR_ARGB(255,
-			(int)(m_continent->diffuse.x * 255.0f),
-			(int)(m_continent->diffuse.y * 255.0f),
-			(int)(m_continent->diffuse.z * 255.0f));
+		m_fogColor = D3DCOLOR_ARGB(255, 127, 127, 153);
 
-		light.Diffuse.r = m_continent->diffuse.x * 1.2f;
-		light.Diffuse.g = m_continent->diffuse.y * 1.2f;
-		light.Diffuse.b = m_continent->diffuse.z * 1.2f;
+		light.Ambient.r = light.Ambient.g = light.Ambient.b = (81.0f / 255.0f) * 0.9f;
+		light.Diffuse.r = light.Diffuse.g = light.Diffuse.b = (113.0f / 255.0f) + 0.1f;
 
-		light.Ambient.r = m_continent->ambient.x * 0.8f;
-		light.Ambient.g = m_continent->ambient.y * 0.8f;
-		light.Ambient.b = m_continent->ambient.z * 0.8f;
-
-		D3DXVECTOR3 vecSun = D3DXVECTOR3(0.0f, 0.5f, 0.5f);
-		D3DXVec3Normalize(&vecSun, &vecSun);
-		light.Direction.x = -vecSun.x;
-		light.Direction.y = -vecSun.y;
-		light.Direction.z = -vecSun.z;
+		D3DXVECTOR3 vec(0.0f, -0.5f, -1.0f);
+		D3DXVec3Normalize(&vec, &vec);
+		light.Direction.x = vec.x;
+		light.Direction.y = vec.y;
+		light.Direction.z = vec.z;
 	}
 	else
 	{
-		if (m_inDoor)
+		if (m_continent && m_continent->useEnvir)
 		{
 			m_fogColor = D3DCOLOR_ARGB(255,
-				(m_diffuse >> 16) & 0xff,
-				(m_diffuse >> 8) & 0xff,
-				m_diffuse & 0xff);
+				(int)(m_continent->diffuse.x * 255.0f),
+				(int)(m_continent->diffuse.y * 255.0f),
+				(int)(m_continent->diffuse.z * 255.0f));
 
-			light.Diffuse.r = ((float)((m_diffuse >> 16) & 0xff) / 255.f) + 0.1f;
-			light.Diffuse.g = ((float)((m_diffuse >> 8) & 0xff) / 255.f) + 0.1f;
-			light.Diffuse.b = ((float)(m_diffuse & 0xff) / 255.f) + 0.1f;
+			light.Diffuse.r = m_continent->diffuse.x * 1.2f;
+			light.Diffuse.g = m_continent->diffuse.y * 1.2f;
+			light.Diffuse.b = m_continent->diffuse.z * 1.2f;
 
-			light.Ambient.r = ((float)((m_ambient >> 16) & 0xff) / 255.f) * 0.9f;
-			light.Ambient.g = ((float)((m_ambient >> 8) & 0xff) / 255.f) * 0.9f;
-			light.Ambient.b = ((float)(m_ambient & 0xff) / 255.f) * 0.9f;
+			light.Ambient.r = m_continent->ambient.x * 0.8f;
+			light.Ambient.g = m_continent->ambient.y * 0.8f;
+			light.Ambient.b = m_continent->ambient.z * 0.8f;
 
-			light.Direction.x = m_lightDir.x;
-			light.Direction.y = m_lightDir.y;
-			light.Direction.z = m_lightDir.z;
+			D3DXVECTOR3 vecSun = D3DXVECTOR3(0.0f, 0.5f, 0.5f);
+			D3DXVec3Normalize(&vecSun, &vecSun);
+			light.Direction.x = -vecSun.x;
+			light.Direction.y = -vecSun.y;
+			light.Direction.z = -vecSun.z;
 		}
 		else
 		{
-			int hour = g_global3D.hour;
-			hour--;
-			if (hour < 0)
-				hour = 0;
-			if (hour > 23)
-				hour = 23;
+			if (m_inDoor)
+			{
+				m_fogColor = D3DCOLOR_ARGB(255,
+					(m_diffuse >> 16) & 0xff,
+					(m_diffuse >> 8) & 0xff,
+					m_diffuse & 0xff);
 
-			LightColor lightColorPrev = s_light[(hour - 1 == -1) ? 23 : hour - 1];
-			const LightColor lightColor = s_light[hour];
-			lightColorPrev.r1 += (lightColor.r1 - lightColorPrev.r1) * g_global3D.min / 60;
-			lightColorPrev.g1 += (lightColor.g1 - lightColorPrev.g1) * g_global3D.min / 60;
-			lightColorPrev.b1 += (lightColor.b1 - lightColorPrev.b1) * g_global3D.min / 60;
-			lightColorPrev.r2 += (lightColor.r2 - lightColorPrev.r2) * g_global3D.min / 60;
-			lightColorPrev.g2 += (lightColor.g2 - lightColorPrev.g2) * g_global3D.min / 60;
-			lightColorPrev.b2 += (lightColor.b2 - lightColorPrev.b2) * g_global3D.min / 60;
+				light.Diffuse.r = ((float)((m_diffuse >> 16) & 0xff) / 255.f) + 0.1f;
+				light.Diffuse.g = ((float)((m_diffuse >> 8) & 0xff) / 255.f) + 0.1f;
+				light.Diffuse.b = ((float)(m_diffuse & 0xff) / 255.f) + 0.1f;
 
-			m_fogColor = D3DCOLOR_ARGB(255,
-				(int)(lightColorPrev.r1 * 255.0f),
-				(int)(lightColorPrev.g1 * 255.0f),
-				(int)(lightColorPrev.b1 * 255.0f));
+				light.Ambient.r = ((float)((m_ambient >> 16) & 0xff) / 255.f) * 0.9f;
+				light.Ambient.g = ((float)((m_ambient >> 8) & 0xff) / 255.f) * 0.9f;
+				light.Ambient.b = ((float)(m_ambient & 0xff) / 255.f) * 0.9f;
 
-			light.Diffuse.r = lightColorPrev.r1 * 1.1f;
-			light.Diffuse.g = lightColorPrev.g1 * 1.1f;
-			light.Diffuse.b = lightColorPrev.b1 * 1.1f;
+				light.Direction.x = m_lightDir.x;
+				light.Direction.y = m_lightDir.y;
+				light.Direction.z = m_lightDir.z;
+			}
+			else
+			{
+				int hour = g_global3D.hour;
+				hour--;
+				if (hour < 0)
+					hour = 0;
+				if (hour > 23)
+					hour = 23;
 
-			light.Ambient.r = lightColorPrev.r2 * 0.9f;
-			light.Ambient.g = lightColorPrev.g2 * 0.9f;
-			light.Ambient.b = lightColorPrev.b2 * 0.9f;
+				LightColor lightColorPrev = s_light[(hour - 1 == -1) ? 23 : hour - 1];
+				const LightColor lightColor = s_light[hour];
+				lightColorPrev.r1 += (lightColor.r1 - lightColorPrev.r1) * g_global3D.min / 60;
+				lightColorPrev.g1 += (lightColor.g1 - lightColorPrev.g1) * g_global3D.min / 60;
+				lightColorPrev.b1 += (lightColor.b1 - lightColorPrev.b1) * g_global3D.min / 60;
+				lightColorPrev.r2 += (lightColor.r2 - lightColorPrev.r2) * g_global3D.min / 60;
+				lightColorPrev.g2 += (lightColor.g2 - lightColorPrev.g2) * g_global3D.min / 60;
+				lightColorPrev.b2 += (lightColor.b2 - lightColorPrev.b2) * g_global3D.min / 60;
 
-			int temp2 = g_global3D.hour;
-			if (g_global3D.hour >= 1 && g_global3D.hour <= 6)
-				temp2 = 24 + g_global3D.hour;
+				m_fogColor = D3DCOLOR_ARGB(255,
+					(int)(lightColorPrev.r1 * 255.0f),
+					(int)(lightColorPrev.g1 * 255.0f),
+					(int)(lightColorPrev.b1 * 255.0f));
 
-			const uint secCount = temp2 * 24 * 60 + g_global3D.min * 60 * g_global3D.sec;
-			const float sunAngle = (secCount * 0.00015f) - 90.0f;
+				light.Diffuse.r = lightColorPrev.r1 * 1.1f;
+				light.Diffuse.g = lightColorPrev.g1 * 1.1f;
+				light.Diffuse.b = lightColorPrev.b1 * 1.1f;
 
-			D3DXVECTOR3 vecSun = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-			D3DXMATRIX  matTemp;
-			D3DXMatrixRotationX(&matTemp, (sunAngle + 180.0f) * (3.1415926f / 180.f));
-			D3DXVec3TransformCoord(&vecSun, &vecSun, &matTemp);
+				light.Ambient.r = lightColorPrev.r2 * 0.9f;
+				light.Ambient.g = lightColorPrev.g2 * 0.9f;
+				light.Ambient.b = lightColorPrev.b2 * 0.9f;
 
-			light.Direction.x = vecSun.x;
-			light.Direction.y = vecSun.y;
-			light.Direction.z = vecSun.z;
+				int temp2 = g_global3D.hour;
+				if (g_global3D.hour >= 1 && g_global3D.hour <= 6)
+					temp2 = 24 + g_global3D.hour;
+
+				const uint secCount = temp2 * 24 * 60 + g_global3D.min * 60 * g_global3D.sec;
+				const float sunAngle = (secCount * 0.00015f) - 90.0f;
+
+				D3DXVECTOR3 vecSun = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+				D3DXMATRIX  matTemp;
+				D3DXMatrixRotationX(&matTemp, (sunAngle + 180.0f) * (3.1415926f / 180.f));
+				D3DXVec3TransformCoord(&vecSun, &vecSun, &matTemp);
+
+				light.Direction.x = vecSun.x;
+				light.Direction.y = vecSun.y;
+				light.Direction.z = vecSun.z;
+			}
 		}
 	}
 
@@ -191,7 +208,7 @@ void CWorld::_setLight(bool sendToDevice)
 			(int)(light.Ambient.b * 255.0f)));
 	}
 
-	if (g_global3D.hour >= 21 || g_global3D.hour <= 6)
+	if (g_global3D.hour >= 21 || g_global3D.hour <= 6 || g_global3D.editionLight)
 		g_global3D.night = true;
 	else
 		g_global3D.night = false;
@@ -227,4 +244,57 @@ void CWorld::_setFog()
 
 	const D3DXVECTOR4 fogConst(1.0f, 1.0f, 1.0f, 100.0f);
 	m_device->SetVertexShaderConstantF(95, (float*)&fogConst, 1);
+}
+
+void CWorld::UpdateContinent()
+{
+	const Continent* oldContinent = m_continent;
+	m_continent = null;
+
+	int i, j, counter = 0;
+	D3DXVECTOR3 p1, p2;
+	float xinters;
+	Continent* continent;
+	for (i = 0; i < m_continents.GetSize(); i++)
+	{
+		continent = m_continents[i];
+		if (!continent || !continent->useEnvir)
+			continue;
+
+		const QVector<D3DXVECTOR3>& vertices = continent->vertices;
+
+		p1 = vertices[0];
+		for (j = 1; j <= vertices.size(); j++)
+		{
+			p2 = vertices[j % vertices.size()];
+			if (m_cameraPos.z > (p1.z < p2.z ? p1.z : p2.z))
+			{
+				if (m_cameraPos.z <= (p1.z > p2.z ? p1.z : p2.z))
+				{
+					if (m_cameraPos.x <= (p1.x > p2.x ? p1.x : p2.x))
+					{
+						if (p1.z != p2.z)
+						{
+							xinters = (m_cameraPos.z - p1.z) * (p2.x - p1.x) / (p2.z - p1.z) + p1.x;
+							if (p1.x == p2.x || m_cameraPos.x <= xinters)
+								counter++;
+						}
+					}
+				}
+			}
+			p1 = p2;
+		}
+
+		if (counter % 2 != 0)
+		{
+			m_continent = continent;
+			break;
+		}
+	}
+
+	if (m_continent != oldContinent && m_skybox)
+	{
+		_setLight(false);
+		m_skybox->LoadTextures();
+	}
 }

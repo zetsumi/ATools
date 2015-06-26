@@ -70,14 +70,13 @@ void CLandscape::_initPatches()
 
 int CLandscape::GetTextureID(const D3DXVECTOR3& pos)
 {
-	const double unity = (double)(MAP_SIZE * MPU) / (double)((PATCH_SIZE - 1) * NUM_PATCHES_PER_SIDE);
-	D3DXVECTOR3 realPos((int)((pos.x + (unity / 2.0f)) / unity) * unity,
+	D3DXVECTOR3 realPos((int)((pos.x + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY) * LIGHTMAP_UNITY,
 		0.0f,
-		(int)((pos.z + (unity / 2.0f)) / unity) * unity);
+		(int)((pos.z + (LIGHTMAP_UNITY / 2.0f)) / LIGHTMAP_UNITY) * LIGHTMAP_UNITY);
 	realPos -= GetPosition();
 
-	const int textureOffsetX = realPos.x < (unity - 0.0099f) ? 0 : (int)(realPos.x / unity + 0.5f);
-	const int textureOffsetZ = realPos.z < (unity - 0.0099f) ? 0 : (int)(realPos.z / unity + 0.5f);
+	const int textureOffsetX = realPos.x < (LIGHTMAP_UNITY - 0.0099f) ? 0 : (int)(realPos.x / LIGHTMAP_UNITY + 0.5f);
+	const int textureOffsetZ = realPos.z < (LIGHTMAP_UNITY - 0.0099f) ? 0 : (int)(realPos.z / LIGHTMAP_UNITY + 0.5f);
 
 	const int textureOffset = textureOffsetX + textureOffsetZ * MAP_SIZE;
 	if (textureOffset < 0 || textureOffset >= MAP_SIZE * MAP_SIZE)
@@ -297,7 +296,7 @@ void CLandscape::UpdateTextureLayers()
 bool CLandscape::Load(const string& filename)
 {
 	CFile file;
-	if (!file.Open(filename, QIODevice::ReadOnly, false))
+	if (!file.Open(filename, QIODevice::ReadOnly))
 		return false;
 
 	uint version;
@@ -742,7 +741,7 @@ void CLandscape::MakeAttributesVertexBuffer()
 	Color3DVertex* VB;
 	m_attrVB->Lock(0, 0, (void**)&VB, 0);
 
-	const D3DXVECTOR3 addPos(m_posX * MPU, 0.1f, m_posY * MPU);
+	const D3DXVECTOR3 addPos(m_posX * MPU, 0.0f, m_posY * MPU);
 	float posY;
 	DWORD c;
 	for (x = 0; x < MAP_SIZE; x++)
@@ -973,7 +972,7 @@ void CLandscape::_cull()
 	m_visible = true;
 }
 
-LandLayer* CLandscape::GetLayer(int textureID)
+LandLayer* CLandscape::GetLayer(int textureID, int createPosition)
 {
 	for (int i = 0; i < m_layers.GetSize(); i++)
 	{
@@ -1010,8 +1009,23 @@ LandLayer* CLandscape::GetLayer(int textureID)
 	}
 
 	layer->lightMap->UnlockRect(0);
-	m_layers.Append(layer);
+	m_layers.Append(layer, createPosition);
 	return layer;
+}
+
+int CLandscape::DeleteLayer(int textureID)
+{
+	for (int i = 0; i < m_layers.GetSize(); i++)
+	{
+		if (m_layers[i]->textureID == textureID)
+		{
+			Release(m_layers[i]->lightMap);
+			Delete(m_layers[i]);
+			m_layers.RemoveAt(i);
+			return i;
+		}
+	}
+	return -1;
 }
 
 float CLandscape::GetHeight(int offset) const
@@ -1044,6 +1058,53 @@ float CLandscape::GetHeightAttribute(int offset) const
 		return HGT_NOWALK;
 	}
 	return 0.0f;
+}
+
+void CLandscape::SetHeight(int x, int z, float height)
+{
+	m_heightMap[x + z * (MAP_SIZE + 1)] = height;
+
+	const int tx = x / PATCH_SIZE;
+	const int tz = z / PATCH_SIZE;
+
+	m_patches[tz][tx].m_dirty = true;
+	if (tx > 0)
+		m_patches[tz][tx - 1].m_dirty = true;
+	if (tz > 0)
+		m_patches[tz - 1][tx].m_dirty = true;
+	if (tz > 0 && tx > 0)
+		m_patches[tz - 1][tx - 1].m_dirty = true;
+	m_dirty = true;
+}
+
+void CLandscape::SetWaterHeight(int x, int z, WaterHeight height)
+{
+	const int offset = x + z * NUM_PATCHES_PER_SIDE;
+	if (offset < 0 || offset >= NUM_PATCHES_PER_SIDE * NUM_PATCHES_PER_SIDE)
+		return;
+
+	m_waterHeight[offset] = height;
+}
+
+float CLandscape::GetMinHeight(int x, int z) const
+{
+	return m_patches[z][x].m_bounds[0].y;
+}
+
+void CLandscape::GetColor(int x, int z, byte color[3])
+{
+	const int offset = (x + z * MAP_SIZE) * 3;
+	color[0] = m_colorMap[offset + 0];
+	color[1] = m_colorMap[offset + 1];
+	color[2] = m_colorMap[offset + 2];
+}
+
+void CLandscape::SetColor(int x, int z, byte color[3])
+{
+	const int offset = (x + z * MAP_SIZE) * 3;
+	m_colorMap[offset + 0] = color[0];
+	m_colorMap[offset + 1] = color[1];
+	m_colorMap[offset + 2] = color[2];
 }
 
 CLandPatch::CLandPatch()
@@ -1166,7 +1227,7 @@ void CLandPatch::Render() const
 	if (g_global3D.terrainLOD)
 	{
 		if (m_level == 3)
-			m_device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, m_offset, 0, (PATCH_SIZE + 1)*(PATCH_SIZE + 1), g_anStartIndex[m_level], 2);
+			m_device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, m_offset, 0, (PATCH_SIZE + 1)*(PATCH_SIZE + 1), g_anStartIndex[3], 2);
 		else
 		{
 			if (m_level != m_topLevel)
@@ -1188,5 +1249,5 @@ void CLandPatch::Render() const
 		}
 	}
 	else
-		m_device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, m_offset, 0, (PATCH_SIZE + 1)*(PATCH_SIZE + 1), 0, 128);
+		m_device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, m_offset, 0, (PATCH_SIZE + 1)*(PATCH_SIZE + 1), 0, PATCH_SIZE * PATCH_SIZE * 2);
 }

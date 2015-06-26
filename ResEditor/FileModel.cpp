@@ -12,13 +12,13 @@ QMap<string, int> CFileModel::s_exts;
 
 void CFileModel::InitResources()
 {
-	s_icons[0].addFile(":/MainFrame/Resources/ext/default.png");
-	s_icons[1].addFile(":/MainFrame/Resources/ext/code.png");
-	s_icons[2].addFile(":/MainFrame/Resources/ext/csv.png");
-	s_icons[3].addFile(":/MainFrame/Resources/ext/header.png");
-	s_icons[4].addFile(":/MainFrame/Resources/ext/system.png");
-	s_icons[5].addFile(":/MainFrame/Resources/ext/picture.png");
-	s_icons[6].addFile(":/MainFrame/Resources/ext/text.png");
+	s_icons[0].addFile(":/MainFrame/Resources/default.png");
+	s_icons[1].addFile(":/MainFrame/Resources/code.png");
+	s_icons[2].addFile(":/MainFrame/Resources/csv.png");
+	s_icons[3].addFile(":/MainFrame/Resources/header.png");
+	s_icons[4].addFile(":/MainFrame/Resources/system.png");
+	s_icons[5].addFile(":/MainFrame/Resources/picture.png");
+	s_icons[6].addFile(":/MainFrame/Resources/text.png");
 	s_exts["inc"] = 1;
 	s_exts["c"] = 1;
 	s_exts["cpp"] = 1;

@@ -43,10 +43,6 @@ public:
 	void Cull();
 	void Render() const;
 
-	float GetMinHeight() const {
-		return m_bounds[0].y;
-	}
-
 private:
 	LPDIRECT3DDEVICE9 m_device;
 	bool m_dirty;
@@ -78,20 +74,20 @@ public:
 	bool Load(const string& filename);
 	bool Save(const string& filename);
 
-	LandLayer* GetLayer(int textureID);
+	void UpdateCull();
+	void Render();
+	void RenderWater();
+	void RenderAttributes();
+
+	LandLayer* GetLayer(int textureID, int createPosition = -1);
+	int DeleteLayer(int textureID);
+	int GetTextureID(const D3DXVECTOR3& pos);
+
 	float GetHeight(int offset) const;
 	float GetHeight(float x, float z) const;
 	float GetHeightAttribute(int offset) const;
 	float GetMaxHeight() const;
-	int GetTextureID(const D3DXVECTOR3& pos);
-	
-	void Render();
-	void RenderWater();
-	void RenderAttributes();
-	void MakeWaterVertexBuffer();
-	void MakeAttributesVertexBuffer();
-	void UpdateTextureLayers();
-	void UpdateCull();
+	float GetMinHeight(int x, int z) const;
 
 	WaterHeight* GetWaterHeight(int x, int z) {
 		return &m_waterHeight[x + z * NUM_PATCHES_PER_SIDE];
@@ -100,10 +96,14 @@ public:
 		return D3DXVECTOR3(m_posX * MPU, 0, m_posY * MPU);
 	}
 
-#ifdef WORLD_EDITOR
 	void SetHeight(int x, int z, float height);
-	bool SetLayerAlpha(int x, int z, int textureID, byte alpha);
-#endif // WORLD_EDITOR
+	void SetWaterHeight(int x, int z, WaterHeight height);
+	void GetColor(int x, int z, byte color[3]);
+	void SetColor(int x, int z, byte color[3]);
+
+	void MakeWaterVertexBuffer();
+	void MakeAttributesVertexBuffer();
+	void UpdateTextureLayers();
 
 private:
 	LPDIRECT3DDEVICE9 m_device;

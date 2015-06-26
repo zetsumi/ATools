@@ -4,64 +4,40 @@
 // The rest is released without license and without any warranty
 ///////////
 
-#ifndef DAEEXPORTER_H
-#define DAEEXPORTER_H
+#ifndef EXPORTER_H
+#define EXPORTER_H
 
 class CAnimatedMesh;
 struct GMObject;
 struct Material;
 struct Bone;
 struct TMAnimation;
+struct MaterialBlock;
 
-class CDAEExporter
+class CExporter
 {
 public:
-	CDAEExporter(CAnimatedMesh* mesh);
-	~CDAEExporter();
+	CExporter(CAnimatedMesh* mesh);
 
-	bool Export(const string& filename);
+	virtual bool Export(const string& filename) = 0;
 
-private:
-	struct VertexWeight
-	{
-		int boneIds[2];
-		int weightIDs[2];
-	};
-
-	QFile m_file;
-	QDomDocument m_doc;
-	QDomElement m_colladaNode;
-
+protected:
 	int m_frameCount;
 	string m_rootBoneID;
 	QMap<string, Material*> m_materials;
-	QVector<Material*> m_transparentMaterials;
+	QMap<Material*, MaterialBlock*> m_materialBlocks;
 	QList<Bone*> m_bones;
 	QMap<string, GMObject*> m_objects;
 	QMap<string, TMAnimation*> m_animations;
 	QMap<Bone*, int> m_boneIDs;
 	QMap<GMObject*, int> m_objectIDs;
 	QMap<GMObject*, int> m_objectLODs;
-
-	void _writeAsset();
-	void _writeCameras();
-	void _writeLights();
-	void _writeImages();
-	void _writeEffects();
-	void _writeMaterials();
-	void _writeGeometries();
-	void _writeAnimations();
-	void _writeControllers();
-	void _writeVisualScenes();
-	void _writeScene();
-
-	void _writeNode(QDomElement* parent, const string& name, GMObject* obj);
-	void _writeNode(QDomElement* parent, const string& name, Bone* bone);
+	QMap<Bone*, D3DXMATRIX> m_boneAnimTMs;
 
 	string _getMaterialID(Material* mat);
+	MaterialBlock* _getMaterialBlock(Material* mat);
 
-	string _matToString(const D3DXMATRIX& mat);
-	string _identityMat();
+	D3DXMATRIX _getRotationMatrix(const D3DXQUATERNION& quat) const;
 };
 
-#endif // DAEEXPORTER_H
+#endif // EXPORTER_H

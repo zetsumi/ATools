@@ -13,6 +13,7 @@
 class CModelViewer;
 class CAnimatedMesh;
 class CTimeline;
+class CSoundMng;
 
 class CMainFrame : public QMainWindow
 {
@@ -22,7 +23,12 @@ public:
 	CMainFrame(QWidget* parent = 0);
 	~CMainFrame();
 
+	bool Initialize();
+
 	CTimeline* GetTimeline() const { return m_timeline; }
+
+	void OpenFile(const string& filename);
+	void SetTextureEx(int index);
 
 public slots:
 	void About();
@@ -45,6 +51,12 @@ public slots:
 	void ShowCollObj(bool show);
 	void ChangeCW();
 	void SkinAuto();
+	void SetSoundVolume();
+	void ShowBones(bool show);
+	void SetFillMode(QAction* action);
+	void SetScaleFactor();
+	void SetReferenceModel();
+	void CollisionAuto();
 
 private:
 	Ui::MainFrameClass ui;
@@ -60,16 +72,20 @@ private:
 	CTimeline* m_timeline;
 	QActionGroup* m_actionsLOD;
 	string m_supportedImportFiles;
-
+	CSoundMng* m_soundMng;
+	QStringList m_soundsList;
+	QActionGroup* m_fillModeActionGroup;
+	float m_importScaleFactor;
+	int m_referenceModelID;
 	QTranslator m_translator;
-	bool m_inEnglish;
+	int m_language;
 	QActionGroup* m_languageActionGroup;
 
-	void _openFile(const string& filename);
 	void _saveFile(const string& filename);
 
 	void _connectWidgets();
 	void _loadSettings();
+	void _setShortcuts();
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent* event);

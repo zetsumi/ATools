@@ -11,11 +11,10 @@ CDialogNewPart::CDialogNewPart(QWidget *parent)
 	: QDialog(parent)
 {
 	ui.setupUi(this);
-}
 
-CDialogNewPart::~CDialogNewPart()
-{
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(SetTextureName()));
 }
 
 ESfxPartType CDialogNewPart::GetSfxType() const
@@ -55,4 +54,19 @@ void CDialogNewPart::SetPart(CSfxPart* part)
 		part->m_billType = ESfxPartBillType::Bottom;
 	else if (text == "Pole")
 		part->m_billType = ESfxPartBillType::Pole;
+}
+
+void CDialogNewPart::SetTextureName()
+{
+	string oldFilename;
+	if (GetExtension(ui.lineEdit_2->text()) == "o3d")
+		oldFilename = "Model/";
+	else
+		oldFilename = "SFX/Texture/";
+	oldFilename += ui.lineEdit_2->text();
+
+	const string filename = QFileDialog::getOpenFileName(this, tr("Charger une texture/model"), oldFilename, tr("Fichier texture") % " (*.dds *.tga *.bmp);; " % tr("Fichier 3D") % " (*.o3d)");
+
+	if (!filename.isEmpty())
+		ui.lineEdit_2->setText(QFileInfo(filename).fileName());
 }

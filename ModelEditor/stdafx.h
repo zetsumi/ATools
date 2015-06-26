@@ -12,14 +12,20 @@
 
 class CImporter;
 class CMainFrame;
-class CDAEExporter;
+class CExporter;
 class CDialogEditEffects;
 class CDialogSkinAuto;
+class CModelViewer;
 
-#define MODEL_EDITOR_FRIENDS	friend class CImporter; friend class CMainFrame; friend class CDAEExporter; friend class CDialogEditEffects; friend class CDialogSkinAuto;
+#define MODEL_EDITOR_FRIENDS	friend class CImporter; friend class CMainFrame; friend class CExporter; friend class CDialogEditEffects; friend class CDialogSkinAuto; friend class CModelViewer;
 
 #include <Common.h>
 
 #include <qdom.h>
+#include <QtMultimedia\QSoundEffect.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #endif // STDAFX_H

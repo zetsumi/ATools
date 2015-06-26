@@ -63,7 +63,7 @@ CDialogSkinAuto::~CDialogSkinAuto()
 void CDialogSkinAuto::LoadSkel()
 {
 	const string skel = QFileDialog::getOpenFileName(this, tr("Charger un squelette"),
-		"Model/", tr("Fichier squelette (*.chr)"));
+		"Model/", tr("Fichier squelette") % " (*.chr)");
 
 	if (!skel.isEmpty())
 	{
@@ -126,7 +126,7 @@ void CDialogSkinAuto::SkinSkel()
 
 	if (bones.size() > MAX_BONES)
 	{
-		QMessageBox::warning(this, tr("Attention"), tr("Vous ne devez pas sélectionner plus de ") % string::number(MAX_BONES) % tr(" os..."));
+		QMessageBox::warning(this, tr("Attention"), tr("Vous ne devez pas sélectionner plus de") % ' ' % string::number(MAX_BONES) % ' ' % tr("os..."));
 		return;
 	}
 

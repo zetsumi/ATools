@@ -56,9 +56,12 @@ void CWorld::Render()
 
 	if (!g_global3D.renderMinimap)
 	{
-		if (!m_inDoor && g_global3D.skybox && m_skybox)
+		if (!m_inDoor && g_global3D.skybox && m_skybox && !g_global3D.editionLight)
 			m_skybox->Render();
 	}
+
+	if (g_global3D.fillMode != D3DFILL_SOLID)
+		m_device->SetRenderState(D3DRS_FILLMODE, g_global3D.fillMode);
 
 	m_device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	m_device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -87,9 +90,9 @@ void CWorld::Render()
 	if (g_global3D.renderTerrainAttributes)
 		_renderTerrainAttributes();
 
-	m_device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
 	m_device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_ZENABLE, FALSE);
+	m_device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TFACTOR);
@@ -205,6 +208,11 @@ void CWorld::Render()
 	m_device->SetFVF(TerrainVertex::FVF);
 	m_device->SetIndices(s_gridIB);
 
+	if (g_global3D.fillMode != D3DFILL_SOLID)
+		m_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	if (g_global3D.fog)
+		m_device->SetRenderState(D3DRS_FOGENABLE, TRUE);
+
 	for (i = 0; i < m_cullObjCount; i++)
 	{
 		obj = m_objCull[i];
@@ -258,7 +266,7 @@ void CWorld::Render()
 
 	if (!g_global3D.renderMinimap)
 	{
-		if (m_continent)
+		if (m_continent && g_global3D.continentVertices)
 			_renderContinentLines();
 
 		if (m_paths.size() > 0 && (g_global3D.renderMonster || g_global3D.renderNPC))
@@ -845,14 +853,14 @@ void CWorld::_applyCamera()
 
 	if (g_global3D.renderMinimap)
 	{
-		D3DXMatrixOrthoLH(&proj, (float)(MAP_SIZE * MPU), (float)(MAP_SIZE * MPU), NEAR_PLANE, FAR_PLANE);
+		D3DXMatrixOrthoLH(&proj, (float)(MAP_SIZE * MPU), (float)(MAP_SIZE * MPU), 1.0f, g_global3D.farPlane);
 		D3DXVECTOR3 lookAt = m_cameraPos;
 		lookAt.y -= 1.0f;
 		D3DXMatrixLookAtLH(&view, &m_cameraPos, &lookAt, &D3DXVECTOR3(0, 0, 1));
 	}
 	else
 	{
-		D3DXMatrixPerspectiveFovLH(&proj, M_PI_4, (float)g_global3D.viewport.Width / (float)g_global3D.viewport.Height, NEAR_PLANE, FAR_PLANE);
+		D3DXMatrixPerspectiveFovLH(&proj, M_PI_4, (float)g_global3D.viewport.Width / (float)g_global3D.viewport.Height, 1.0f, g_global3D.farPlane);
 		const float phiRadian = m_cameraAngle.y * M_PI / 180.0f;
 		const float thetaRadian = m_cameraAngle.x * M_PI / 180.0f;
 		D3DXVECTOR3 lookAt;
@@ -1063,6 +1071,50 @@ float CWorld::GetHeight(float x, float z) const
 	return land->GetHeight(x - (mX * MAP_SIZE), z - (mZ * MAP_SIZE));
 }
 
+float CWorld::GetHeight_fast(float x, float z) const
+{
+	if (!VecInWorld(x, z))
+		return 0.0f;
+
+	x /= (float)m_MPU;
+	z /= (float)m_MPU;
+
+	int mX = int(x / MAP_SIZE);
+	int mZ = int(z / MAP_SIZE);
+	if (x == m_width * MAP_SIZE)
+		mX--;
+	if (z == m_height * MAP_SIZE)
+		mZ--;
+
+	CLandscape* land = m_lands[mX + mZ * m_width];
+	if (!land)
+		return 0.0f;
+
+	return land->GetHeight(((int)x - (mX * MAP_SIZE)) + ((int)z - (mZ * MAP_SIZE)) * (MAP_SIZE + 1));
+}
+
+float CWorld::GetHeightAttribute(float x, float z) const
+{
+	if (!VecInWorld(x, z))
+		return 0.0f;
+
+	x /= (float)m_MPU;
+	z /= (float)m_MPU;
+
+	int mX = int(x / MAP_SIZE);
+	int mZ = int(z / MAP_SIZE);
+	if (x == m_width * MAP_SIZE)
+		mX--;
+	if (z == m_height * MAP_SIZE)
+		mZ--;
+
+	CLandscape* land = m_lands[mX + mZ * m_width];
+	if (!land)
+		return 0.0f;
+
+	return land->GetHeightAttribute(((int)x - (mX * MAP_SIZE)) + ((int)z - (mZ * MAP_SIZE)) * (MAP_SIZE + 1));
+}
+
 WaterHeight* CWorld::GetWaterHeight(float x, float z)
 {
 	if (!VecInWorld(x, z))
@@ -1131,7 +1183,9 @@ bool CWorld::InitStaticDeviceObjects(LPDIRECT3DDEVICE9 device)
 		8, 40, 80,
 		0, 72, 40,
 		40, 72, 80,
-		0, 72, 8, 8, 72, 80
+
+		// LOD 3
+		0, (PATCH_SIZE + 1) * PATCH_SIZE, PATCH_SIZE, PATCH_SIZE, (PATCH_SIZE + 1) * PATCH_SIZE, (PATCH_SIZE + 1)*(PATCH_SIZE + 1) - 1
 	};
 
 	ushort* IB;

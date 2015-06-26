@@ -19,8 +19,10 @@ class CMainFrame : public QMainWindow
 	Q_OBJECT
 
 public:
-	CMainFrame(QWidget *parent = 0);
+	CMainFrame(QWidget *parent = null);
 	~CMainFrame();
+
+	bool Initialize();
 
 	void SetEditControl();
 	QAction* GetDeleteCtrlAction() { return ui.actionSupprimer_le_control; }
@@ -93,13 +95,13 @@ private:
 	QActionGroup* m_controlsGroup;
 	int m_createControlType;
 	CPtrArray<ControlData> m_clipboardControls;
-
 	QTranslator m_translator;
-	bool m_inEnglish;
+	int m_language;
 	QActionGroup* m_languageActionGroup;
 
 	void _connectWidgets();
 	void _loadSettings();
+	void _setShortcuts();
 
 protected:
 	virtual void changeEvent(QEvent* event);

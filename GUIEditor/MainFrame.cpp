@@ -10,15 +10,53 @@
 #include "GUIEditor.h"
 #include "WndWindow.h"
 #include <WndManager.h>
+#include <AboutDialog.h>
+#include <ShortcutsMng.h>
 
 CMainFrame::CMainFrame(QWidget *parent)
 	: QMainWindow(parent),
+	m_editor(null),
 	m_dataMng(null),
 	m_windowList(null),
-	m_inEnglish(false),
-	m_languageActionGroup(null)
+	m_language(LANG_FRE),
+	m_languageActionGroup(null),
+	m_status(null),
+	m_controlsGroup(null)
+{
+}
+
+CMainFrame::~CMainFrame()
+{
+	for (int i = 0; i < m_clipboardControls.GetSize(); i++)
+		Delete(m_clipboardControls[i]);
+	m_clipboardControls.RemoveAll();
+
+	Delete(m_editor);
+	Delete(m_windowList);
+	Delete(m_status);
+	Delete(m_dataMng);
+	Delete(m_controlsGroup);
+	Delete(m_languageActionGroup);
+}
+
+bool CMainFrame::Initialize()
 {
 	ui.setupUi(this);
+
+	m_dataMng = new CDataManager(ui.editControlID);
+	if (!m_dataMng->Load())
+		return false;
+
+	m_windowList = new QStringListModel(ui.listWindows);
+	m_dataMng->FillWindowList(m_windowList);
+	ui.listWindows->setModel(m_windowList);
+	m_dataMng->FillControlList();
+
+	m_editor = new CGUIEditor(this);
+	setCentralWidget(m_editor);
+
+	if (!m_editor->CreateEnvironment())
+		return false;
 
 	m_status = new QLabel(tr("Prêt"));
 	m_status->setStyleSheet("color: white;");
@@ -27,23 +65,6 @@ CMainFrame::CMainFrame(QWidget *parent)
 
 	ui.menuFen_tres->addAction(ui.dockWindows->toggleViewAction());
 	ui.menuFen_tres->addAction(ui.dockEdit->toggleViewAction());
-
-	m_dataMng = new CDataManager(ui.editControlID);
-	m_dataMng->Load();
-
-	m_editor = new CGUIEditor(this);
-	setCentralWidget(m_editor);
-
-	if (!m_editor->CreateEnvironment())
-	{
-		Delete(m_editor);
-		qFatal("Loading failed !");
-	}
-
-	m_windowList = new QStringListModel(ui.listWindows);
-	m_dataMng->FillWindowList(m_windowList);
-	ui.listWindows->setModel(m_windowList);
-	m_dataMng->FillControlList();
 
 	m_controlsGroup = new QActionGroup(this);
 	m_controlsGroup->addAction(ui.actionX);
@@ -66,25 +87,13 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_languageActionGroup = new QActionGroup(ui.menuLangage);
 	m_languageActionGroup->addAction(ui.actionFran_ais);
 	m_languageActionGroup->addAction(ui.actionEnglish);
+	m_languageActionGroup->addAction(ui.actionDeutsch);
 
 	_connectWidgets();
-
+	_setShortcuts();
 	SetEditControl();
 	_loadSettings();
-}
-
-CMainFrame::~CMainFrame()
-{
-	for (int i = 0; i < m_clipboardControls.GetSize(); i++)
-		Delete(m_clipboardControls[i]);
-	m_clipboardControls.RemoveAll();
-
-	Delete(m_editor);
-	Delete(m_windowList);
-	Delete(m_status);
-	Delete(m_dataMng);
-	Delete(m_controlsGroup);
-	Delete(m_languageActionGroup);
+	return true;
 }
 
 void CMainFrame::_connectWidgets()
@@ -145,6 +154,29 @@ void CMainFrame::_connectWidgets()
 #endif
 }
 
+void CMainFrame::_setShortcuts()
+{
+	CShortcutsMng mng;
+	mng.Add(ui.actionQuitter, "ExitApp");
+	mng.Add(ui.actionEnregistrer, "SaveFile");
+	mng.Add(ui.actionPlein_cran, "Fullscreen");
+	mng.Add(ui.action_propos, "About");
+	mng.Add(ui.actionCopier, "Copy");
+	mng.Add(ui.actionCouper, "Cut");
+	mng.Add(ui.actionColler, "Paste");
+	mng.Add(ui.actionNouvelle_fen_tre, "NewWindow");
+	mng.Add(ui.actionSupprimer_le_control , "DeleteCtrl");
+	mng.Add(ui.actionAligner_en_haut, "AlignTop");
+	mng.Add(ui.actionAligner_droite, "AlignRight");
+	mng.Add(ui.actionAligner_gauche, "AlignLeft");
+	mng.Add(ui.actionAligner_en_bas, "AlignBottom");
+	mng.Add(ui.actionRamener_au_premier_plan, "BringToFront");
+	mng.Add(ui.actionCling, "Cling");
+	mng.Add(ui.actionGrille, "ShowGrid");
+	mng.Add(ui.actionX, "X");
+	mng.Load();
+}
+
 void CMainFrame::Save()
 {
 	const bool result = m_dataMng->Save();
@@ -185,10 +217,19 @@ void CMainFrame::_loadSettings()
 		}
 		if (settings.contains("WindowState"))
 			restoreState(settings.value("WindowState").toByteArray());
-		if (settings.contains("Language") && settings.value("Language") == "English")
+		if (settings.contains("Language"))
 		{
-			ui.actionEnglish->setChecked(true);
-			SetLanguage(ui.actionEnglish);
+			switch (settings.value("Language").toInt())
+			{
+			case LANG_ENG:
+				ui.actionEnglish->setChecked(true);
+				SetLanguage(ui.actionEnglish);
+				break;
+			case LANG_GER:
+				ui.actionDeutsch->setChecked(true);
+				SetLanguage(ui.actionDeutsch);
+				break;
+			}
 		}
 
 		if (m_editor)
@@ -200,13 +241,18 @@ void CMainFrame::SetLanguage(QAction* action)
 {
 	if (action == ui.actionFran_ais)
 	{
-		m_inEnglish = false;
+		m_language = LANG_FRE;
 		m_translator.load("", "");
 	}
 	else if (action == ui.actionEnglish)
 	{
-		m_inEnglish = true;
-		m_translator.load("guieditor_en.qm", "platforms/English");
+		m_language = LANG_ENG;
+		m_translator.load("guieditor_en.qm", "Plugins/languages/English");
+	}
+	else if (action == ui.actionDeutsch)
+	{
+		m_language = LANG_GER;
+		m_translator.load("guieditor_de.qm", "Plugins/languages/Deutsch");
 	}
 
 	qApp->installTranslator(&m_translator);
@@ -226,7 +272,7 @@ void CMainFrame::closeEvent(QCloseEvent* event)
 		settings.setValue("GridSize", CWndWindow::s_gridSize);
 		settings.setValue("WindowGeometry", saveGeometry());
 		settings.setValue("WindowState", saveState());
-		settings.setValue("Language", m_inEnglish ? "English" : "French");
+		settings.setValue("Language", m_language);
 	}
 
 	QMainWindow::closeEvent(event);
@@ -272,8 +318,7 @@ void CMainFrame::SwitchFullscreen(bool fullscreen)
 
 void CMainFrame::About()
 {
-	QMessageBox::about(this, tr("À propos"),
-		"ATools v" % string::number(VERSION) % '.' % string::number(SUB_VERSION) % tr("\n\nPar Aishiro"));
+	CAboutDialog(this, m_editor).exec();
 }
 
 void CMainFrame::AboutQt()

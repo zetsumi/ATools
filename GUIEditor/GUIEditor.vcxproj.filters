@@ -132,6 +132,18 @@
     <ClCompile Include="WndWindow.cpp">
       <Filter>Interface</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\AboutDialog.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\ShortcutsMng.cpp">
+      <Filter>Common\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -188,6 +200,9 @@
     <ClInclude Include="..\Common\PtrArray.h">
       <Filter>Common\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\ShortcutsMng.h">
+      <Filter>Common\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.qrc">
@@ -205,6 +220,9 @@
     <CustomBuild Include="GUIEditor.h">
       <Filter>MainFrame</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Common\AboutDialog.h">
+      <Filter>Common\Utils</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUIEditor.rc">
@@ -213,6 +231,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="guieditor_en.ts">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="guieditor_de.ts">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

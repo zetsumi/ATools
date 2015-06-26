@@ -12,6 +12,53 @@
 #include <Project.h>
 #include <GameElements.h>
 
+void CMainFrame::UpdatePatrolList()
+{
+	ui.patrolList->clear();
+	bool exists = false;
+
+	if (m_world)
+	{
+		QListWidgetItem* item;
+		for (auto it = m_world->m_paths.begin(); it != m_world->m_paths.end(); it++)
+		{
+			item = new QListWidgetItem("Path " % string::number(it.key()), ui.patrolList);
+			item->setData(Qt::UserRole + 1, it.key());
+			ui.patrolList->addItem(item);
+
+			if (it.key() == m_currentPatrol)
+			{
+				ui.patrolList->setCurrentItem(item);
+				exists = true;
+			}
+		}
+	}
+
+	if (!exists)
+		m_currentPatrol = -1;
+}
+
+bool CMainFrame::IsEditingContinents() const
+{
+	return m_dialogContinentEdit != null;
+}
+
+void CMainFrame::ResetDefaultEditionColor()
+{
+	m_editTerrainTextureColor = QColor(127, 127, 127, 255);
+	ui.editTerrainTextureColor->setStyleSheet("background-color: " % m_editTerrainTextureColor.name() % ';');
+}
+
+void CMainFrame::GetAddObjSettings(bool& rot, float& minRot, float& maxRot, bool& scale, float& minScale, float& maxScale)
+{
+	rot = m_addObjRandomRot;
+	minRot = m_addObjRandomRotMin;
+	maxRot = m_addObjRandomRotMax;
+	scale = m_addObjRandomScale;
+	minScale = m_addObjRandomScaleMin;
+	maxScale = m_addObjRandomScaleMax;
+}
+
 int CMainFrame::GetCurrentPatrol() const
 {
 	if (ui.dockPatrolEditor->isHidden())
@@ -88,13 +135,13 @@ void CMainFrame::SetGridSize()
 {
 	HideDialogs();
 	bool ok = false;
-	const int result = QInputDialog::getInt(this, tr("Taille de la grille"), tr("Taille :"), m_gridSize, 1, MAP_SIZE, 1, &ok);
+	const float gridSize = (float)QInputDialog::getDouble(this, tr("Taille de la grille"), tr("Taille :"), (float)m_gridSize, 0.001, MAP_SIZE, 1, &ok);
 	ShowDialogs();
 	if (ok)
-		m_gridSize = result;
+		m_gridSize = gridSize;
 }
 
-int CMainFrame::GetGridSize()
+float CMainFrame::GetGridSize()
 {
 	return m_gridSize;
 }
@@ -201,6 +248,12 @@ void CMainFrame::ChangeEditMode(QAction* action)
 		m_editMode = EDIT_ROTATE_OBJECTS;
 	else if (action == ui.actionRedimensionner_les_objets)
 		m_editMode = EDIT_SCALE_OBJECTS;
+	else if (action == ui.actionD_placer_cam_ra)
+		m_editMode = EDIT_CAMERA_POS;
+	else if (action == ui.actionTourner_cam_ra)
+		m_editMode = EDIT_CAMERA_ROT;
+	else if (action == ui.actionZoomer_cam_ra)
+		m_editMode = EDIT_CAMERA_ZOOM;
 
 	if (!m_editor->IsAutoRefresh())
 		m_editor->RenderEnvironment();
@@ -251,37 +304,6 @@ void CMainFrame::SetLayerInfos(CLandscape* land)
 CLandscape* CMainFrame::GetCurrentInfoLand()
 {
 	return m_currentLand;
-}
-
-void CMainFrame::DeleteLandLayer()
-{
-	if (!m_world || !m_currentLand || ui.editTerrainLayerList->count() <= 0)
-		return;
-
-	auto selection = ui.editTerrainLayerList->selectedItems();
-	if (selection.count() <= 0)
-		return;
-
-	const int index = ui.editTerrainLayerList->row(selection[0]);
-	if (index < 0 || index >= m_currentLand->m_layers.GetSize())
-		return;
-
-	Release(m_currentLand->m_layers[index]->lightMap);
-	Delete(m_currentLand->m_layers[index]);
-	m_currentLand->m_layers.RemoveAt(index);
-
-	ui.editTerrainLayerList->clear();
-	QListWidgetItem* item;
-	for (int i = 0; i < m_currentLand->m_layers.GetSize(); i++)
-	{
-		item = new QListWidgetItem(string::number(i) % " - " % Project->GetTerrainFilename(m_currentLand->m_layers[i]->textureID),
-			ui.editTerrainLayerList,
-			QListWidgetItem::UserType + 1 + m_currentLand->m_layers[i]->textureID);
-		ui.editTerrainLayerList->addItem(item);
-	}
-
-	if (!m_editor->IsAutoRefresh())
-		m_editor->RenderEnvironment();
 }
 
 void CMainFrame::GetTerrainHeightEditInfos(int& mode, bool& rounded, int& radius, int& hardness, bool& useFixedheight, float& fixedHeight, int& attribute)

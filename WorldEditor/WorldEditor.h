@@ -16,6 +16,13 @@ class CModelMng;
 class CWorld;
 class CRender2D;
 class CObject;
+class CEditTerrainHeightCommand;
+class CEditWaterCommand;
+class CEditTerrainColorCommand;
+class CEditTerrainTextureCommand;
+class CObjectTransformCommand;
+class CObjectEditRectCommand;
+class CObjectDeleteCommand;
 
 class CWorldEditor : public CD3DWidget
 {
@@ -35,7 +42,6 @@ public:
 	void SaveBigmap(const string& filename);
 	void SaveMinimaps();
 	void MouseLost();
-	void RotateObjects(int axis, float factor);
 
 	bool IsPickingTerrain() const {
 		return m_pickingTerrain;
@@ -58,7 +64,8 @@ private:
 	bool m_pickingTerrain,
 		m_rotatingCamera,
 		m_movingCamera,
-		m_editing;
+		m_editing,
+		m_zoomingCamera;
 	QPoint m_lastMousePos,
 		m_editTexturePos;
 	D3DXVECTOR3 m_moveVector,
@@ -71,12 +78,19 @@ private:
 	bool m_selectRect;
 	QPoint m_selectRectPos;
 	QPoint m_editBasePos;
-	int m_editSpawn;
 	QPoint m_lastRightClickPos;
 
 	void _updateTerrainPos3D(const QPoint& pt);
 	void _updateMouse3D(const QPoint& pt);
 	void _updateAddObjects();
+
+	CEditTerrainHeightCommand* m_terrainEditHeightCommand;
+	CEditWaterCommand* m_waterEditCommand;
+	CEditTerrainColorCommand* m_terrainEditColorCommand;
+	CEditTerrainTextureCommand* m_terrainEditTextureCommand;
+	CObjectTransformCommand* m_objectTransformCommand;
+	CObjectEditRectCommand* m_objectEditRectCommand;
+	CObjectDeleteCommand* m_duplicateCommand;
 };
 
 #endif // WORLDEDITOR_H
