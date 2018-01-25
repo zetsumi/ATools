@@ -1,4 +1,4 @@
-# FlyForFun resources editor
+# ATools - FlyForFun resources editor
 
 ## Overview
 
