@@ -962,6 +962,7 @@
      <addaction name="actionG_n_rer_les_minimaps"/>
      <addaction name="actionG_n_rer_une_image"/>
      <addaction name="actionListe"/>
+     <addaction name="actionExporter"/>
     </widget>
     <addaction name="actionNouveau"/>
     <addaction name="actionOuvrir"/>
@@ -2279,6 +2280,15 @@
    </property>
    <property name="text">
     <string>Zoomer caméra</string>
+   </property>
+  </action>
+  <action name="actionExporter">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/paste.png</normaloff>:/MainFrame/Resources/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exporter</string>
    </property>
   </action>
  </widget>

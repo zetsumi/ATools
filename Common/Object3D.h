@@ -130,19 +130,11 @@ public:
 	void RenderCollision(const D3DXMATRIX* world);
 
 	bool Pick(const D3DXMATRIX& world, const D3DXVECTOR3& origin, const D3DXVECTOR3& dir, float& dist);
-
-	void SetExternBones(D3DXMATRIX* bones, D3DXMATRIX* invBones)
-	{
-		if (!m_baseBones)
-		{
-			m_externBones = bones;
-			m_externInvBones = invBones;
-		}
-	}
-
-	bool HasSkin() const {
-		return m_hasSkin;
-	}
+	void SetExternBones(D3DXMATRIX* bones, D3DXMATRIX* invBones);
+	bool HasSkin() const;
+	Material* GetMaterial(int idg, int ido);
+	int GetObjectCount(int idg);
+	bool GetLOD();
 
 private:
 	LPDIRECT3DDEVICE9 m_device;

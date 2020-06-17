@@ -11,6 +11,144 @@
 #include <Project.h>
 #include <Object.h>
 #include <Landscape.h>
+#include <ModelMng.h>
+#include <Object3D.h>
+
+
+void CMainFrame::ExportWorld()
+{
+	if (!m_world)
+		return;
+
+	const QFileInfo& filenameWorld(m_world->m_filename);
+	const QString& pathOrigin = filenameWorld.absolutePath();
+	const QString& pathExport = pathOrigin + "/Export";
+	const QString& pathExportModel = pathExport + "/Model";
+	const QString& pathExportModelTexture = pathExport + "/Model/Texture";
+	const QString& pathExportSfx = pathExport + "/Sfx";
+	const QString& pathExportSfxTexture = pathExport + "/Sfx/Texture";
+	const QString& pathExportTerrain = pathExport + "/Terrain";
+
+
+	if (QDir(pathExport).exists() == false)
+		QDir().mkdir(pathExport);
+	if (QDir(pathExportModel).exists() == false)
+		QDir().mkdir(pathExportModel);
+	if (QDir(pathExportModelTexture).exists() == false)
+		QDir().mkdir(pathExportModelTexture);
+	if (QDir(pathExportSfx).exists() == false)
+		QDir().mkdir(pathExportSfx);
+	if (QDir(pathExportTerrain).exists() == false)
+		QDir().mkdir(pathExportTerrain);
+
+	CLandscape* land = nullptr;
+	QVector<string> models;
+	QVector<string> modelTextures;
+	QVector<string> sfxs;
+	QVector<string> sfxTextures;
+	QVector<string> terrains;
+
+	for (unsigned int i = 0; i < MAX_OBJTYPE; i++)
+	{
+		for (unsigned int j = 0; j < m_world->m_objects[i].GetSize(); j++)
+		{
+			CObject* obj = m_world->m_objects[i].GetAt(j);
+			if (obj->m_isReal && obj->m_modelProp &&
+				(obj->m_modelProp->modelType == MODELTYPE_ANIMATED_MESH
+					|| obj->m_modelProp->modelType == MODELTYPE_MESH))
+			{
+				const string name = obj->GetModelFilename();
+				if (!models.contains(name))
+				{
+					CObject3D* obj3D = ModelMng->GetObject3D(name);
+					if (obj3D == nullptr)
+						continue;
+					for (int x = 0; x < (obj3D->GetLOD() ? MAX_GROUP : 1); x++)
+					{
+						auto objCount = obj3D->GetObjectCount(x);
+						for (unsigned int y = 0; y < objCount; ++y)
+						{
+							Material* m = obj3D->GetMaterial(x, y);
+							if (m != nullptr)
+							{
+								QString ss(m->textureName);
+								if (modelTextures.contains(ss) == false)
+									modelTextures.push_back(ss);
+							}
+						}
+					}
+					models.push_back(name);
+				}
+			}
+		}
+	}
+	const QString& pathRessourceModel("Model\\");
+	for (const auto& nameModel : models)
+	{
+		const QString& src = pathRessourceModel + nameModel;
+		const QString& dest = pathExportModel + "\\" + nameModel;
+		QFile::copy(src, dest);
+	}
+	const QString& pathRessourceModelTexture("Model\\Texture\\");
+	for (const auto& nameTexture : modelTextures)
+	{
+		const QString& src = pathRessourceModelTexture + nameTexture;
+		const QString& dest = pathExportModelTexture + "\\" + nameTexture;
+		QFile::copy(src, dest);
+	}
+
+	for (unsigned int i = 0; i < MAX_OBJTYPE; i++)
+	{
+		for (unsigned int j = 0; j < m_world->m_objects[i].GetSize(); j++)
+		{
+			CObject* obj = m_world->m_objects[i].GetAt(j);
+			if (obj->m_isReal && obj->m_modelProp && obj->m_modelProp->modelType == MODELTYPE_SFX)
+			{
+				const string name = obj->GetModelFilename();
+				if (!sfxs.contains(name))
+				{
+					sfxs.push_back(name);
+				}
+			}
+		}
+	}
+	const QString& pathRessourceSfx("SFX\\");
+	for (const auto& nameModel : sfxs)
+	{
+		const QString& src = pathRessourceSfx + nameModel;
+		const QString& dest = pathExportSfx + "\\" + nameModel;
+		QFile::copy(src, dest);
+	}
+	const QString& pathRessourceSfxTexture("SFX\\Texture\\");
+	for (const auto& sfxTexture : sfxTextures)
+	{
+		const QString& src = pathRessourceSfxTexture + sfxTexture;
+		const QString& dest = pathExportSfxTexture + "\\" + sfxTexture;
+		QFile::copy(src, dest);
+	}
+
+	for (unsigned int i = 0; i < m_world->m_width * m_world->m_height; i++)
+	{
+		land = m_world->m_lands[i];
+		if (land)
+		{
+			for (unsigned int j = 0; j < land->m_layers.GetSize(); j++)
+			{
+				const string name = Project->GetTerrainFilename(land->m_layers[j]->textureID);
+				if (!terrains.contains(name))
+					terrains.push_back(name);
+			}
+		}
+	}
+	const QString& pathRessourceTerrain("World\\Texture\\");
+	for (const auto& nameTerrain : terrains)
+	{
+		const QString& src = pathRessourceTerrain + nameTerrain;
+		const QString& dest = pathExportTerrain + "\\" + nameTerrain;
+		QFile::copy(src, dest);
+	}
+}
+
 
 void CMainFrame::GenerateList()
 {

@@ -330,6 +330,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionChamp_de_vision, SIGNAL(triggered()), this, SLOT(SetFarPlane()));
 	connect(ui.actionGravit, SIGNAL(triggered(bool)), this, SLOT(SetGravityEnabled(bool)));
 	connect(ui.actionPlacer_sur_la_grille, SIGNAL(triggered(bool)), this, SLOT(SetOnGridEnabled(bool)));
+	connect(ui.actionExporter, SIGNAL(triggered(bool)), this, SLOT(ExportWorld()));
 
 	connect(m_undoStack, SIGNAL(canRedoChanged(bool)), ui.actionR_tablir, SLOT(setEnabled(bool)));
 	connect(m_undoStack, SIGNAL(canUndoChanged(bool)), ui.actionAnnuler, SLOT(setEnabled(bool)));

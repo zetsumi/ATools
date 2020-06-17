@@ -164,6 +164,7 @@ public slots:
 	void AddPath();
 	void RemovePath();
 	void GenerateList();
+	void ExportWorld();
 	void TranslateObjects();
 	void RotateObjects();
 	void ShowEditionLight(bool light);
