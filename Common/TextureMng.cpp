@@ -64,9 +64,9 @@ CTexture* CTextureMng::GetGUITexture(const string& filename)
 	if (ext == "tga" || ext == "bmp")
 		powerOfTwo = false;
 
-	if (!texture->Load("Theme/Default/" % filename, 0, 0xffff00ff, powerOfTwo))
+	if (!texture->Load("Theme/" % filename, 0, 0xffff00ff, powerOfTwo))
 	{
-		qWarning(("Can't load GUI texture from file 'Theme/Default/" % filename % "'").toLocal8Bit().data());
+		qWarning(("Can't load GUI texture from file 'Theme/" % filename % "'").toLocal8Bit().data());
 		Delete(texture);
 	}
 
@@ -93,7 +93,7 @@ CTexture* CTextureMng::GetModelTexture(const string& filename)
 			{
 				if (!QFileInfo(m_modelTexturePath % "TextureLow/" % filename).exists())
 				{
-					qWarning(("Can't load model texture from file '" % filename % "'").toLocal8Bit().data());
+					//qWarning(("Can't load model texture from file '" % filename % "'").toLocal8Bit().data());
 					m_modelTextures[name] = null;
 					return null;
 				}
@@ -133,7 +133,7 @@ CTexture* CTextureMng::GetModelTexture(const string& filename)
 
 	if (!texture->Load(filepath % filename, 4))
 	{
-		qWarning(("Can't load model texture from file '" % filename % "'").toLocal8Bit().data());
+		//qWarning(("Can't load model texture from file '" % filename % "'").toLocal8Bit().data());
 		Delete(texture);
 	}
 

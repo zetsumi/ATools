@@ -13,16 +13,16 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B12702AD-ABFB-343A-A199-8E24837244A3}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -38,19 +38,20 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\Binary\</OutDir>
-    <IncludePath>..\Binary;..\Lib\Assimp\include;..\Lib\DirectX;E:\Qt\5.4\msvc2013\include;..\Common;.;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Resources</OutDir>
+    <IncludePath>..\Binary;..\Lib\DirectX;C:\Qt\5.14.2\msvc2017\include;..\Common;.;$(IncludePath)</IncludePath>
     <LibraryPath>..\Lib\Assimp\lib\Debug;..\Lib\DirectX;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)-d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\Binary\</OutDir>
-    <IncludePath>..\Binary;..\Lib\Assimp\include;..\Lib\DirectX;E:\Qt\5.4\msvc2013\include;..\Common;.;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Resources</OutDir>
+    <IncludePath>..\Binary;..\Lib\Assimp\include;..\Lib\DirectX;C:\Qt\5.14.2\msvc2017\include;..\Common;.;$(IncludePath)</IncludePath>
     <LibraryPath>..\Lib\Assimp\lib\Release;..\Lib\DirectX;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_WIDGETS_LIB;QT_CORE_LIB;QT_XML_LIB;QT_MULTIMEDIA_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;..\Resources;..\Lib\Assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -58,32 +59,36 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlibstaticd.lib;assimp-vc140-mt.lib;d3d9.lib;d3dx9d.lib;qtmaind.lib;Qt5Widgetsd.lib;Qt5Cored.lib;Qt5Xmld.lib;Qt5Multimediad.lib;Qt5Guid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlibstaticd.lib;assimp-vc141-mt.lib;d3d9.lib;d3dx9d.lib;qtmaind.lib;Qt5Widgetsd.lib;Qt5Cored.lib;Qt5Xmld.lib;Qt5Multimediad.lib;Qt5Guid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_WIDGETS_LIB;QT_CORE_LIB;QT_XML_LIB;QT_MULTIMEDIA_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtMultimedia;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;..\Resources;..\Lib\Assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>zlibstatic.lib;assimp-vc140-mt.lib;d3d9.lib;d3dx9.lib;qtmain.lib;Qt5Widgets.lib;Qt5Core.lib;Qt5Xml.lib;Qt5Multimedia.lib;Qt5Gui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlibstatic.lib;assimp-vc141-mt.lib;d3d9.lib;d3dx9.lib;qtmain.lib;Qt5Widgets.lib;Qt5Core.lib;Qt5Xml.lib;Qt5Multimedia.lib;Qt5Gui.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -184,11 +189,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing AboutDialog.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing AboutDialog.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="..\Common\AnimatedMesh.h" />
     <ClInclude Include="..\Common\Common.h" />
@@ -199,11 +204,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing D3DWidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing D3DWidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="..\Common\File.h" />
     <ClInclude Include="..\Common\ModelMng.h" />
@@ -214,11 +219,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing SoundMng.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing SoundMng.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="..\Common\ShortcutsMng.h" />
     <ClInclude Include="..\Common\TextFile.h" />
@@ -227,21 +232,21 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing Timeline.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing Timeline.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../../Common/%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <CustomBuild Include="DialogEditEffects.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing DialogEditEffects.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing DialogEditEffects.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="DAEExporter.h" />
     <ClInclude Include="Exporter.h" />
@@ -249,21 +254,21 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing MainFrame.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing MainFrame.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <CustomBuild Include="ModelViewer.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ModelViewer.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ModelViewer.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_DialogEditEffects.h" />
     <ClInclude Include="GeneratedFiles\ui_MainFrame.h" />
@@ -276,11 +281,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing SkinAuto.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing SkinAuto.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_WIDGETS_LIB -DQT_CORE_LIB -DQT_XML_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtMultimedia" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I.\..\Resources" "-I.\..\Lib\Assimp\include" "-fstdafx.h" "-f../../%(Filename)%(Extension)"</Command>
     </CustomBuild>
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -345,7 +350,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="-noobsolete" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="qt5.12.1" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="-noobsolete" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2017" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

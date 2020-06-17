@@ -68,9 +68,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->texture = "WndEditTile00.tga";
 		controlData->tiles = true;
 		controlData->rect.setSize(QSize(80, 40));
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_PICTURE:
 		controlData->define = "WIDC_STATIC1";
@@ -79,9 +76,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WSS_PICTURE;
 		controlData->rect.setSize(QSize(128, 128));
-#if __VER >= 19
-		controlData->color = QColor(246, 204, 77);
-#endif
 		break;
 	case CREATECTRL_STATIC:
 		controlData->define = "WIDC_STATIC";
@@ -89,18 +83,12 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->text = "Static";
 		controlData->flags |= WBS_NOFRAME;
 		controlData->rect.setSize(QSize(40, 20));
-#if __VER >= 19
-		controlData->color = QColor(246, 204, 77);
-#endif
 		break;
 	case CREATECTRL_TEXTEDIT:
 		controlData->define = "WIDC_EDIT";
 		controlData->type = WTYPE_EDITCTRL;
 		controlData->tiles = true;
 		controlData->rect.setSize(QSize(120, 20));
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_GROUPBOX:
 		controlData->define = "WIDC_GROUPBOX";
@@ -109,9 +97,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WSS_GROUPBOX;
 		controlData->rect.setSize(QSize(128, 128));
-#if __VER >= 19
-		controlData->color = QColor(246, 204, 77);
-#endif
 		break;
 	case CREATECTRL_BUTTON:
 		controlData->define = "WIDC_BUTTON";
@@ -120,9 +105,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WBS_HIGHLIGHT;
 		controlData->rect.setSize(QSize(80, 25));
-#if __VER >= 19
-		controlData->color = QColor(0, 0, 0);
-#endif
 		break;
 	case CREATECTRL_CHECKBOX:
 		controlData->define = "WIDC_CHECK";
@@ -131,9 +113,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WBS_CHECK;
 		controlData->rect.setSize(QSize(80, 15));
-#if __VER >= 19
-		controlData->color = QColor(255, 249, 198);
-#endif
 		break;
 	case CREATECTRL_RADIO:
 		controlData->define = "WIDC_RADIO";
@@ -142,9 +121,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WBS_RADIO;
 		controlData->rect.setSize(QSize(80, 15));
-#if __VER >= 19
-		controlData->color = QColor(255, 249, 198);
-#endif
 		break;
 	case CREATECTRL_COMBOBOX:
 		controlData->define = "WIDC_COMBOBOX";
@@ -152,9 +128,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->rect.setSize(QSize(120, 20));
 		controlData->texture = "WndEditTile00.tga";
 		controlData->tiles = true;
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_LISTBOX:
 		controlData->define = "WIDC_LISTBOX";
@@ -163,17 +136,11 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->texture = "WndEditTile00.tga";
 		controlData->tiles = true;
 		controlData->flags |= WBS_VSCROLL;
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_LISTCTRL:
 		controlData->define = "WIDC_LISTCTRL";
 		controlData->type = WTYPE_LISTCTRL;
 		controlData->rect.setSize(QSize(100, 120));
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_TREECTRL:
 		controlData->define = "WIDC_TREECTRL";
@@ -182,9 +149,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->texture = "WndEditTile00.tga";
 		controlData->tiles = true;
 		controlData->flags |= WBS_VSCROLL;
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_TABCTRL:
 		controlData->define = "WIDC_TABCTRL";
@@ -192,9 +156,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->rect.setSize(QSize(119, 120));
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WBS_NODRAWFRAME;
-#if __VER >= 19
-		controlData->color = QColor(255, 255, 255);
-#endif
 		break;
 	case CREATECTRL_CUSTOM:
 		controlData->define = "WIDC_CUSTOM";
@@ -202,9 +163,6 @@ CWndControl* CWndWindow::CreateControl(int type, const QPoint& pos)
 		controlData->rect.setSize(QSize(64, 64));
 		controlData->flags |= WBS_NOFRAME;
 		controlData->flags |= WBS_NODRAWFRAME;
-#if __VER >= 19
-		controlData->color = QColor(46, 112, 169);
-#endif
 		break;
 	}
 
@@ -306,11 +264,6 @@ CWndControl* CWndWindow::CreateControl(ControlData* controlData)
 		else
 			control->SetTexture(controlData->texture, controlData->tiles);
 	}
-
-#if __VER >= 19
-	control->SetColor(controlData->color);
-#endif
-
 	return control;
 }
 
@@ -337,11 +290,7 @@ void CWndWindow::Resize(const QSize& size)
 	if (HasFlag(WBS_NOFRAME))
 		m_closeButton->Move(QPoint(size.width() - 23, 5));
 	else
-#if __VER >= 19
-		m_closeButton->Move(QPoint(size.width() - 11, 8));
-#else
 		m_closeButton->Move(QPoint(size.width() - 11, 5));
-#endif
 }
 
 void CWndWindow::ChildNotify(int childID, EWndMsg msg)

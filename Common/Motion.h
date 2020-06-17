@@ -18,8 +18,8 @@
 
 struct TMAnimation
 {
-	D3DXQUATERNION rot;
-	D3DXVECTOR3 pos;
+	D3DXQUATERNION rot{};
+	D3DXVECTOR3 pos{};
 };
 
 struct MotionAttribute

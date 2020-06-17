@@ -37,6 +37,7 @@ public slots:
 	void CloseFile();
 	void LoadTextureEx();
 	void PlayMotion(const QModelIndex & index);
+	void PlayMotion(unsigned int index);
 	void Play(bool play);
 	void Stop();
 	void MotionAttributeModified(int row, int frame, bool removed);

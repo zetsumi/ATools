@@ -147,11 +147,6 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionCopier, SIGNAL(triggered()), this, SLOT(CopyControl()));
 	connect(ui.actionCouper, SIGNAL(triggered()), this, SLOT(CutControl()));
 	connect(ui.actionColler, SIGNAL(triggered()), this, SLOT(PasteControl()));
-
-#if __VER >= 19
-	connect(ui.editWindowIcon, SIGNAL(textEdited(const QString&)), this, SLOT(EditWindowIcon(const QString&)));
-	connect(ui.editControlColor, SIGNAL(clicked()), this, SLOT(EditControlColor()));
-#endif
 }
 
 void CMainFrame::_setShortcuts()

@@ -44,11 +44,7 @@ bool CGUIEditor::InitDeviceObjects()
 	CWndControl::s_titleFont = new CFont(m_device);
 	CWndControl::s_textFont = new CFont(m_device);
 	if (!CWndControl::s_titleFont->Create("Verdana", 9, CFont::Normal, D3DCOLOR_ARGB(255, 255, 255, 255), 2,
-#if __VER >= 19
-		D3DCOLOR_ARGB(255, 0, 0, 0)
-#else
 		D3DCOLOR_ARGB(255, 217, 91, 51)
-#endif
 		)
 		|| !CWndControl::s_textFont->Create("Verdana", 9, CFont::Normal, D3DCOLOR_ARGB(255, 255, 255, 255)))
 		return false;
@@ -321,11 +317,7 @@ void CGUIEditor::mousePressEvent(QMouseEvent * event)
 						if (ctrl->HasFlag(WBS_CAPTION))
 						{
 							QRect rect = ctrl->GetWindowRect(true);
-#if __VER >= 19
-							rect.setTop(rect.top() + 26);
-#else
 							rect.setTop(rect.top() + 18);
-#endif
 							if (!rect.contains(mousePos))
 							{
 								if (!ctrl->GetControl(WTBID_CLOSE)->IsPush())

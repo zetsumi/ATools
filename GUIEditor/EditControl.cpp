@@ -261,14 +261,6 @@ void CMainFrame::SetEditControl()
 				ui.editWindowD3DFormat->setCurrentText("A4R4G4B4");
 			else if (wndData->format == D3DFMT_A8R8G8B8)
 				ui.editWindowD3DFormat->setCurrentText("A8R8G8B8");
-
-#if __VER >= 19
-			ui.editWindowIcon->setEnabled(true);
-			ui.editWindowIcon->setText(wndData->icon);
-
-			ui.editControlColor->setEnabled(false);
-			ui.editControlViewColor->setStyleSheet("background-color: #7f7f7f;");
-#endif
 		}
 		else
 		{
@@ -331,14 +323,6 @@ void CMainFrame::SetEditControl()
 			ui.editWindowCaption->setChecked(false);
 			ui.editWindowNoFrame->setChecked(false);
 			ui.editWindowD3DFormat->setCurrentText("A4R4G4B4");
-
-#if __VER >= 19
-			ui.editWindowIcon->setEnabled(false);
-			ui.editWindowIcon->setText("");
-
-			ui.editControlColor->setEnabled(true);
-			ui.editControlViewColor->setStyleSheet("background-color: " % ctrlData->color.name() % ';');
-#endif
 		}
 
 		CWndControl::s_selection[0] = editCtrl;
@@ -373,14 +357,6 @@ void CMainFrame::SetEditControl()
 		ui.editWindowCaption->setChecked(false);
 		ui.editWindowNoFrame->setChecked(false);
 		ui.editWindowD3DFormat->setCurrentText("A4R4G4B4");
-
-#if __VER >= 19
-		ui.editWindowIcon->setEnabled(false);
-		ui.editWindowIcon->setText("");
-
-		ui.editControlColor->setEnabled(false);
-		ui.editControlViewColor->setStyleSheet("background-color: #7f7f7f;");
-#endif
 	}
 
 	m_editor->RenderEnvironment();
@@ -603,7 +579,7 @@ void CMainFrame::SetControlTexture()
 	if (CWndControl::s_selection.GetSize() <= 0 || !CWndControl::s_selection[0])
 		return;
 
-	const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"), "Theme/Default/" % CWndControl::s_selection[0]->GetTextureName(), tr("Fichier texture") % " (*.bmp *.tga)");
+	const string texture = QFileDialog::getOpenFileName(this, tr("Charger une texture"), "Theme/" % CWndControl::s_selection[0]->GetTextureName(), tr("Fichier texture") % " (*.bmp *.tga)");
 	if (!texture.isEmpty())
 	{
 		ui.editControlTexture->setText(QFileInfo(texture).fileName());
@@ -1443,47 +1419,8 @@ void CMainFrame::EditWindowFormat(const QString& format)
 
 void CMainFrame::EditWindowIcon(const QString& icon)
 {
-#if __VER >= 19
-	if (CWndControl::s_selection.GetSize() <= 0 || !CWndControl::s_selection[0])
-		return;
-
-	CWndControl* ctrl = CWndControl::s_selection[0];
-	if (ctrl->GetType() != WTYPE_GUI_EDITOR_WND)
-		return;
-
-	WindowData* wnd = m_dataMng->GetWindow(ctrl->GetID());
-	if (wnd)
-		wnd->icon = icon;
-
-	m_editor->RenderEnvironment();
-#endif
 }
 
 void CMainFrame::EditControlColor()
 {
-#if __VER >= 19
-	if (CWndControl::s_selection.GetSize() <= 0 || !CWndControl::s_selection[0])
-		return;
-
-	CWndControl* ctrl = CWndControl::s_selection[0];
-	if (ctrl->GetType() == WTYPE_GUI_EDITOR_WND)
-		return;
-
-	WindowData* wnd = m_dataMng->GetWindow(ctrl->GetParent()->GetID());
-	if (wnd)
-	{
-		ControlData* data = wnd->GetControl(ctrl->GetID());
-		if (data)
-		{
-			const QColor color = QColorDialog::getColor(data->color, this, tr("Changer la couleur"));
-			if (color.isValid())
-			{
-				data->color = color;
-				ctrl->SetColor(color);
-				ui.editControlViewColor->setStyleSheet("background-color: " % color.name() % ';');
-				m_editor->RenderEnvironment();
-			}
-		}
-	}
-#endif
 }

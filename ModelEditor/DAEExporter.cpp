@@ -468,6 +468,8 @@ void CDAEExporter::_writeAnimations()
 	{
 		const string aniID = it.key();
 		frames = it.value();
+		if (frames == nullptr)
+			continue;
 
 		QDomElement animation = m_doc.createElement("animation");
 		animation.setAttribute("id", aniID);
@@ -521,8 +523,21 @@ void CDAEExporter::_writeAnimations()
 
 			for (int i = 0; i < m_frameCount; i++)
 			{
-				trans = frames[i].pos;
-				quat = frames[i].rot;
+
+				try
+				{
+					TMAnimation f = frames[i];
+					trans = f.pos;
+					quat = f.rot;
+				}
+				catch (std::exception&)
+				{
+					continue;
+				}
+				catch (...)
+				{
+					continue;
+				}
 
 				D3DXMatrixTranslation(&m1, trans.x, trans.y, trans.z);
 				m2 = _getRotationMatrix(quat);

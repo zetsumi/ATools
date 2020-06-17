@@ -24,9 +24,6 @@ struct ControlData
 	string textID;
 	string tooltip;
 	string tooltipID;
-#if __VER >= 19
-	QColor color;
-#endif
 };
 
 struct WindowData
@@ -43,9 +40,6 @@ struct WindowData
 	string tooltip;
 	string tooltipID;
 	CPtrArray<ControlData> controls;
-#if __VER >= 19
-	string icon;
-#endif
 
 	ControlData* GetControl(int ID) const
 	{

@@ -17,8 +17,13 @@ int main(int argc, char *argv[])
 
 	QApplication app(argc, argv);
 
-	QSplashScreen* splash = new QSplashScreen(QPixmap(":/MainFrame/Resources/Splashscreen_" % string::number(rand() % 6) % ".png"));
-	splash->show();
+	std::string pixMapName;
+	pixMapName.append(":/MainFrame/Resources/Splashscreen_");
+	pixMapName.append(std::to_string(rand() % 6));
+	pixMapName.append(".png");
+	//QPixmap pixMap = QPixmap(pixMapName.c_str());
+	//QSplashScreen* splash = new QSplashScreen(pixMap);
+	//splash->show();
 	app.processEvents();
 
 	CMainFrame* mainFrame = new CMainFrame();
@@ -27,8 +32,8 @@ int main(int argc, char *argv[])
 	if (mainFrame->Initialize())
 	{
 		mainFrame->show();
-		splash->finish(mainFrame);
-		Delete(splash);
+		//splash->finish(mainFrame);
+		//Delete(splash);
 
 		if (argc >= 2)
 			mainFrame->OpenFile(string::fromLocal8Bit(argv[1]));
@@ -36,8 +41,8 @@ int main(int argc, char *argv[])
 		mainFrame->UpdateWorldEditor();
 		result = app.exec();
 	}
-	else
-		Delete(splash);
+	//else
+	//	Delete(splash);
 	
 	Delete(mainFrame);
 	return result;

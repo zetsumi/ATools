@@ -236,11 +236,7 @@ void CWndControl::PaintFrame()
 			m_render2D->RenderTexture(QPoint(0, 0), m_texture);
 
 		if (HasFlag(WBS_CAPTION))
-#if __VER >= 19
-			m_render2D->RenderText(s_titleFont, m_text, QPoint(m_windowRect.width() / 2 - s_titleFont->GetSize(m_text).width() / 2, 8), D3DCOLOR_XRGB(246, 204, 77));
-#else
 			m_render2D->RenderText(s_titleFont, m_text, QPoint(10, 4), m_color);
-#endif
 	}
 	else
 	{

@@ -87,6 +87,9 @@ void CustomMsgHandler(QtMsgType type, const QMessageLogContext &context, const Q
 	flux << context.function << endl;
 	flux << msg << endl;
 
+	::OutputDebugStringA(msg.toStdString().c_str());
+	::OutputDebugStringA("\n");
+
 #ifdef WORLD_EDITOR
 	if (MainFrame->MsgBoxForErrors() && (type == QtCriticalMsg || type == QtFatalMsg))
 	{

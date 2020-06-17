@@ -240,7 +240,7 @@ bool CDataManager::Load()
 {
 	if (!CTextFile::LoadDefine("WndStyle.h")
 		|| !_loadDefine("resData.h")
-		|| !_loadText("resData.txt.txt")
+		|| !_loadText("Translate\\FR\\Item\\resData.txt.txt")
 		|| !_loadScript("resData.inc"))
 		return false;
 	return true;
@@ -249,7 +249,7 @@ bool CDataManager::Load()
 bool CDataManager::Save()
 {
 	if (!_saveDefine("resData.h")
-		|| !_saveText("resData.txt.txt")
+		|| !_saveText("Translate\\FR\\Item\\resData.txt.txt")
 		|| !_saveScript("resData.inc"))
 		return false;
 	return true;
@@ -280,9 +280,6 @@ bool CDataManager::_saveScript(const string& filename)
 		window = it.value();
 		out << window->define << ' ';
 		out << '"' << window->texture << "\" ";
-#if __VER >= 19
-		out << '"' << window->icon << "\" ";
-#endif
 		out << (window->tiles ? 1 : 0) << ' ';
 		out << window->size.width() << ' ';
 		out << window->size.height() << ' ';
@@ -355,9 +352,6 @@ bool CDataManager::_saveScript(const string& filename)
 			out << (control->group ? 1 : 0) << ' ';
 			out << (control->disabled ? 1 : 0) << ' ';
 			out << (control->tabStop ? 1 : 0);
-#if __VER >= 19
-			out << ' ' << control->color.red() << ' ' << control->color.green() << ' ' << control->color.blue();
-#endif
 			out << endl;
 			out << space << '{' << endl << space << "// Title String" << endl << space << control->textID << endl << space << '}' << endl;
 			out << space << '{' << endl << space << "// ToolTip" << endl << space << control->tooltipID << endl << space << '}' << endl;
@@ -456,9 +450,6 @@ bool CDataManager::_loadScript(const string& filename)
 			window->ID = -1;
 
 		window->texture = file.GetString();
-#if __VER >= 19
-		window->icon = file.GetString();
-#endif
 		window->tiles = file.GetBool();
 		window->size.setWidth(file.GetInt());
 		window->size.setHeight(file.GetInt());
@@ -521,25 +512,6 @@ bool CDataManager::_loadScript(const string& filename)
 			control->group = file.GetBool();
 			control->disabled = file.GetBool();
 			control->tabStop = file.GetBool();
-#if __VER >= 19
-			int r, g, b;
-			r = file.GetInt();
-			if (r < 0)
-				r = 0;
-			else if (r > 255)
-				r = 255;
-			g = file.GetInt();
-			if (g < 0)
-				g = 0;
-			else if (g > 255)
-				g = 255;
-			b = file.GetInt();
-			if (b < 0)
-				b = 0;
-			else if (b > 255)
-				b = 255;
-			control->color = QColor(r, g, b);
-#endif
 
 			file.NextToken(); // {
 			control->textID = file.GetString();

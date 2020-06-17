@@ -19,17 +19,10 @@ CWndButton::CWndButton(CRender2D* render2D)
 
 void CWndButton::InitialUpdate()
 {
-#if __VER >= 19
-	if (HasFlag(WBS_RADIO))
-		m_textureName = "ButtRadio.tga";
-	if (HasFlag(WBS_CHECK))
-		m_textureName = "ButtCheck.tga";
-#else
 	if (HasFlag(WBS_RADIO))
 		m_textureName = "ButtRadio.bmp";
 	if (HasFlag(WBS_CHECK))
 		m_textureName = "ButtCheck.bmp";
-#endif
 }
 
 void CWndButton::FitTextureSize()
@@ -110,14 +103,6 @@ void CWndButton::PaintFrame()
 
 			textureRect.setWidth(1.0f / 4.0f);
 			m_render2D->RenderTexture(QPoint(0, 0), m_texture, textureRect);
-
-#if __VER >= 19
-			const QSize size = s_textFont->GetSize(m_text);
-			QPoint textPos = QPoint(m_windowRect.width() / 2 - size.width() / 2, m_windowRect.height() / 2 - size.height() / 2);
-			if (m_push)
-				textPos.ry()++;
-			m_render2D->RenderText(s_textFont, m_text, textPos, _getTextColor());
-#endif
 		}
 		else
 		{
@@ -153,15 +138,9 @@ DWORD CWndButton::_getTextColor() const
 {
 	if (m_enabled)
 	{
-#if __VER >= 19
-		if (m_mouseHover)
-			return D3DCOLOR_ARGB(255, 191, 157, 95);
-		return m_color;
-#else
 		if (m_mouseHover)
 			return D3DCOLOR_ARGB(255, 64, 64, 255);
 		return D3DCOLOR_ARGB(255, 64, 64, 64);
-#endif
 	}
 	return D3DCOLOR_ARGB(255, 140, 140, 140);
 }
@@ -425,11 +404,7 @@ void CWndText::UpdateScrollBar()
 
 void CWndText::Draw()
 {
-#if __VER >= 19
-	m_render2D->RenderText(s_textFont, m_text, QPoint(2, 2), m_color);
-#else
 	m_render2D->RenderText(s_textFont, m_text, QPoint(2, 2), 0xff000000);
-#endif
 }
 
 CWndEdit::CWndEdit(CRender2D* render2D)

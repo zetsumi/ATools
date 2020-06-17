@@ -425,7 +425,9 @@ void CMainFrame::OpenFile(const string& filename)
 			}
 		}
 
-		if (m_mesh && (filenameToLower.startsWith("part") || filenameToLower.startsWith("mvr") || filenameToLower.startsWith("item")) && m_motionList->rowCount() == 0)
+		if (m_mesh && (filenameToLower.startsWith("part")
+			|| filenameToLower.startsWith("mvr")
+			|| filenameToLower.startsWith("item")) && m_motionList->rowCount() == 0)
 		{
 			QStringList list;
 			const QDir fileDir(dir);
@@ -560,6 +562,7 @@ void CMainFrame::_saveFile(const string& filename)
 	}
 }
 
+
 void CMainFrame::OpenFile()
 {
 	string dir = ModelMng->GetModelPath();
@@ -574,7 +577,9 @@ void CMainFrame::OpenFile()
 	const QString filename = QFileDialog::getOpenFileName(this, tr("Charger un model"), dir, tr("Fichier 3D") % " (" % m_supportedImportFiles % ")");
 
 	if (!filename.isEmpty())
+	{
 		OpenFile(filename);
+	}
 }
 
 void CMainFrame::SaveFile()
@@ -746,6 +751,54 @@ void CMainFrame::MotionAttributeModified(int row, int frame, bool removed)
 				attributes[frame].frame = (float)frame;
 			}
 		}
+	}
+}
+
+void CMainFrame::PlayMotion(unsigned int index)
+{
+	m_soundMng->Stop();
+	m_modelViewer->ChangeMotion();
+	const QString motion = m_motionList->stringList().at(index);
+
+	if (m_mesh)
+	{
+		string filename;
+		if (m_meshSex == SEX_MALE)
+			filename = "mvr_male";
+		else if (m_meshSex == SEX_FEMALE)
+			filename = "mvr_female";
+		else
+			filename = QFileInfo(m_filename).baseName();
+
+		m_motionName = filename % '_' % motion % ".ani";
+		Delete(m_mesh->m_motion);
+		m_mesh->SetMotion(m_motionName);
+
+		const int frameCount = m_mesh->GetFrameCount();
+		m_timeline->SetFrameCount(frameCount);
+		m_timeline->RemoveAllKeys();
+		if (frameCount > 0)
+		{
+			const MotionAttribute* attributes = m_mesh->GetAttributes();
+			if (attributes)
+			{
+				for (int i = 0; i < frameCount; i++)
+				{
+					if ((int)(attributes[i].frame + 0.5f) == i)
+					{
+						if (attributes[i].type & MA_HIT)
+							m_timeline->AddKey(0, i);
+						if (attributes[i].type & MA_SOUND)
+							m_timeline->AddKey(1, i);
+						if (attributes[i].type & MA_QUAKE)
+							m_timeline->AddKey(2, i);
+					}
+				}
+			}
+		}
+
+		m_modelViewer->SetAutoRefresh(true);
+		ui.actionJouer->setChecked(true);
 	}
 }
 
