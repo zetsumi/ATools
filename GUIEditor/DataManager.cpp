@@ -240,7 +240,7 @@ bool CDataManager::Load()
 {
 	if (!CTextFile::LoadDefine("WndStyle.h")
 		|| !_loadDefine("resData.h")
-		|| !_loadText("Translate\\FR\\Item\\resData.txt.txt")
+		|| !_loadText("Translate\\ENG\\resData.txt.txt")
 		|| !_loadScript("resData.inc"))
 		return false;
 	return true;
@@ -249,7 +249,7 @@ bool CDataManager::Load()
 bool CDataManager::Save()
 {
 	if (!_saveDefine("resData.h")
-		|| !_saveText("Translate\\FR\\Item\\resData.txt.txt")
+		|| !_saveText("Translate\\ENG\\resData.txt.txt")
 		|| !_saveScript("resData.inc"))
 		return false;
 	return true;
