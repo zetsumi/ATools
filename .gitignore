@@ -219,5 +219,20 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-/.vs/ATools/v15
 /Lib/assimp/.vs/Assimp/v15
+
+# Resource flyff
+./Resources/Char/
+./Resources/Client/
+./Resources/Cursor/
+./Resources/Icon/
+./Resources/Log/
+./Resources/LuaFunc/
+./Resources/Model/
+./Resources/Music/
+./Resources/SFX/
+./Resources/Sound/
+./Resources/Theme/
+./Resources/Weather/
+./Resources/World/
+
