@@ -76,7 +76,6 @@ public:
 
 	bool IsVisible() const { return m_visible; }
 
-protected:
 	LPDIRECT3DDEVICE9 m_device;
 	string m_name;
 	string m_textureName;
@@ -215,7 +214,6 @@ public:
 	CSfxPart* AddPart(ESfxPartType type);
 	void RemovePart(int i);
 
-private:
 	LPDIRECT3DDEVICE9 m_device;
 	CPtrArray<CSfxPart> m_parts;
 

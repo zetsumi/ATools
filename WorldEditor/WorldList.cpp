@@ -13,6 +13,8 @@
 #include <Landscape.h>
 #include <ModelMng.h>
 #include <Object3D.h>
+#include <Sfx.h>
+#include <SfxModel.h>
 
 
 void CMainFrame::ExportWorld()
@@ -38,6 +40,8 @@ void CMainFrame::ExportWorld()
 		QDir().mkdir(pathExportModelTexture);
 	if (QDir(pathExportSfx).exists() == false)
 		QDir().mkdir(pathExportSfx);
+	if (QDir(pathExportSfxTexture).exists() == false)
+		QDir().mkdir(pathExportSfxTexture);
 	if (QDir(pathExportTerrain).exists() == false)
 		QDir().mkdir(pathExportTerrain);
 
@@ -107,6 +111,14 @@ void CMainFrame::ExportWorld()
 				const string name = obj->GetModelFilename();
 				if (!sfxs.contains(name))
 				{
+					CSfx* objSfx = ModelMng->GetSfx(name);
+					for (unsigned int i = 0; i < objSfx->m_parts.GetSize(); ++i)
+					{
+						CSfxPart* part = objSfx->m_parts[i];
+						const string nameTextureSfx = part->m_textureName;
+						if (sfxTextures.contains(nameTextureSfx) == false)
+							sfxTextures.push_back(nameTextureSfx);
+					}
 					sfxs.push_back(name);
 				}
 			}
