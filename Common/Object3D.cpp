@@ -1228,3 +1228,32 @@ bool CObject3D::Pick(const D3DXMATRIX& world, const D3DXVECTOR3& origin, const D
 	return false;
 #endif // WORLD_EDITOR
 }
+
+void CObject3D::SetExternBones(D3DXMATRIX* bones, D3DXMATRIX* invBones)
+{
+	if (!m_baseBones)
+	{
+		m_externBones = bones;
+		m_externInvBones = invBones;
+	}
+}
+
+bool	CObject3D::HasSkin() const
+{
+	return m_hasSkin;
+}
+
+Material* CObject3D::GetMaterial(int idg, int ido)
+{
+	return m_groups[idg].objects[ido].materials;
+}
+
+int CObject3D::GetObjectCount(int idg)
+{
+	return m_groups[idg].objectCount;
+}
+
+bool CObject3D::GetLOD()
+{
+	return m_LOD;
+}

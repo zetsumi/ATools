@@ -85,7 +85,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>zlibstatic.lib;assimp-vc141-mt.lib;d3d9.lib;d3dx9.lib;qtmain.lib;Qt5Widgets.lib;Qt5Core.lib;Qt5Xml.lib;Qt5Multimedia.lib;Qt5Gui.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -82,6 +82,7 @@ Lib/Assimp/lib/
 *.pidb
 *.log
 *.scc
+*.iobj
 
 # Visual C++ cache files
 ipch/
@@ -220,6 +221,18 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 /Lib/assimp/.vs/Assimp/v15
+
+Resources/GUIEditor-d.exe
+Resources/ModelEditor-d.exe
+Resources/ResEditor-d.exe
+Resources/SfxEditor-d.exe
+Resources/WorldEditor-d.exe
+
+Resources/GUIEditor.exe
+Resources/ModelEditor.exe
+Resources/ResEditor.exe
+Resources/SfxEditor.exe
+Resources/WorldEditor.exe
 
 # Resource flyff
 Resources/Char/
