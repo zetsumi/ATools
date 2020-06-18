@@ -17,6 +17,7 @@
 #include "DAEExporter.h"
 #include "OBJExporter.h"
 #include "DialogEditEffects.h"
+#include "DialogListModel.h"
 #include <SoundMng.h>
 #include <TextFile.h>
 #include <AboutDialog.h>
@@ -46,6 +47,12 @@ CMainFrame::~CMainFrame()
 	Delete(m_motionList);
 	Delete(m_languageActionGroup);
 	Delete(m_fillModeActionGroup);
+	if (m_DialogListModel != nullptr)
+	{
+		m_DialogListModel->raise();
+		m_DialogListModel->setAttribute(Qt::WA_DeleteOnClose);
+		Delete(m_DialogListModel);
+	}
 }
 
 bool CMainFrame::Initialize()
@@ -138,6 +145,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionTaille_l_import, SIGNAL(triggered()), this, SLOT(SetScaleFactor()));
 	connect(ui.actionModel_de_r_f_rence, SIGNAL(triggered()), this, SLOT(SetReferenceModel()));
 	connect(ui.actionCollision_auto, SIGNAL(triggered()), this, SLOT(CollisionAuto()));
+	connect(ui.actionListModel, SIGNAL(triggered()), this, SLOT(DialogListModel()));
 }
 
 void CMainFrame::_setShortcuts()
@@ -977,4 +985,12 @@ void CMainFrame::changeEvent(QEvent* event)
 	}
 
 	QMainWindow::changeEvent(event);
+}
+
+void CMainFrame::DialogListModel()
+{
+	if (m_DialogListModel == nullptr)
+		m_DialogListModel = new CDialogListModel(this);
+	m_DialogListModel->show();
+	m_DialogListModel->init();
 }

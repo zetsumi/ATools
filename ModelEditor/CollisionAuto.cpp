@@ -171,3 +171,4 @@ void CMainFrame::CollisionAuto()
 	ui.actionObjet_de_collision->setChecked(true);
 	ShowCollObj(true);
 }
+

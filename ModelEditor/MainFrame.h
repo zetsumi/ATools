@@ -14,6 +14,7 @@ class CModelViewer;
 class CAnimatedMesh;
 class CTimeline;
 class CSoundMng;
+class CDialogListModel;
 
 class CMainFrame : public QMainWindow
 {
@@ -58,6 +59,7 @@ public slots:
 	void SetScaleFactor();
 	void SetReferenceModel();
 	void CollisionAuto();
+	void DialogListModel();
 
 private:
 	Ui::MainFrameClass ui;
@@ -81,6 +83,7 @@ private:
 	QTranslator m_translator;
 	int m_language;
 	QActionGroup* m_languageActionGroup;
+	CDialogListModel* m_DialogListModel = nullptr;
 
 	void _saveFile(const string& filename);
 

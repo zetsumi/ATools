@@ -96,6 +96,8 @@
     <addaction name="separator"/>
     <addaction name="menuLangage"/>
     <addaction name="actionPlein_cran"/>
+    <addaction name="separator"/>
+    <addaction name="actionListModel"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -549,6 +551,15 @@
    </property>
    <property name="text">
     <string>Collision auto</string>
+   </property>
+  </action>
+  <action name="actionListModel">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/open.png</normaloff>:/MainFrame/Resources/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Liste des models</string>
    </property>
   </action>
  </widget>
