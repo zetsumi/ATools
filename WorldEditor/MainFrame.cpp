@@ -99,8 +99,9 @@ bool CMainFrame::Initialize()
 	ui.setupUi(this);
 
 	m_prj = new CProject();
-	if (!m_prj->Load("Masquerade.prj"))
-		return false;
+	if (!m_prj->Load("Masquerade_tr.prj", false))
+		if (!m_prj->Load("Masquerade.prj"))
+			return false;
 
 	m_editor = new CWorldEditor(this);
 	setCentralWidget(m_editor);

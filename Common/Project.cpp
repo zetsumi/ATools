@@ -50,10 +50,10 @@ CProject::~CProject()
 	DeleteArray(m_waterLists);
 }
 
-bool CProject::Load(const string& filename)
+bool CProject::Load(const string& filename, bool error)
 {
 	CTextFile file;
-	if (!file.Load(filename))
+	if (!file.Load(filename, error))
 		return false;
 
 	QVector<string> models;
