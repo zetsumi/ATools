@@ -238,19 +238,30 @@ void CDataManager::FillControlList()
 
 bool CDataManager::Load()
 {
-	if (!CTextFile::LoadDefine("WndStyle.h")
-		|| !_loadDefine("resData.h")
-		|| !_loadText("Translate\\ENG\\resData.txt.txt")
-		|| !_loadScript("resData.inc"))
+	if (!CTextFile::LoadDefine("WndStyle.h"))
+		return false;
+	if (!_loadDefine("resData.h"))
+		return false;
+	if (!_loadText("Translate\\ENG\\resData.txt.txt"))
+	{
+		if (!_loadText("resData.txt.txt"))
+			return false;
+	}
+	if (!_loadScript("resData.inc"))
 		return false;
 	return true;
 }
 
 bool CDataManager::Save()
 {
-	if (!_saveDefine("resData.h")
-		|| !_saveText("Translate\\ENG\\resData.txt.txt")
-		|| !_saveScript("resData.inc"))
+	if (!_saveDefine("resData.h"))
+		return false;
+	if (!_saveText("Translate\\ENG\\resData.txt.txt"))
+	{
+		if (!_saveText("resData.txt.txt"))
+		return false;
+	}
+	if (!_saveScript("resData.inc"))
 		return false;
 	return true;
 }

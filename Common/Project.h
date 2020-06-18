@@ -85,7 +85,7 @@ public:
 	CProject();
 	~CProject();
 
-	bool Load(const string& filename);
+	bool Load(const string& filename, bool error = true);
 
 	void FillTreeView(QTreeView* treeView);
 	void FillTerrainComboBox(QComboBox* comboBox);
