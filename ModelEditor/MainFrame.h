@@ -31,6 +31,8 @@ public:
 	void OpenFile(const string& filename);
 	void SetTextureEx(int index);
 
+	void onOpenFile() { OpenFile(); }
+
 public slots:
 	void About();
 	void AboutQt();
@@ -61,7 +63,7 @@ public slots:
 	void CollisionAuto();
 	void DialogListModel();
 
-private:
+public:
 	Ui::MainFrameClass ui;
 	CModelViewer* m_modelViewer;
 	QLabel* m_status;
