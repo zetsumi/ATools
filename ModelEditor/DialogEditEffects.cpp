@@ -143,49 +143,56 @@ void CDialogEditEffects::_setTree()
 	ui.tree->clear();
 	m_items.clear();
 
-	QTreeWidgetItem* item, *item2, *item3;
+	QTreeWidgetItem* gmobj, *model, *lod;
 	QList<QTreeWidgetItem*> items;
 	int id = 0;
 	for (int i = 0; i < (m_obj3D->m_LOD ? MAX_GROUP : 1); i++)
 	{
 		if (m_obj3D->m_LOD)
-			item3 = new QTreeWidgetItem(QStringList(string("LOD %1").arg(i)));
+			lod = new QTreeWidgetItem(QStringList(string("LOD %1").arg(i)));
 
 		for (int j = 0; j < m_obj3D->m_groups[i].objectCount; j++)
 		{
-			item = new QTreeWidgetItem(QStringList(string("GMObject %1").arg(j + 1)));
+			gmobj = new QTreeWidgetItem(QStringList(string("GMObject %1").arg(j + 1)));
 			for (int k = 0; k < m_obj3D->m_groups[i].objects[j].materialBlockCount; k++)
 			{
 				m_oldBlocks[id] = m_obj3D->m_groups[i].objects[j].materialBlocks[k];
 
 				if (m_obj3D->m_groups[i].objects[j].material)
 				{
-					item2 = new QTreeWidgetItem(QStringList(string(
-						string(m_obj3D->m_groups[i].objects[j].materials[m_obj3D->m_groups[i].objects[j].materialBlocks[k].materialID].textureName) % " %1").arg(
-						k + 1)), id + 1);
+					model = new QTreeWidgetItem(
+						QStringList(
+							string(
+								string(
+									m_obj3D->m_groups[i].objects[j]
+									.materials[m_obj3D->m_groups[i]
+									.objects[j].materialBlocks[k]
+									.materialID].textureName
+								) % " %1"
+							).arg(k + 1)), id + 1);
 				}
 				else
 				{
-					item2 = new QTreeWidgetItem(QStringList(string(
+					model = new QTreeWidgetItem(QStringList(string(
 						string("- %1")).arg(
 						k + 1)), id + 1);
 				}
 
-				item->addChild(item2);
+				gmobj->addChild(model);
 
-				m_items[&m_obj3D->m_groups[i].objects[j].materialBlocks[k]] = item2;
+				m_items[&m_obj3D->m_groups[i].objects[j].materialBlocks[k]] = model;
 
 				id++;
 			}
 
 			if (m_obj3D->m_LOD)
-				item3->addChild(item);
+				lod->addChild(gmobj);
 			else
-				items.append(item);
+				items.append(gmobj);
 		}
 
 		if (m_obj3D->m_LOD)
-			items.append(item3);
+			items.append(lod);
 	}
 
 	ui.tree->insertTopLevelItems(0, items);

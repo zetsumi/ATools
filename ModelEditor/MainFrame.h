@@ -14,6 +14,7 @@ class CModelViewer;
 class CAnimatedMesh;
 class CTimeline;
 class CSoundMng;
+class CDialogListModel;
 
 class CMainFrame : public QMainWindow
 {
@@ -29,6 +30,8 @@ public:
 
 	void OpenFile(const string& filename);
 	void SetTextureEx(int index);
+
+	void onOpenFile() { OpenFile(); }
 
 public slots:
 	void About();
@@ -58,8 +61,9 @@ public slots:
 	void SetScaleFactor();
 	void SetReferenceModel();
 	void CollisionAuto();
+	void DialogListModel();
 
-private:
+public:
 	Ui::MainFrameClass ui;
 	CModelViewer* m_modelViewer;
 	QLabel* m_status;
@@ -81,6 +85,7 @@ private:
 	QTranslator m_translator;
 	int m_language;
 	QActionGroup* m_languageActionGroup;
+	CDialogListModel* m_DialogListModel = nullptr;
 
 	void _saveFile(const string& filename);
 
