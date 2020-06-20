@@ -299,6 +299,11 @@ int CMainFrame::GetInsertCercleRadius() const
 	return ui.sliderRadiusInsertCercle->value();
 }
 
+int CMainFrame::GetInsertGapBetweenModel() const
+{
+	return ui.spinInsertGap->value();
+}
+
 void CMainFrame::GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size)
 {
 	mode = WTYPE_NONE;

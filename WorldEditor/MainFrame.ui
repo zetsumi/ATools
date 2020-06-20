@@ -953,212 +953,197 @@
         <attribute name="title">
          <string>Insertion Mode</string>
         </attribute>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>0</y>
-           <width>321</width>
-           <height>191</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Geometry</string>
-         </property>
-         <widget class="QRadioButton" name="geoRect">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>71</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Rectangle</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QRadioButton" name="geoCercle">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>130</y>
-            <width>51</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Cercle</string>
-          </property>
-         </widget>
-         <widget class="QSlider" name="sliderRadiusInsertCercle">
-          <property name="geometry">
-           <rect>
-            <x>80</x>
-            <y>160</y>
-            <width>231</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="value">
-           <number>10</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="radiusInsertCercle">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>160</y>
-            <width>41</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>radius: 1</string>
-          </property>
-         </widget>
-         <widget class="Line" name="line">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>110</y>
-            <width>321</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_22">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>47</width>
-            <height>13</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Longueur:</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_23">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>80</y>
-            <width>47</width>
-            <height>13</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Largueur:</string>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="insertRectLength">
-          <property name="geometry">
-           <rect>
-            <x>80</x>
-            <y>50</y>
-            <width>231</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>2</number>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="insertRectWidth">
-          <property name="geometry">
-           <rect>
-            <x>80</x>
-            <y>80</y>
-            <width>231</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>2</number>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="displayIntegerBase">
-           <number>10</number>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="insertSuffle">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>190</y>
-           <width>321</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Mode</string>
-         </property>
-         <widget class="QRadioButton" name="insertModeSimple">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>82</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Simple</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QRadioButton" name="insertionModeMultiple">
-          <property name="geometry">
-           <rect>
-            <x>100</x>
-            <y>20</y>
-            <width>82</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Multiple</string>
-          </property>
-         </widget>
-         <widget class="QRadioButton" name="insertSuffleReset">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>20</y>
-            <width>82</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Multi Suffle</string>
-          </property>
-         </widget>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QGroupBox" name="GroupMode">
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="title">
+            <string>Mode</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QRadioButton" name="insertModeSimple">
+                <property name="text">
+                 <string>Simple</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="insertSuffleReset">
+                <property name="text">
+                 <string>Multi Suffle</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="insertionModeMultiple">
+                <property name="text">
+                 <string>Multiple</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="GroupGeo">
+           <property name="title">
+            <string>Geometry</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QRadioButton" name="geoRect">
+                <property name="text">
+                 <string>Rectangle</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="geoCercle">
+                <property name="text">
+                 <string>Cercle</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_24">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout_2">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>Ecart entre les models:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QSpinBox" name="spinInsertGap">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout_3">
+              <item row="0" column="1">
+               <widget class="QSpinBox" name="insertRectLength">
+                <property name="minimum">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>Largueur:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSpinBox" name="insertRectWidth">
+                <property name="minimum">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="displayIntegerBase">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Longueur:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <widget class="QLabel" name="radiusInsertCercle">
+                <property name="text">
+                 <string>radius: </string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QSlider" name="sliderRadiusInsertCercle">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>
@@ -1190,15 +1175,15 @@
      <addaction name="actionG_n_rer_les_minimaps"/>
      <addaction name="actionG_n_rer_une_image"/>
      <addaction name="actionListe"/>
-     <addaction name="actionExporter"/>
     </widget>
     <addaction name="actionNouveau"/>
     <addaction name="actionOuvrir"/>
+    <addaction name="actionEnregistrer_sous"/>
+    <addaction name="actionExporter"/>
     <addaction name="menuFichiers_r_cents"/>
     <addaction name="actionFermer"/>
     <addaction name="separator"/>
     <addaction name="actionEnregistrer"/>
-    <addaction name="actionEnregistrer_sous"/>
     <addaction name="menuG_n_rer"/>
     <addaction name="separator"/>
     <addaction name="actionQuitter"/>

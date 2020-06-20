@@ -367,9 +367,10 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 							{
 								int length = MainFrame->GetInsertRectLength();
 								int width = MainFrame->GetInsertRectWidth();
+								int gap = MainFrame->GetInsertGapBetweenModel();
 
-								int px = obj->m_pos.x - ((10 * length) / 2);
-								int pz = obj->m_pos.z - ((10 * width) / 2);
+								int px = obj->m_pos.x - ((gap * length) / 2);
+								int pz = obj->m_pos.z - ((gap * width) / 2);
 
 								for (unsigned int y = 0; y < length; ++y)
 								{
@@ -380,15 +381,15 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 
 										if (modeInsert == EInsertMode::INSERT_MULTIPLE)
 										{
-											newPos.x += x * 10;
-											newPos.z += y * 10;
+											newPos.x += x * gap;
+											newPos.z += y * gap;
 										}
 										else if (modeInsert == EInsertMode::INSERT_SUFFLE)
 										{
 											int minX = px;
-											int maxX = px + (10 * length);
+											int maxX = px + (gap * length);
 											int minZ = pz;
-											int maxZ = pz + (10 * width);
+											int maxZ = pz + (gap * width);
 											newPos.x = qrand() % (maxX - minX) + minX;
 											newPos.z = qrand() % (maxZ - minZ) + minZ;
 										}
