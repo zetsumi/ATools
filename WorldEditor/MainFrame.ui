@@ -20,7 +20,18 @@
    <iconset resource="MainFrame.qrc">
     <normaloff>:/MainFrame/Resources/WorldEditor.png</normaloff>:/MainFrame/Resources/WorldEditor.png</iconset>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QSpinBox" name="spinBox_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>231</width>
+      <height>16</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="styleSheet">
     <string notr="true">background-color: #881f1f;</string>
@@ -220,10 +231,13 @@
        <property name="styleSheet">
         <string notr="true"/>
        </property>
-       <property name="currentIndex">
-        <number>0</number>
+       <property name="tabPosition">
+        <enum>QTabWidget::North</enum>
        </property>
-       <widget class="QWidget" name="tab_5">
+       <property name="currentIndex">
+        <number>5</number>
+       </property>
+       <widget class="QWidget" name="height_terrain">
         <attribute name="title">
          <string>Hauteur</string>
         </attribute>
@@ -545,7 +559,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_4">
+       <widget class="QWidget" name="texture">
         <attribute name="title">
          <string>Texture</string>
         </attribute>
@@ -666,7 +680,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_3">
+       <widget class="QWidget" name="color">
         <attribute name="title">
          <string>Couleur</string>
         </attribute>
@@ -771,7 +785,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_2">
+       <widget class="QWidget" name="water_cloud">
         <attribute name="title">
          <string>Eau et nuages</string>
         </attribute>
@@ -893,7 +907,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="layer">
         <attribute name="title">
          <string>Calques</string>
         </attribute>
@@ -931,6 +945,220 @@
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QWidget" name="insertion">
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <attribute name="title">
+         <string>Insertion Mode</string>
+        </attribute>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>0</y>
+           <width>321</width>
+           <height>191</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Geometry</string>
+         </property>
+         <widget class="QRadioButton" name="geoRect">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>71</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rectangle</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="geoCercle">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>51</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Cercle</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="sliderRadiusInsertCercle">
+          <property name="geometry">
+           <rect>
+            <x>80</x>
+            <y>160</y>
+            <width>231</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="radiusInsertCercle">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>160</y>
+            <width>41</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>radius: 1</string>
+          </property>
+         </widget>
+         <widget class="Line" name="line">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>110</y>
+            <width>321</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_22">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>47</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Longueur:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_23">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>47</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Largueur:</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="insertRectLength">
+          <property name="geometry">
+           <rect>
+            <x>80</x>
+            <y>50</y>
+            <width>231</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="insertRectWidth">
+          <property name="geometry">
+           <rect>
+            <x>80</x>
+            <y>80</y>
+            <width>231</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="displayIntegerBase">
+           <number>10</number>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="insertSuffle">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>190</y>
+           <width>321</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Mode</string>
+         </property>
+         <widget class="QRadioButton" name="insertModeSimple">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>82</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Simple</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="insertionModeMultiple">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>20</y>
+            <width>82</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Multiple</string>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="insertSuffleReset">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>20</y>
+            <width>82</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Multi Suffle</string>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </widget>
      </item>
