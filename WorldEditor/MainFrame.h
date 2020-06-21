@@ -94,6 +94,7 @@ public:
 	int	GetInsertRectLength() const;
 	int	GetInsertCercleRadius() const;
 	int	GetInsertGapBetweenModel() const;
+	int GetInsertNombreModelCercle() const;
 	void GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size);
 	void GetTerrainHeightEditInfos(int& mode, bool& rounded, int& radius, int& hardness, bool& useFixedheight, float& fixedHeight, int& attribute);
 	int GetTerrainHeightEditMode() const;

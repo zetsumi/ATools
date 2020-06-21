@@ -363,11 +363,11 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 						}
 						else if (modeInsert == EInsertMode::INSERT_MULTIPLE || modeInsert == EInsertMode::INSERT_SUFFLE)
 						{
+							int gap = MainFrame->GetInsertGapBetweenModel();
 							if (modeGeo == EInsertionGeometry::INSERT_GEO_RECT)
 							{
 								int length = MainFrame->GetInsertRectLength();
 								int width = MainFrame->GetInsertRectWidth();
-								int gap = MainFrame->GetInsertGapBetweenModel();
 
 								int px = obj->m_pos.x - ((gap * length) / 2);
 								int pz = obj->m_pos.z - ((gap * width) / 2);
@@ -407,6 +407,47 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 										}
 										newObjs.push_back(newObj);
 									}
+								}
+							}
+							else if (modeGeo == EInsertionGeometry::INSERT_GEO_CERCLE)
+							{
+								int nombreModel = MainFrame->GetInsertNombreModelCercle();
+								int radius = MainFrame->GetInsertCercleRadius();
+								float angle = 360 / nombreModel; // nombre de models
+								
+								for (unsigned int teta = angle; teta <= 360; teta += angle)
+								{
+									double x, z;
+									if (modeInsert == EInsertMode::INSERT_MULTIPLE)
+									{
+										x = qCos(qDegreesToRadians(static_cast<float>(teta)));
+										z = qSin(qDegreesToRadians(static_cast<float>(teta)));
+									}
+									else if (modeInsert == EInsertMode::INSERT_SUFFLE)
+									{
+										float tetaX = qrand() % 360;
+										float tetaZ = qrand() % 360;
+										x = qCos(qDegreesToRadians(static_cast<float>(tetaX)));
+										z = qSin(qDegreesToRadians(static_cast<float>(tetaZ)));
+									}
+
+									CObject* newObj = CObject::CreateObject(obj->m_type, obj);
+									D3DXVECTOR3 newPos = newObj->m_pos;
+									newPos.x += (radius * (x * 100)) / 100;
+									newPos.z += (radius * (z * 100)) / 100;
+									newPos.y = m_world->GetHeight(newPos.x, newPos.z);
+									newObj->SetPos(newPos);
+
+									if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
+									{
+										CSpawnObject* dyna = ((CSpawnObject*)newObj);
+										dyna->m_rect = QRect(QPoint(
+											(int)(newObj->m_pos.z + 0.5f),
+											(int)(newObj->m_pos.x + 0.5f)) + dyna->m_rect.topLeft(),
+											dyna->m_rect.size()
+										);
+									}
+									newObjs.push_back(newObj);
 								}
 							}
 						}

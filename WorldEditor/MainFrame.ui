@@ -654,7 +654,7 @@
             <number>255</number>
            </property>
            <property name="value">
-            <number>255</number>
+            <number>250</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -979,16 +979,16 @@
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="insertSuffleReset">
+               <widget class="QRadioButton" name="insertionModeMultiple">
                 <property name="text">
-                 <string>Multi Suffle</string>
+                 <string>Multiple</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="insertionModeMultiple">
+               <widget class="QRadioButton" name="insertSuffleReset">
                 <property name="text">
-                 <string>Multiple</string>
+                 <string>Multi Suffle</string>
                 </property>
                </widget>
               </item>
@@ -1108,14 +1108,21 @@
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_7">
-              <item row="0" column="0">
+              <item row="1" column="0">
                <widget class="QLabel" name="radiusInsertCercle">
                 <property name="text">
                  <string>radius: </string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
+              <item row="1" column="1">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
                <widget class="QSlider" name="sliderRadiusInsertCercle">
                 <property name="minimum">
                  <number>1</number>
@@ -1131,10 +1138,20 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_26">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_27">
                 <property name="text">
-                 <string>10</string>
+                 <string>Nombre de model:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QSpinBox" name="spinNombreModelCercle">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>5</number>
                 </property>
                </widget>
               </item>

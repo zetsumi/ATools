@@ -304,6 +304,11 @@ int CMainFrame::GetInsertGapBetweenModel() const
 	return ui.spinInsertGap->value();
 }
 
+int CMainFrame::GetInsertNombreModelCercle() const
+{
+	return ui.spinNombreModelCercle->value();
+}
+
 void CMainFrame::GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size)
 {
 	mode = WTYPE_NONE;
