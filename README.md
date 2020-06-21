@@ -31,8 +31,6 @@ To compile you will need:
 You must also:
 * Install and configure Qt and his Add-in in order to have this in Visual Studio:
 
-![alt tag](http://i.imgur.com/MAGPOjo.png)
-
 ## How to use it
 Copy only your resource file on the folder `Resource`:
 * Char
