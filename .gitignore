@@ -83,6 +83,7 @@ Lib/Assimp/lib/
 *.log
 *.scc
 *.iobj
+*.ipdb
 
 # Visual C++ cache files
 ipch/
