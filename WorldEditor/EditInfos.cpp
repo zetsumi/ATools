@@ -264,6 +264,46 @@ EEditMode CMainFrame::GetEditMode() const
 	return m_editMode;
 }
 
+EInsertMode CMainFrame::GetInsertMode() const
+{
+	if (ui.insertModeSimple->isChecked() == true)
+		return EInsertMode::INSERT_SIMPLE;
+	if (ui.insertionModeMultiple->isChecked() == true)
+		return EInsertMode::INSERT_MULTIPLE;
+	if (ui.insertSuffleReset->isChecked() == true)
+		return EInsertMode::INSERT_SUFFLE;
+	return EInsertMode::INSERT_UNKNOW;
+}
+
+EInsertionGeometry	CMainFrame::GetInsertGeometry() const
+{
+	if (ui.geoRect->isChecked())
+		return EInsertionGeometry::INSERT_GEO_RECT;
+	if (ui.geoCercle->isChecked())
+		return EInsertionGeometry::INSERT_GEO_CERCLE;
+	return EInsertionGeometry::INSERT_GEO_RECT;
+}
+
+int CMainFrame::GetInsertRectWidth() const
+{
+	return ui.insertRectLength->value();
+}
+
+int CMainFrame::GetInsertRectLength() const
+{
+	return ui.insertRectWidth->value();
+}
+
+int CMainFrame::GetInsertCercleRadius() const
+{
+	return ui.sliderRadiusInsertCercle->value();
+}
+
+int CMainFrame::GetInsertGapBetweenModel() const
+{
+	return ui.spinInsertGap->value();
+}
+
 void CMainFrame::GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size)
 {
 	mode = WTYPE_NONE;

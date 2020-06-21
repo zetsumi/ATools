@@ -341,8 +341,9 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 				const int patrolIndex = MainFrame->GetCurrentPatrol();
 
 				CObjectCreateCommand* command = new CObjectCreateCommand(m_world);
-
 				CObject* obj;
+				std::vector<CObject*>	newObjs;
+
 				for (int i = 0; i < m_addObjects.GetSize(); i++)
 				{
 					obj = m_addObjects[i];
@@ -353,7 +354,69 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 							command->AddCreateObject(obj, patrolIndex);
 					}
 					else
-						command->AddCreateObject(obj);
+					{
+						EInsertMode modeInsert = MainFrame->GetInsertMode();
+						EInsertionGeometry modeGeo = MainFrame->GetInsertGeometry();
+						if (modeInsert == EInsertMode::INSERT_SIMPLE)
+						{
+							command->AddCreateObject(obj);
+						}
+						else if (modeInsert == EInsertMode::INSERT_MULTIPLE || modeInsert == EInsertMode::INSERT_SUFFLE)
+						{
+							if (modeGeo == EInsertionGeometry::INSERT_GEO_RECT)
+							{
+								int length = MainFrame->GetInsertRectLength();
+								int width = MainFrame->GetInsertRectWidth();
+								int gap = MainFrame->GetInsertGapBetweenModel();
+
+								int px = obj->m_pos.x - ((gap * length) / 2);
+								int pz = obj->m_pos.z - ((gap * width) / 2);
+
+								for (unsigned int y = 0; y < length; ++y)
+								{
+									for (unsigned int x = 0; x < width; ++x)
+									{
+										CObject* newObj = CObject::CreateObject(obj->m_type, obj);
+										D3DXVECTOR3 newPos(px, newObj->m_pos.y, pz);
+
+										if (modeInsert == EInsertMode::INSERT_MULTIPLE)
+										{
+											newPos.x += x * gap;
+											newPos.z += y * gap;
+										}
+										else if (modeInsert == EInsertMode::INSERT_SUFFLE)
+										{
+											int minX = px;
+											int maxX = px + (gap * length);
+											int minZ = pz;
+											int maxZ = pz + (gap * width);
+											newPos.x = qrand() % (maxX - minX) + minX;
+											newPos.z = qrand() % (maxZ - minZ) + minZ;
+										}
+										newPos.y = m_world->GetHeight(newPos.x, newPos.z);
+										newObj->SetPos(newPos);
+
+										if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
+										{
+											CSpawnObject* dyna = ((CSpawnObject*)newObj);
+											dyna->m_rect = QRect(QPoint(
+												(int)(newObj->m_pos.z + 0.5f),
+												(int)(newObj->m_pos.x + 0.5f)) + dyna->m_rect.topLeft(),
+												dyna->m_rect.size()
+											);
+										}
+										newObjs.push_back(newObj);
+									}
+								}
+							}
+						}
+						
+						// Add the new objects
+						for (auto newObj : newObjs)
+						{
+							command->AddCreateObject(newObj);
+						}
+					}
 				}
 
 				command->Apply();

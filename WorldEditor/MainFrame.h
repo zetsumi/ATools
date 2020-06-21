@@ -37,6 +37,20 @@ enum EEditMode
 	EDIT_SCALE_OBJECTS
 };
 
+enum EInsertMode
+{
+	INSERT_SIMPLE,
+	INSERT_MULTIPLE,
+	INSERT_SUFFLE,
+	INSERT_UNKNOW
+};
+
+enum EInsertionGeometry
+{
+	INSERT_GEO_RECT,
+	INSERT_GEO_CERCLE
+};
+
 enum EEditAxis
 {
 	EDIT_X,
@@ -74,6 +88,12 @@ public:
 	void ShowDialogs();
 
 	EEditMode GetEditMode() const;
+	EInsertMode	GetInsertMode() const;
+	EInsertionGeometry	GetInsertGeometry() const;
+	int	GetInsertRectWidth() const;
+	int	GetInsertRectLength() const;
+	int	GetInsertCercleRadius() const;
+	int	GetInsertGapBetweenModel() const;
 	void GetWaterEditInfos(int& mode, byte& waterHeight, byte& waterTexture, int& size);
 	void GetTerrainHeightEditInfos(int& mode, bool& rounded, int& radius, int& hardness, bool& useFixedheight, float& fixedHeight, int& attribute);
 	int GetTerrainHeightEditMode() const;
