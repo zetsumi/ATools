@@ -20,32 +20,8 @@ What my tools have in addition:
 * Lots of new features added
 * The source code is available so you can fit all you need
 
-## Screenshots
 
-### WorldEditor
-
-![alt tag](http://i.imgur.com/KNX9gu1.png)
-
-![alt tag](http://i.imgur.com/Qb6jrPN.png)
-
-### ModelEditor
-
-![alt tag](http://i.imgur.com/AOc5cSx.png)
-
-### SfxEditor
-
-![alt tag](http://i.imgur.com/VTfc9Ow.png)
-
-### GUIEditor (v15 and v19)
-
-![alt tag](http://i.imgur.com/HZ3ZuUt.png)
-
-### ResEditor
-
-![alt tag](http://i.imgur.com/uTa5UJw.png)
-
-## Build
-    
+## Build    
 To compile you will need:
 * Visual Studio 2019
 * DirectX SDK : http://www.microsoft.com/en-us/download/details.aspx?id=6812
@@ -56,3 +32,37 @@ You must also:
 * Install and configure Qt and his Add-in in order to have this in Visual Studio:
 
 ![alt tag](http://i.imgur.com/MAGPOjo.png)
+
+## How to use it
+Copy only your resource file on the folder `Resource`:
+* Char
+* Client
+* Cursor
+* Icon
+* Item
+* LuaFunc
+* Model
+* Music
+* SFX
+* Sound
+* Theme
+* Weather
+* Worldp
+
+Copy your file with extension `.txt.txt` on the folder `Translate\ENG\`.<br>
+You shall not replace the `.dll` and `.lib` already exist on the folder `Resource`.<br>
+
+
+## Version
+
+0.1:<br>
+WorldEditor:
+* Export World all models, sfx and terrain in folder `Export`.
+
+0.2:<br>
+WorlEditor:
+* Multi Insertion
+    * Geometry Cercle and Rect.
+    * Mode Simple, Multi, Multi with shuffle
+Model Editor:
+* Listing models and fast load.
