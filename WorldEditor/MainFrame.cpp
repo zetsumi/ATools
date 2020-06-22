@@ -110,8 +110,7 @@ bool CMainFrame::Initialize()
 	}
 	else if (!m_prj->Load("Masquerade.prj"))
 	{
-		if (!m_prj->Load("Config/MasqueradeTextDefault.prj"))
-			return false;
+		return false;
 	}
 
 	m_editor = new CWorldEditor(this);
