@@ -242,11 +242,18 @@ bool CDataManager::Load()
 		return false;
 	if (!_loadDefine("resData.h"))
 		return false;
-	if (!_loadText("Translate\\ENG\\resData.txt.txt"))
+	if (QFile::exists("Config/Masquerade.prj"))
 	{
-		if (!_loadText("resData.txt.txt"))
+		if (!_loadText("Translate\\ENG\\resData.txt.txt"))
+		{
 			return false;
+		}
 	}
+	else if (!_loadText("resData.txt.txt"))
+	{
+		return false;
+	}
+
 	if (!_loadScript("resData.inc"))
 		return false;
 	return true;
@@ -256,11 +263,16 @@ bool CDataManager::Save()
 {
 	if (!_saveDefine("resData.h"))
 		return false;
-	if (!_saveText("Translate\\ENG\\resData.txt.txt"))
+	if (QFile::exists("Config/Masquerade.prj"))
 	{
-		if (!_saveText("resData.txt.txt"))
-		return false;
+		if (!_saveText("Translate\\ENG\\resData.txt.txt"))
+		{
+			return false;
+		}
 	}
+	else if (!_saveText("resData.txt.txt"))
+		return false;
+
 	if (!_saveScript("resData.inc"))
 		return false;
 	return true;

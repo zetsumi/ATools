@@ -1,0 +1,38 @@
+project    "MUDRA"
+
+textClient "textClient.inc" 
+model      "mdlObj.inc" 
+model      "mdlDyna.inc" 
+billboard  "billboard.csv"
+world      "world.inc"
+terrain    "terrain.inc" 
+
+// properties
+propMover  "propMover.txt"
+propItem   "propItem.txt"
+propSkill  "propSkill.txt"
+propMotion "propMotion.txt"
+propTroupeSkill "propTroupeSkill.txt"
+propKarma  "propKarma.txt"
+propJob   "propJob.txt"
+propCtrl   "propCtrl.csv"
+propSkillAdd "propSkillAdd.csv"
+
+// character
+character "character.inc"
+character "character-etc.inc"
+character "character-school.inc"
+
+// quest
+propQuest "propQuest.inc"
+propQuest "propQuest-RequestBox.inc"
+propQuest "propQuest-Scenario.inc"
+propQuest "propQuest-RequestBox2.inc"
+propQuest "propQuest-DungeonandPK.inc" 
+
+//parts      "parts.inc"
+expTable   "ExpTable.inc"
+help       "Client\help.inc"
+
+// Event
+Event_LevelUp_ItemList "Event_LevelUp_ItemList.txt"

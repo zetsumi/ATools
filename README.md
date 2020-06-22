@@ -25,11 +25,12 @@ What my tools have in addition:
 To compile you will need:
 * Visual Studio 2019
 * DirectX SDK : http://www.microsoft.com/en-us/download/details.aspx?id=6812
-* Visual Studio Add-in 1.2.4 for Qt5 : http://download.qt.io/official_releases/vsaddin/qt-vs-addin-1.2.4-opensource.exe
-* Qt 5.14.2 for Windows 32 bits - VS 2017
+* Visual Studio Add-in for Qt5 : https://download.qt.io/official_releases/vsaddin/2.5.1/
+* Qt 5.14.2 for Windows 32 bits
 
 You must also:
-* Install and configure Qt and his Add-in in order to have this in Visual Studio:
+* Install and configure Qt and his Add-in in order to have this in Visual Studio
+![alt tag](http://i.imgur.com/MAGPOjo.png)
 
 ## How to use it
 Copy only your resource file on the folder `Resource`:
