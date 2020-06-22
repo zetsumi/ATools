@@ -1,14 +1,4 @@
-project    "MUDRA"
-
-define     "define.h"
-define     "defineNeuz.h"
-define     "defineQuest.h"
-define     "defineJob.h"
-define     "defineItem.h"
-define     "defineWorld.h"
-define     "defineItemkind.h"
-define     "lang.h"
-
+// Properties
 string	"Translate\ENG\character.txt.txt"
 string	"Translate\ENG\character-etc.txt.txt"
 string	"Translate\ENG\character-school.txt.txt"
@@ -38,6 +28,7 @@ string	"Translate\ENG\Guide.txt.txt"
 string	"Translate\ENG\GameGuard.txt.txt"
 string	"Translate\ENG\faq.txt.txt"
 
+// World
 string	"Translate\ENG\WdVolcane.txt.txt"
 string	"Translate\ENG\wdMadrigal.txt.txt"
 string	"Translate\ENG\WdKebaras.txt.txt"
@@ -74,47 +65,3 @@ string	"Translate\ENG\WdVolcane.txt.txt"
 string	"Translate\ENG\WdVolcaneRed.txt.txt"
 string	"Translate\ENG\WdVolcaneYellow.txt.txt"
 string	"Client\tutorial.txt.txt"
-
-localDef   "defineObj.h"
-localDef   "defineAttribute.h"
-localDef   "defineSkill.h"
-localDef   "defineText.h"
-localDef   "defineSound.h"
-
-textClient "textClient.inc" 
-textServer "textServer.inc" 
-model      "mdlObj.inc" 
-model      "mdlDyna.inc" 
-billboard  "billboard.csv"
-world      "world.inc"
-terrain    "terrain.inc" 
-beginItem  "beginItem.inc" 
-propMover  "propMover.txt"
-propItem   "propItem.txt"
-propSkill  "propSkill.txt"
-propMotion "propMotion.txt"
-propTroupeSkill "propTroupeSkill.txt"
-propKarma  "propKarma.txt"
-
-
-propJob   "propJob.txt"
-propCtrl   "propCtrl.csv"
-propSkillAdd "propSkillAdd.csv"
-
-character "character.inc"
-character "character-etc.inc"
-character "character-school.inc"
-
-propQuest "propQuest.inc"
-propQuest "propQuest-RequestBox.inc"
-propQuest "propQuest-Scenario.inc"
-propQuest "propQuest-RequestBox2.inc"
-propQuest "propQuest-DungeonandPK.inc" 
-
-
-//parts      "parts.inc"
-expTable   "ExpTable.inc"
-help       "Client\help.inc"
-
-// Event
-Event_LevelUp_ItemList "Event_LevelUp_ItemList.txt"
