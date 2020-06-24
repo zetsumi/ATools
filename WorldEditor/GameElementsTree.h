@@ -9,7 +9,7 @@ public:
 	CGameElementsTree(QWidget* parent = null);
 
 protected:
-	virtual void keyPressEvent(QKeyEvent* event);
+	void keyPressEvent(QKeyEvent* event) override;
 };
 
 #endif // GAMEELEMENTSTREE_H

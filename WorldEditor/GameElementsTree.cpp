@@ -21,4 +21,15 @@ void CGameElementsTree::keyPressEvent(QKeyEvent* event)
 
 	if ((event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) && selectedIndexes().size() > 0)
 		emit activated(selectedIndexes().at(0));
+	if (event->key() != Qt::Key_Shift && event->key() != Qt::Key_Alt)
+	{
+		QString key = event->text().toLower();
+		if (event->modifiers() & Qt::ShiftModifier)
+		{
+			if (key == "e")
+				expandAll();
+			else if (key == "h")
+				collapseAll();
+		}
+	}
 }

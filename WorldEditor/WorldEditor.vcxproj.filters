@@ -482,5 +482,8 @@
     <None Include="worldeditor_de.ts">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Resources\plugins\Shortcuts.inc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

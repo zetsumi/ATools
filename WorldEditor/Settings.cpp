@@ -64,7 +64,10 @@ void CMainFrame::ShowFavoritesMenu(const QPoint& pt)
 	if (index.isValid())
 	{
 		QStandardItem* element = (QStandardItem*)model->itemFromIndex(index);
-		if (element && (element->type() == GAMEELE_TERRAIN || element->type() == GAMEELE_MODEL))
+		if (element == nullptr)
+			return;
+		int type = element->type();
+		if (type == GAMEELE_TERRAIN || type == GAMEELE_MODEL)
 		{
 			if (element->parent() == m_favoritesFolder)
 			{
@@ -103,6 +106,18 @@ void CMainFrame::ShowFavoritesMenu(const QPoint& pt)
 						ui.gameElementsTree->expand(m_favoritesFolder->index());
 					}
 				}
+			}
+		}
+		else if (type == GAMEELE_FOLDER)
+		{
+			QAction* result = m_folderExpandHide->exec(ui.gameElementsTree->mapToGlobal(pt));
+			if (result)
+			{
+				QModelIndex currentIndex = ui.gameElementsTree->currentIndex();
+				if (ui.gameElementsTree->isExpanded(currentIndex))
+					ui.gameElementsTree->collapse(currentIndex);
+				else
+					ui.gameElementsTree->expandRecursively(currentIndex);
 			}
 		}
 	}
