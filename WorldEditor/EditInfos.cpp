@@ -284,6 +284,11 @@ EInsertionGeometry	CMainFrame::GetInsertGeometry() const
 	return EInsertionGeometry::INSERT_GEO_RECT;
 }
 
+bool CMainFrame::IsInsertRandomRotate() const
+{
+	return ui.checkRandonRotation->isChecked();
+}
+
 int CMainFrame::GetInsertRectWidth() const
 {
 	return ui.insertRectLength->value();

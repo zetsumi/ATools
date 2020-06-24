@@ -965,34 +965,56 @@
            <property name="flat">
             <bool>false</bool>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QRadioButton" name="insertModeSimple">
-                <property name="text">
-                 <string>Simple</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="insertionModeMultiple">
-                <property name="text">
-                 <string>Multiple</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="insertSuffleReset">
-                <property name="text">
-                 <string>Multi Suffle</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QRadioButton" name="geoRect">
+              <property name="text">
+               <string>Rectangle</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="geoCercle">
+              <property name="text">
+               <string>Cercle</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>GroupBox</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QRadioButton" name="insertModeSimple">
+              <property name="text">
+               <string>Simple</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="insertionModeMultiple">
+              <property name="text">
+               <string>Multiple</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="insertSuffleReset">
+              <property name="text">
+               <string>Multi Suffle</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1007,32 +1029,25 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
-              <item>
-               <widget class="QRadioButton" name="geoRect">
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11"/>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkRandonRotation">
                 <property name="text">
-                 <string>Rectangle</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="geoCercle">
-                <property name="text">
-                 <string>Cercle</string>
+                 <string>rotation aleatoire</string>
                 </property>
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
             </item>
             <item>
              <layout class="QFormLayout" name="formLayout_2">
@@ -1057,6 +1072,13 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QFormLayout" name="formLayout_3">
@@ -1324,6 +1346,7 @@
     <addaction name="actionVerrouiller_la_s_lection"/>
     <addaction name="actionTranslation"/>
     <addaction name="actionRotation"/>
+    <addaction name="actionRandomRotate"/>
     <addaction name="actionRedimension"/>
     <addaction name="actionTaille_et_rotation_al_atoires"/>
     <addaction name="actionGravit"/>
@@ -2519,6 +2542,15 @@
    </property>
    <property name="text">
     <string>Exporter</string>
+   </property>
+  </action>
+  <action name="actionRandomRotate">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/rotate.png</normaloff>:/MainFrame/Resources/rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotation Aleatoire</string>
    </property>
   </action>
  </widget>

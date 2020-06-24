@@ -339,6 +339,7 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 			if (m_addObjects.GetSize() > 0)
 			{
 				const int patrolIndex = MainFrame->GetCurrentPatrol();
+				const bool isRandomRotate = MainFrame->IsInsertRandomRotate();
 
 				CObjectCreateCommand* command = new CObjectCreateCommand(m_world);
 				CObject* obj;
@@ -359,6 +360,12 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 						EInsertionGeometry modeGeo = MainFrame->GetInsertGeometry();
 						if (modeInsert == EInsertMode::INSERT_SIMPLE)
 						{
+							if (isRandomRotate)
+							{
+								D3DXVECTOR3 rot = obj->GetRot();
+								rot.y = qrand() % 360;
+								obj->SetRot(rot);
+							}
 							command->AddCreateObject(obj);
 						}
 						else if (modeInsert == EInsertMode::INSERT_MULTIPLE || modeInsert == EInsertMode::INSERT_SUFFLE)
@@ -395,6 +402,14 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 										}
 										newPos.y = m_world->GetHeight(newPos.x, newPos.z);
 										newObj->SetPos(newPos);
+
+										if (isRandomRotate)
+										{
+											D3DXVECTOR3 rot = newObj->GetRot();
+											rot.y = qrand() % 360;
+											newObj->SetRot(rot);
+										}
+
 
 										if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
 										{
@@ -437,6 +452,12 @@ void CWorldEditor::mousePressEvent(QMouseEvent* event)
 									newPos.z += (radius * (z * 100)) / 100;
 									newPos.y = m_world->GetHeight(newPos.x, newPos.z);
 									newObj->SetPos(newPos);
+									if (isRandomRotate)
+									{
+										D3DXVECTOR3 rot = newObj->GetRot();
+										rot.y = qrand() % 360;
+										newObj->SetRot(rot);
+									}
 
 									if (obj->m_type == OT_MOVER || obj->m_type == OT_ITEM || obj->m_type == OT_CTRL)
 									{

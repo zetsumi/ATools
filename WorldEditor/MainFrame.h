@@ -90,6 +90,7 @@ public:
 	EEditMode GetEditMode() const;
 	EInsertMode	GetInsertMode() const;
 	EInsertionGeometry	GetInsertGeometry() const;
+	bool IsInsertRandomRotate() const;
 	int	GetInsertRectWidth() const;
 	int	GetInsertRectLength() const;
 	int	GetInsertCercleRadius() const;
@@ -188,6 +189,7 @@ public slots:
 	void ExportWorld();
 	void TranslateObjects();
 	void RotateObjects();
+	void RandomRotateObjects();
 	void ShowEditionLight(bool light);
 	void ScaleObjects();
 	void SetAddObjectsSettings();

@@ -330,6 +330,27 @@ void CMainFrame::RotateObjects()
 	ShowDialogs();
 }
 
+void CMainFrame::RandomRotateObjects()
+{
+	if (!m_world || CWorld::s_selection.GetSize() <= 0)
+		return;
+
+	CObjectTransformCommand* command = new CObjectTransformCommand(m_world);
+
+	for (int i = 0; i < CWorld::s_selection.GetSize(); i++)
+	{
+		auto rot = CWorld::s_selection[i]->GetRot();
+		rot.y = qrand() % 360;
+		command->SetRotate(CWorld::s_selection[i], rot);
+	}
+
+	command->Apply();
+	AddCommand(command);
+	UpdateWorldEditor();
+
+	ShowDialogs();
+}
+
 void CMainFrame::TranslateObjects()
 {
 	if (!m_world || CWorld::s_selection.GetSize() <= 0)
