@@ -33,7 +33,7 @@ You must also:
 ![alt tag](http://i.imgur.com/MAGPOjo.png)
 
 ## How to use it
-Copy only your resource file on the folder `Resource`:
+Copy only your resource file on the folder `Resources`:
 * Char
 * Client
 * Cursor
@@ -49,7 +49,7 @@ Copy only your resource file on the folder `Resource`:
 * Worldp
 
 Copy your file with extension `.txt.txt` on the folder `Translate\ENG\`.<br>
-You shall not replace the `.dll` and `.lib` already exist on the folder `Resource`.<br>
+You shall not replace the `.dll` and `.lib` already exist on the folder `Resources`.<br>
 
 
 ## Version
