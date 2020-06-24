@@ -49,7 +49,9 @@ void CShortcutsMng::Load()
 					if (!shortcut.isEmpty())
 					{
 						if (shortcuts.contains(shortcut))
+						{
 							qWarning("Shortcut %s already used.", shortcut.toLocal8Bit().constData());
+						}
 						else
 						{
 							it.value()->setShortcut(shortcut);

@@ -217,6 +217,7 @@ private:
 		*m_waterHeight;
 	QMap<QAction*, string> m_lastOpenFilesActions;
 	QMenu* m_favoritesAddMenu;
+	QMenu* m_folderExpandHide;
 	QMenu* m_favoritesRemoveMenu;
 	CRootFolderElement* m_favoritesFolder;
 	QColor m_editTerrainTextureColor;
@@ -237,6 +238,7 @@ private:
 	int m_currentPatrol;
 	QUndoStack* m_undoStack;
 	QAction* m_actionEditModel;
+	QAction* m_actionExpandHiddenListModel;
 	bool m_addObjRandomScale,
 		m_addObjRandomRot;
 	float m_addObjRandomScaleMin,

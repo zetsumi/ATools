@@ -24,6 +24,7 @@ CMainFrame::CMainFrame(QWidget *parent)
 	m_world(null),
 	m_navigator(null),
 	m_favoritesAddMenu(null),
+	m_folderExpandHide(null),
 	m_favoritesRemoveMenu(null),
 	m_favoritesFolder(null),
 	m_curX(null),
@@ -79,6 +80,7 @@ CMainFrame::~CMainFrame()
 	Delete(m_navigator);
 	Delete(m_editor);
 	Delete(m_favoritesAddMenu);
+	Delete(m_folderExpandHide);
 	Delete(m_favoritesRemoveMenu);
 	Delete(m_curX);
 	Delete(m_curY);
@@ -168,6 +170,9 @@ bool CMainFrame::Initialize()
 	m_favoritesAddMenu->addAction(iconAdd, tr("Ajouter aux favoris"));
 	m_favoritesRemoveMenu = new QMenu(this);
 	m_favoritesRemoveMenu->addAction(iconRemove, tr("Retirer des favoris"));
+
+	m_folderExpandHide = new QMenu(this);
+	m_folderExpandHide->addAction(iconAdd, tr("deployer / cacher"));
 
 	QIcon iconEdit;
 	iconEdit.addFile(":/MainFrame/Resources/edit.png");
