@@ -1372,8 +1372,14 @@
     <property name="title">
      <string>Monde</string>
     </property>
+    <widget class="QMenu" name="menuListeWorld">
+     <property name="title">
+      <string>Liste</string>
+     </property>
+    </widget>
     <addaction name="action_dition_des_continents"/>
     <addaction name="actionPropri_t_s_du_monde"/>
+    <addaction name="menuListeWorld"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuObjets"/>
@@ -2551,6 +2557,11 @@
    </property>
    <property name="text">
     <string>Rotation Aleatoire</string>
+   </property>
+  </action>
+  <action name="actiontest">
+   <property name="text">
+    <string>test</string>
    </property>
   </action>
  </widget>

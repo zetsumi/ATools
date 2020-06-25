@@ -199,6 +199,7 @@ public slots:
 	void SetFarPlane();
 	void SetGravityEnabled(bool gravity);
 	void SetOnGridEnabled(bool grid);
+	void LoadWorldFromList(QAction*);
 
 private:
 	Ui::MainFrameClass ui;
@@ -256,6 +257,7 @@ private:
 	void _loadSettings();
 	void _updateLastOpenFiles();
 	void _setShortcuts();
+	void _loadListWorld();
 
 	void _writeObjectsList(QTextStream& out, int objType, const string& filename, const string& name, const string& defBegin);
 
