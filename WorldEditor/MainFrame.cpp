@@ -264,6 +264,7 @@ bool CMainFrame::Initialize()
 
 	_setShortcuts();
 	_loadSettings();
+	_loadListWorld();
 	CloseFile();
 	return true;
 }
@@ -349,6 +350,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionGravit, SIGNAL(triggered(bool)), this, SLOT(SetGravityEnabled(bool)));
 	connect(ui.actionPlacer_sur_la_grille, SIGNAL(triggered(bool)), this, SLOT(SetOnGridEnabled(bool)));
 	connect(ui.actionExporter, SIGNAL(triggered(bool)), this, SLOT(ExportWorld()));
+	connect(ui.menuListeWorld, SIGNAL(triggered(QAction*)), this, SLOT(LoadWorldFromList(QAction*)));
 
 	connect(m_undoStack, SIGNAL(canRedoChanged(bool)), ui.actionR_tablir, SLOT(setEnabled(bool)));
 	connect(m_undoStack, SIGNAL(canUndoChanged(bool)), ui.actionAnnuler, SLOT(setEnabled(bool)));
@@ -409,6 +411,28 @@ void CMainFrame::_setShortcuts()
 	mng.Add(ui.actionTourner_cam_ra, "RotateCamera");
 	mng.Add(ui.actionZoomer_cam_ra, "ZoomCamera");
 	mng.Load();
+}
+
+void CMainFrame::_loadListWorld()
+{
+	QDir dir("World/");
+	QDirIterator directories("World/", QDir::Dirs);
+	while (directories.hasNext())
+	{
+		QString worldName = directories.fileName();
+		if (worldName.toLower() != "texture"
+			&& worldName.toLower() != "texturemid"
+			&& worldName.toLower() != "texturelow"
+			&& worldName.toLower() != "texturehight")
+		{
+			if (worldName.isEmpty() == false && worldName.contains(".") == false)
+			{
+				auto action = ui.menuListeWorld->addAction(worldName);
+				action->setObjectName(worldName);
+			}
+		}
+		directories.next();
+	}
 }
 
 void CMainFrame::AddCommand(CEditCommand* command)

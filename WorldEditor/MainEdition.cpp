@@ -653,3 +653,17 @@ void CMainFrame::SetOnGridEnabled(bool grid)
 		UpdateWorldEditor();
 	}
 }
+
+void CMainFrame::LoadWorldFromList(QAction* action)
+{
+	QString worldName = action->objectName();
+	if (worldName.isEmpty())
+		return;
+
+	SaveFile();
+
+	QString worldFileName = "World/" + worldName + "/" + worldName + ".wld";
+	qDebug() << worldFileName;
+
+	OpenFile(worldFileName);
+}
