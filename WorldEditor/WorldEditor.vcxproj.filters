@@ -58,6 +58,11 @@
     <Filter Include="Dialogs">
       <UniqueIdentifier>{34b49b7d-00a4-4f29-8451-ea1b64b8505d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainFrame.cpp">
@@ -285,6 +290,15 @@
     <ClCompile Include="..\Common\ShortcutsMng.cpp">
       <Filter>Common\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CWidgetAutoSave.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CWidgetAutoSave.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="CWidgetAutoSave.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -413,6 +427,9 @@
     <ClInclude Include="..\Common\ShortcutsMng.h">
       <Filter>Common\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_WidgetAutoSave.h">
+      <Filter>MainFrame\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.h">
@@ -465,6 +482,12 @@
     </CustomBuild>
     <CustomBuild Include="..\Common\AboutDialog.h">
       <Filter>Common\Utils</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WidgetAutoSave.ui">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CWidgetAutoSave.h">
+      <Filter>Dialogs</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
