@@ -224,6 +224,7 @@ bool CMainFrame::Initialize()
 	m_objectMenu->addSeparator();
 	m_objectMenu->addAction(ui.actionTranslation);
 	m_objectMenu->addAction(ui.actionRotation);
+	m_objectMenu->addAction(ui.actionRandomRotate);
 	m_objectMenu->addAction(ui.actionRedimension);
 	m_objectMenu->addAction(ui.actionRamener_sur_le_sol);
 	m_objectMenu->addAction(ui.actionTaille_et_rotation_al_atoires);
@@ -339,6 +340,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionListe, SIGNAL(triggered()), this, SLOT(GenerateList()));
 	connect(ui.actionTranslation, SIGNAL(triggered()), this, SLOT(TranslateObjects()));
 	connect(ui.actionRotation, SIGNAL(triggered()), this, SLOT(RotateObjects()));
+	connect(ui.actionRandomRotate, SIGNAL(triggered()), this, SLOT(RandomRotateObjects()));
 	connect(ui.actionRedimension, SIGNAL(triggered()), this, SLOT(ScaleObjects()));
 	connect(ui.actionParam_tres_d_ajout_d_objets, SIGNAL(triggered()), this, SLOT(SetAddObjectsSettings()));
 	connect(ui.actionSupprimer_tous_les_objets, SIGNAL(triggered()), this, SLOT(DeleteAllObjects()));
