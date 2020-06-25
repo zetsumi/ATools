@@ -1376,10 +1376,15 @@
      <property name="title">
       <string>Liste</string>
      </property>
+     <property name="icon">
+      <iconset resource="MainFrame.qrc">
+       <normaloff>:/MainFrame/Resources/list.png</normaloff>:/MainFrame/Resources/list.png</iconset>
+     </property>
     </widget>
     <addaction name="action_dition_des_continents"/>
     <addaction name="actionPropri_t_s_du_monde"/>
     <addaction name="menuListeWorld"/>
+    <addaction name="actionTimeSave"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuObjets"/>
@@ -2562,6 +2567,18 @@
   <action name="actiontest">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="actionTimeSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/gametime.png</normaloff>:/MainFrame/Resources/gametime.png</iconset>
+   </property>
+   <property name="text">
+    <string>sauvegarde automatique</string>
    </property>
   </action>
  </widget>
