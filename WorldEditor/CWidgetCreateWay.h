@@ -11,6 +11,10 @@ public:
 	CWidgetCreateWay(QWidget *parent = Q_NULLPTR);
 	~CWidgetCreateWay();
 
+public slots:
+	void onPutPointWay();
+	void onApply();
+
 private:
 	Ui::CWidgetCreateWay ui;
 };

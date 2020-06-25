@@ -673,3 +673,9 @@ void CMainFrame::onTimerAutoSave()
 	if (m_widgetAutoSave.isActiveWindow() == false)
 		m_widgetAutoSave.show();
 }
+
+void CMainFrame::onToolTracingWay()
+{
+	if (m_widgetToolTracingWay.isActiveWindow() == false)
+		m_widgetToolTracingWay.show();
+}

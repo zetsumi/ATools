@@ -357,6 +357,7 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionR_tablir, SIGNAL(triggered(bool)), m_undoStack, SLOT(redo()));
 	connect(ui.actionAnnuler, SIGNAL(triggered(bool)), m_undoStack, SLOT(undo()));
 	connect(ui.actionTimeSave, SIGNAL(triggered()), this, SLOT(onTimerAutoSave()));
+	connect(ui.actionToolTracingWay, SIGNAL(triggered()), this, SLOT(onToolTracingWay()));
 }
 
 void CMainFrame::_setShortcuts()

@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
+    <width>273</width>
     <height>163</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CWidgetCreateWay</string>
+   <string>Outil de tracer automatique</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="MainFrame.qrc">
+    <normaloff>:/MainFrame/Resources/WorldEditor.png</normaloff>:/MainFrame/Resources/WorldEditor.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -23,16 +27,19 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="radioWay">
           <property name="text">
-           <string>eau</string>
+           <string>chemin</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton">
+         <widget class="QRadioButton" name="radioWater">
           <property name="text">
-           <string>chemin</string>
+           <string>eau</string>
           </property>
          </widget>
         </item>
@@ -47,25 +54,59 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="spinBox"/>
-          </item>
           <item row="0" column="0">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>TextLabel</string>
+             <string>hauteur:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="spinHeight">
+            <property name="minimum">
+             <number>100</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>TextLabel</string>
+             <string>rayon:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="spinBox_2"/>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_3">
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="text">
+             <string>10</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSlider" name="sliderRadius">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -75,30 +116,24 @@
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPushButton" name="btnInsertPointWay">
-         <property name="text">
-          <string>Point Chemin</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Ok</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <widget class="QPushButton" name="btnPutPointWay">
+     <property name="text">
+      <string>Placer un point</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnApply">
+     <property name="text">
+      <string>Creation</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="MainFrame.qrc"/>
+ </resources>
  <connections/>
 </ui>

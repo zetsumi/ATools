@@ -9,6 +9,7 @@
 
 #include "ui_MainFrame.h"
 #include <CWidgetAutoSave.h>
+#include <CWidgetCreateWay.h>
 
 class CProject;
 class CWorldEditor;
@@ -204,6 +205,7 @@ public slots:
 	void SetOnGridEnabled(bool grid);
 	void LoadWorldFromList(QAction*);
 	void onTimerAutoSave();
+	void onToolTracingWay();
 
 private:
 	Ui::MainFrameClass ui;
@@ -259,6 +261,7 @@ private:
 	QTimer m_timerSave;
 	int	m_timerAutoSave = 1000 * 60 * 3; // 3min 
 	CWidgetAutoSave	m_widgetAutoSave;
+	CWidgetCreateWay m_widgetToolTracingWay;
 
 	void _connectWidgets();
 	void _loadSettings();

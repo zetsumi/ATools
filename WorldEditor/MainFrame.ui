@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>800</height>
+    <height>840</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -1314,6 +1314,7 @@
     <addaction name="menuLangage"/>
     <addaction name="menuAvanc"/>
     <addaction name="actionPlein_cran"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuFen_tres">
     <property name="title">
@@ -1385,6 +1386,7 @@
     <addaction name="actionPropri_t_s_du_monde"/>
     <addaction name="menuListeWorld"/>
     <addaction name="actionTimeSave"/>
+    <addaction name="actionToolTracingWay"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuObjets"/>
@@ -2579,6 +2581,15 @@
    </property>
    <property name="text">
     <string>sauvegarde automatique</string>
+   </property>
+  </action>
+  <action name="actionToolTracingWay">
+   <property name="icon">
+    <iconset resource="MainFrame.qrc">
+     <normaloff>:/MainFrame/Resources/gravity.png</normaloff>:/MainFrame/Resources/gravity.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outil de tracé de chemin</string>
    </property>
   </action>
  </widget>
