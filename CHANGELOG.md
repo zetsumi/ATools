@@ -1,6 +1,6 @@
 ## Version
 
-0.X:<br>
+0.3:<br>
 * WorldEditor:
     * Fixe Shortcut
     * Folder config
