@@ -51,17 +51,3 @@ Copy only your resource file on the folder `Resources`:
 Copy your file with extension `.txt.txt` on the folder `Translate\ENG\`.<br>
 You shall not replace the `.dll` and `.lib` already exist on the folder `Resources`.<br>
 
-
-## Version
-
-0.1:<br>
-WorldEditor:
-* Export World all models, sfx and terrain in folder `Export`.
-
-0.2:<br>
-WorlEditor:
-* Multi Insertion
-    * Geometry Cercle and Rect.
-    * Mode Simple, Multi, Multi with shuffle
-Model Editor:
-* Listing models and fast load.
