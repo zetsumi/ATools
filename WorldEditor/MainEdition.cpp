@@ -667,3 +667,9 @@ void CMainFrame::LoadWorldFromList(QAction* action)
 
 	OpenFile(worldFileName);
 }
+
+void CMainFrame::onTimerAutoSave()
+{
+	if (m_widgetAutoSave.isActiveWindow() == false)
+		m_widgetAutoSave.show();
+}

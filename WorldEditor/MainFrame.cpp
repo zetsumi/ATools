@@ -265,6 +265,7 @@ bool CMainFrame::Initialize()
 	_setShortcuts();
 	_loadSettings();
 	_loadListWorld();
+	_startTimerSave();
 	CloseFile();
 	return true;
 }
@@ -351,11 +352,11 @@ void CMainFrame::_connectWidgets()
 	connect(ui.actionPlacer_sur_la_grille, SIGNAL(triggered(bool)), this, SLOT(SetOnGridEnabled(bool)));
 	connect(ui.actionExporter, SIGNAL(triggered(bool)), this, SLOT(ExportWorld()));
 	connect(ui.menuListeWorld, SIGNAL(triggered(QAction*)), this, SLOT(LoadWorldFromList(QAction*)));
-
 	connect(m_undoStack, SIGNAL(canRedoChanged(bool)), ui.actionR_tablir, SLOT(setEnabled(bool)));
 	connect(m_undoStack, SIGNAL(canUndoChanged(bool)), ui.actionAnnuler, SLOT(setEnabled(bool)));
 	connect(ui.actionR_tablir, SIGNAL(triggered(bool)), m_undoStack, SLOT(redo()));
 	connect(ui.actionAnnuler, SIGNAL(triggered(bool)), m_undoStack, SLOT(undo()));
+	connect(ui.actionTimeSave, SIGNAL(triggered()), this, SLOT(onTimerAutoSave()));
 }
 
 void CMainFrame::_setShortcuts()
@@ -435,6 +436,17 @@ void CMainFrame::_loadListWorld()
 	}
 }
 
+void CMainFrame::_startTimerSave()
+{
+	connect(&m_timerSave, &QTimer::timeout,
+		[&]()
+		{
+			SaveFile();
+		}
+	);
+	m_timerSave.start(m_timerAutoSave);
+}
+
 void CMainFrame::AddCommand(CEditCommand* command)
 {
 	if (command)
@@ -444,4 +456,9 @@ void CMainFrame::AddCommand(CEditCommand* command)
 		else
 			Delete(command);
 	}
+}
+
+void CMainFrame::SetTimerAutoSave(int timer)
+{
+	m_timerAutoSave = timer;
 }

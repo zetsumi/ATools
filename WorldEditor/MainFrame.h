@@ -8,6 +8,7 @@
 #define MAINFRAME_H
 
 #include "ui_MainFrame.h"
+#include <CWidgetAutoSave.h>
 
 class CProject;
 class CWorldEditor;
@@ -19,6 +20,7 @@ class CDialogWorldProperties;
 class CDialogContinentEdit;
 class CObject;
 class CEditCommand;
+
 
 enum EEditMode
 {
@@ -116,6 +118,7 @@ public:
 	int GetCurrentPatrol() const;
 	void GetAddObjSettings(bool& rot, float& minRot, float& maxRot, bool& scale, float& minScale, float& maxScale);
 	bool IsEditingContinents() const;
+	void SetTimerAutoSave(int timer);
 
 public slots:
 	void NewFile();
@@ -200,6 +203,7 @@ public slots:
 	void SetGravityEnabled(bool gravity);
 	void SetOnGridEnabled(bool grid);
 	void LoadWorldFromList(QAction*);
+	void onTimerAutoSave();
 
 private:
 	Ui::MainFrameClass ui;
@@ -252,12 +256,16 @@ private:
 	int m_language;
 	QActionGroup* m_languageActionGroup;
 	QActionGroup* m_fillModeActionGroup;
+	QTimer m_timerSave;
+	int	m_timerAutoSave = 1000 * 60 * 3; // 3min 
+	CWidgetAutoSave	m_widgetAutoSave;
 
 	void _connectWidgets();
 	void _loadSettings();
 	void _updateLastOpenFiles();
 	void _setShortcuts();
 	void _loadListWorld();
+	void _startTimerSave();
 
 	void _writeObjectsList(QTextStream& out, int objType, const string& filename, const string& name, const string& defBegin);
 
