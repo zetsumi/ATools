@@ -58,11 +58,6 @@
     <Filter Include="Dialogs">
       <UniqueIdentifier>{34b49b7d-00a4-4f29-8451-ea1b64b8505d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-      <ParseFiles>true</ParseFiles>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainFrame.cpp">
@@ -299,6 +294,15 @@
     <ClCompile Include="CWidgetAutoSave.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CWidgetCreateWay.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CWidgetCreateWay.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="CWidgetCreateWay.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -430,6 +434,9 @@
     <ClInclude Include="GeneratedFiles\ui_WidgetAutoSave.h">
       <Filter>MainFrame\UI</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_WidgetCreateWay.h">
+      <Filter>MainFrame\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.h">
@@ -488,6 +495,12 @@
     </CustomBuild>
     <CustomBuild Include="CWidgetAutoSave.h">
       <Filter>Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CWidgetCreateWay.h">
+      <Filter>MainFrame</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WidgetCreateWay.ui">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
